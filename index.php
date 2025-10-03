@@ -243,7 +243,7 @@ $cssVersion = file_exists($cssPath) ? filemtime($cssPath) : time();
             <div class="section-header">
                 <h2 class="section-title">Our Menu</h2>
                 <p class="section-subtitle">
-                    Discover our delicious offerings
+                    All of our burgers are cooked to the required minimum temperature. Upon request we will cook to your specifications || Consuming raw or undercooked meat, poultry, eggs, or seafood poses a risk to everyone.
                 </p>
             </div>
             
@@ -478,13 +478,12 @@ $cssVersion = file_exists($cssPath) ? filemtime($cssPath) : time();
         <div class="container">
             <div class="grid grid-2">
                 <div>
-                    <h2 class="section-title text-left">About Our Restaurant</h2>
-                    <p class="mb-4">
-                        This restaurant is committed to providing a unique dining experience that showcases the best of local and seasonal ingredients.
-                    </p>
-                    <p class="mb-4">
-                        Every dish is crafted with care, using only the freshest ingredients sourced from local farms and markets.
-                    </p>
+                    <?php
+                        $aboutHeading = getContent($content, 'about.heading', getContent($content, 'about.title', 'About Our Restaurant'));
+                        $aboutBody = getContent($content, 'about.body', getContent($content, 'about.content', ''));
+                    ?>
+                    <h2 class="section-title text-left"><?php echo htmlspecialchars($aboutHeading); ?></h2>
+                    <p class="mb-4"><?php echo nl2br(htmlspecialchars($aboutBody)); ?></p>
                     <a href="#" class="btn btn-primary open-contact" data-contact-message="Hi — I'm interested in learning more about your restaurant and services.">Contact Us</a>
                 </div>
                 <div class="card">

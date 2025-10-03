@@ -15,7 +15,9 @@
     },
     "about": {
         "title": "About Us",
-        "content": "Your about us content"
+        "content": "Your about us content",
+        "heading": "About Our Restaurant",
+        "body": "This restaurant is committed to providing a unique dining experience that showcases the best of local and seasonal ingredients.\n\nEvery dish is crafted with care, using only the freshest ingredients sourced from local farms and markets."
     },
     "hours": {
         "monday": "Closed",
@@ -29,7 +31,7 @@
     "images": {
         "logo": "logo-1759391867-68de307bb6469.png"
     },
-    "last_updated": "2025-10-03 15:10:35",
+    "last_updated": "2025-10-03 17:42:15",
     "menu": [
         {
             "title": "Burgers & Sandwiches",
@@ -203,10 +205,29 @@
                             "price": "15.50"
                         }
                     ]
+                },
+                {
+                    "title": "Boneless Wings",
+                    "short": "",
+                    "description": "",
+                    "image": "",
+                    "quantities": [
+                        {
+                            "label": "",
+                            "value": 5,
+                            "price": "8.50"
+                        },
+                        {
+                            "label": "",
+                            "value": 10,
+                            "price": "14.50"
+                        }
+                    ]
                 }
             ],
             "details": [
-                "Served plain or tossed in your choice of sauce: Mild, Medium, Hot, Extra Hot, BBQ, Garlic Parmesan, Kickin' Bourbon, Sweet Teriyaki, Hot Honey",
+                "Served plain or tossed in your choice of sauce: \n",
+                "Mild || Medium || Hot || Extra Hot || BBQ || Garlic Parmesan || Kickin' Bourbon || Sweet Teriyaki || Hot Honey",
                 "Make it a Combo!\nAdd a Side + Drink for $4.50"
             ]
         },
@@ -228,6 +249,38 @@
                             "price": "9.50"
                         }
                     ]
+                },
+                {
+                    "title": "Grilled or Crispy Salad",
+                    "short": "",
+                    "description": "Chicken breast or two tenders, lettuce, tomato, onion and cheddar",
+                    "image": "",
+                    "price": "9.50",
+                    "quantities": []
+                },
+                {
+                    "title": "Chef Salad",
+                    "short": "",
+                    "description": "Sliced ham, sliced turkey, lettuce, tomato, onion, cheddar",
+                    "image": "",
+                    "price": "9.00",
+                    "quantities": []
+                },
+                {
+                    "title": "House Salad",
+                    "short": "",
+                    "description": "Lettuce, tomato, onion, and cheddar",
+                    "image": "",
+                    "price": "5.50",
+                    "quantities": []
+                },
+                {
+                    "title": "BBQ Salad",
+                    "short": "",
+                    "description": "BBQ, lettuce, tomato, onion, and cheddar",
+                    "image": "",
+                    "price": "9.50",
+                    "quantities": []
                 }
             ],
             "details": []
@@ -253,32 +306,426 @@
                 }
             ],
             "details": [
-                "Toppings: Pepperoni | Sausage | Bacon | Ham | Red Onion | Green Pepper | Tomato | Jalapeno",
+                "Toppings: Pepperoni || Sausage || Bacon || Ham || Red Onion || Green Pepper || Tomato || Jalapeno",
                 "Make it a Combo!\nAdd a Side + Drink for $4.50"
             ]
         },
         {
             "title": "Sides",
             "id": "sides",
-            "items": [],
+            "items": [
+                {
+                    "title": "Fries",
+                    "short": "",
+                    "description": "",
+                    "image": "",
+                    "quantities": [
+                        {
+                            "label": "",
+                            "value": "Regular",
+                            "price": "3.50"
+                        },
+                        {
+                            "label": "",
+                            "value": "Basket",
+                            "price": "7.00"
+                        }
+                    ]
+                },
+                {
+                    "title": "Hot Chips",
+                    "short": "",
+                    "description": "",
+                    "image": "",
+                    "quantities": [
+                        {
+                            "label": "",
+                            "value": "Regular",
+                            "price": "3.50"
+                        },
+                        {
+                            "label": "",
+                            "value": "Basket",
+                            "price": "7.00"
+                        }
+                    ]
+                },
+                {
+                    "title": "Tater Tots",
+                    "short": "",
+                    "description": "",
+                    "image": "",
+                    "quantities": [
+                        {
+                            "label": "",
+                            "value": "Regular",
+                            "price": "3.50"
+                        },
+                        {
+                            "label": "",
+                            "value": "Basket",
+                            "price": "7.00"
+                        }
+                    ]
+                },
+                {
+                    "title": "Onion Rings",
+                    "short": "",
+                    "description": "",
+                    "image": "",
+                    "quantities": [
+                        {
+                            "label": "",
+                            "value": "Regular",
+                            "price": "4.50"
+                        },
+                        {
+                            "label": "",
+                            "value": "basket",
+                            "price": "7.00"
+                        }
+                    ]
+                },
+                {
+                    "title": " Potato Salad",
+                    "short": "",
+                    "description": "",
+                    "image": "",
+                    "price": "3.50",
+                    "quantities": []
+                },
+                {
+                    "title": "Side Salad",
+                    "short": "",
+                    "description": "",
+                    "image": "",
+                    "price": "3.50",
+                    "quantities": []
+                }
+            ],
             "details": []
         },
         {
             "title": "Additions & Dressings",
             "id": "additions-dressings",
-            "items": [],
+            "items": [
+                {
+                    "title": "Extra Cheese",
+                    "short": "",
+                    "description": "American | Cheddar | Provolone | Pimento | Cheese Sauce",
+                    "image": "",
+                    "price": ".50",
+                    "quantities": []
+                },
+                {
+                    "title": "Chili",
+                    "short": "",
+                    "description": "",
+                    "image": "",
+                    "price": ".50",
+                    "quantities": []
+                },
+                {
+                    "title": "Bacon",
+                    "short": "",
+                    "description": "",
+                    "image": "",
+                    "price": "1.00",
+                    "quantities": []
+                },
+                {
+                    "title": "Grilled Onion",
+                    "short": "",
+                    "description": "",
+                    "image": "",
+                    "price": ".50",
+                    "quantities": []
+                },
+                {
+                    "title": "Grilled Pepper",
+                    "short": "",
+                    "description": "",
+                    "image": "",
+                    "price": ".50",
+                    "quantities": []
+                },
+                {
+                    "title": "Free Additions",
+                    "short": "",
+                    "description": "Mayo || Ketchup || Mustard || BBQ Sauce || Lettuce || Tomato || Onion || Slaw || Pickle || Jalapeno",
+                    "image": "",
+                    "quantities": []
+                },
+                {
+                    "title": "Extra Dressings",
+                    "short": "",
+                    "description": "Ranch || Italian || 1000 Island || Balsamic Vinaigrette || Honey Mustard",
+                    "image": "",
+                    "price": ".50",
+                    "quantities": []
+                }
+            ],
             "details": []
         },
         {
             "title": "Hershey's Ice Cream",
             "id": "hersheys-ice-cream",
-            "items": [],
+            "items": [
+                {
+                    "title": "Cake Cone",
+                    "short": "",
+                    "description": "",
+                    "image": "",
+                    "price": "3.00",
+                    "quantities": []
+                },
+                {
+                    "title": "Waffle Cone",
+                    "short": "",
+                    "description": "",
+                    "image": "",
+                    "price": "4.50",
+                    "quantities": []
+                },
+                {
+                    "title": "Kid Cone",
+                    "short": "",
+                    "description": "",
+                    "image": "",
+                    "price": "2.00",
+                    "quantities": []
+                },
+                {
+                    "title": "Small Cup",
+                    "short": "",
+                    "description": "",
+                    "image": "",
+                    "price": "3.50",
+                    "quantities": []
+                },
+                {
+                    "title": " Large Cup",
+                    "short": "",
+                    "description": "",
+                    "image": "",
+                    "price": "5.50",
+                    "quantities": []
+                },
+                {
+                    "title": "Pint Cup",
+                    "short": "",
+                    "description": "",
+                    "image": "",
+                    "price": "7.50",
+                    "quantities": []
+                },
+                {
+                    "title": "Kid Cup",
+                    "short": "",
+                    "description": "",
+                    "image": "",
+                    "price": "2.00",
+                    "quantities": []
+                },
+                {
+                    "title": "Small Milkshake",
+                    "short": "",
+                    "description": "",
+                    "image": "",
+                    "price": "5.50",
+                    "quantities": []
+                },
+                {
+                    "title": "Large Milkshake",
+                    "short": "",
+                    "description": "",
+                    "image": "",
+                    "price": "7.00",
+                    "quantities": []
+                },
+                {
+                    "title": "Current Flavors",
+                    "short": "",
+                    "description": "Award Winning Chocolate || Strawberry || Vanilla || Butter Pecan || Moosetracks || Black Cherry || Coconut || Blueberry Cheesecake || Banana Pudding || Rum Raisin || Graham Central Station || Brown Butter Bourbon Truffle || Key Lime Pie || Coffee || Whitehouse Cherry || Peanut Butter Twist || Green Mint Chip || Road Runner Raspberry || Rainbow Sorbet || Strawberry Cheesecake || Orange Blossom || Superman || **SUGAR FREE** Vanilla || **SUGAR FREE** Turtle Sundae",
+                    "image": "",
+                    "quantities": []
+                }
+            ],
             "details": []
         },
         {
             "title": "Current Ice Cream Flavors",
             "id": "current-ice-cream-flavors",
-            "items": [],
+            "items": [
+                {
+                    "title": "Award Winning Chocolate",
+                    "short": "",
+                    "description": "",
+                    "image": "",
+                    "quantities": []
+                },
+                {
+                    "title": "Strawberry",
+                    "short": "",
+                    "description": "",
+                    "image": "",
+                    "quantities": []
+                },
+                {
+                    "title": "Vanilla",
+                    "short": "",
+                    "description": "",
+                    "image": "",
+                    "quantities": []
+                },
+                {
+                    "title": "Butter Pecan",
+                    "short": "",
+                    "description": "",
+                    "image": "",
+                    "quantities": []
+                },
+                {
+                    "title": "Moosetracks",
+                    "short": "",
+                    "description": "",
+                    "image": "",
+                    "quantities": []
+                },
+                {
+                    "title": "Black Cherry",
+                    "short": "",
+                    "description": "",
+                    "image": "",
+                    "quantities": []
+                },
+                {
+                    "title": "Coconut",
+                    "short": "",
+                    "description": "",
+                    "image": "",
+                    "quantities": []
+                },
+                {
+                    "title": "Blueberry Cheesecake",
+                    "short": "",
+                    "description": "",
+                    "image": "",
+                    "quantities": []
+                },
+                {
+                    "title": "Banana Pudding",
+                    "short": "",
+                    "description": "",
+                    "image": "",
+                    "quantities": []
+                },
+                {
+                    "title": "Rum Raisin",
+                    "short": "",
+                    "description": "",
+                    "image": "",
+                    "quantities": []
+                },
+                {
+                    "title": "Graham Central Station",
+                    "short": "",
+                    "description": "",
+                    "image": "",
+                    "quantities": []
+                },
+                {
+                    "title": "Brown Butter Bourbon Truffle",
+                    "short": "",
+                    "description": "",
+                    "image": "",
+                    "quantities": []
+                },
+                {
+                    "title": " Key Lime Pie",
+                    "short": "",
+                    "description": "",
+                    "image": "",
+                    "quantities": []
+                },
+                {
+                    "title": "Coffee",
+                    "short": "",
+                    "description": "",
+                    "image": "",
+                    "quantities": []
+                },
+                {
+                    "title": "Whitehouse Cherry",
+                    "short": "",
+                    "description": "",
+                    "image": "",
+                    "quantities": []
+                },
+                {
+                    "title": " Peanut Butter Twist",
+                    "short": "",
+                    "description": "",
+                    "image": "",
+                    "quantities": []
+                },
+                {
+                    "title": "Green Mint Chip",
+                    "short": "",
+                    "description": "",
+                    "image": "",
+                    "quantities": []
+                },
+                {
+                    "title": "Road Runner Raspberry",
+                    "short": "",
+                    "description": "",
+                    "image": "",
+                    "quantities": []
+                },
+                {
+                    "title": "Rainbow Sorbet",
+                    "short": "",
+                    "description": "",
+                    "image": "",
+                    "quantities": []
+                },
+                {
+                    "title": "Strawberry Cheesecake",
+                    "short": "",
+                    "description": "",
+                    "image": "",
+                    "quantities": []
+                },
+                {
+                    "title": "Orange Blossom",
+                    "short": "",
+                    "description": "",
+                    "image": "",
+                    "quantities": []
+                },
+                {
+                    "title": "Superman",
+                    "short": "",
+                    "description": "",
+                    "image": "",
+                    "quantities": []
+                },
+                {
+                    "title": "**SUGAR FREE** Vanilla",
+                    "short": "",
+                    "description": "",
+                    "image": "",
+                    "quantities": []
+                },
+                {
+                    "title": "**SUGAR FREE** Turtle Sundae",
+                    "short": "",
+                    "description": "",
+                    "image": "",
+                    "quantities": []
+                }
+            ],
             "details": []
         }
     ]
