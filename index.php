@@ -307,11 +307,41 @@ $cssVersion = file_exists($cssPath) ? filemtime($cssPath) : time();
                                                                         // (debug flag removed)
                                                                         // Prefer to show per-quantity pricing when available
                                                                         if ($sectionId !== 'current-ice-cream-flavors' && isset($it['quantities']) && is_array($it['quantities']) && count($it['quantities'])) {
-                                                                            // Show the first quantity's price in the summary row (representative)
-                                                                            $firstQ = $it['quantities'][0];
+                                                                            // If multiple quantity-price pairs are present, show both prices
+                                                                            // in the summary for quicker comparison (e.g. "$8.50 / $11.50").
                                                                             $rp = '';
-                                                                            if (isset($firstQ['price']) && $firstQ['price'] !== '') $rp = '$'.htmlspecialchars($firstQ['price']);
-                                                                            elseif (isset($it['price']) && $it['price'] !== '') $rp = '$'.htmlspecialchars($it['price']);
+                                                                            $qarr = $it['quantities'];
+                                                                            if (count($qarr) >= 2) {
+                                                                                // Build segments that include the quantity label/value and the price
+                                                                                $segParts = [];
+                                                                                for ($qi = 0; $qi < 2; $qi++) {
+                                                                                    $qopt = $qarr[$qi];
+                                                                                    $label = trim((string)($qopt['label'] ?? ''));
+                                                                                    $val = isset($qopt['value']) ? $qopt['value'] : '';
+                                                                                    $price = isset($qopt['price']) ? trim((string)$qopt['price']) : '';
+                                                                                    $lead = $label !== '' ? $label : ($val !== '' ? (string)$val : '');
+                                                                                    if ($price !== '') {
+                                                                                            // For Wings & Tenders prefer the compact "<value> for $<price>" style
+                                                                                            if ($sectionId === 'wings-tenders') {
+                                                                                                // use the numeric value when present, otherwise fall back to label
+                                                                                                $num = $val !== '' ? htmlspecialchars((string)$val) : htmlspecialchars($lead);
+                                                                                                if ($num !== '') $segParts[] = $num . ' for $' . htmlspecialchars($price);
+                                                                                                else $segParts[] = htmlspecialchars($lead) . ' for $' . htmlspecialchars($price);
+                                                                                            } else {
+                                                                                                if ($lead !== '') $segParts[] = htmlspecialchars($lead) . ' $' . htmlspecialchars($price);
+                                                                                                else $segParts[] = '$' . htmlspecialchars($price);
+                                                                                            }
+                                                                                        }
+                                                                                }
+                                                                                if (count($segParts)) $rp = implode(' / ', $segParts);
+                                                                                elseif (isset($it['price']) && $it['price'] !== '') $rp = '$'.htmlspecialchars($it['price']);
+                                                                            } else {
+                                                                                $firstQ = $qarr[0];
+                                                                                $lead = trim((string)($firstQ['label'] ?? '')) ?: (isset($firstQ['value']) ? (string)$firstQ['value'] : '');
+                                                                                if (isset($firstQ['price']) && $firstQ['price'] !== '') {
+                                                                                    $rp = ($lead !== '' ? htmlspecialchars($lead) . ' $' : '$') . htmlspecialchars($firstQ['price']);
+                                                                                } elseif (isset($it['price']) && $it['price'] !== '') $rp = '$'.htmlspecialchars($it['price']);
+                                                                            }
                                                                             if ($rp) echo '<div class="menu-price"><span class="price-badge">'.$rp.'</span></div>';
                                                                         } else {
                                                                             // fallback to item-level price
@@ -325,19 +355,17 @@ $cssVersion = file_exists($cssPath) ? filemtime($cssPath) : time();
                                                                         if ($s) echo '<div class="small" style="color:#666">'.$s.'</div>';
                                                                         // Render per-quantity options (list) when present
                                                                         if (isset($it['quantities']) && is_array($it['quantities']) && count($it['quantities'])) {
+                                                                            // Render quantity labels only in the options list. Prices should
+                                                                            // be shown exclusively in the price badge above. This keeps the
+                                                                            // visual layout consistent and prevents duplicate price text.
                                                                             echo '<div class="menu-qty-options small" style="margin-top:.4rem">';
                                                                             $parts = [];
                                                                             foreach ($it['quantities'] as $qopt) {
                                                                                 $ql = trim($qopt['label'] ?? '');
                                                                                 $qv = isset($qopt['value']) ? $qopt['value'] : '';
-                                                                                $qpr = isset($qopt['price']) && $qopt['price'] !== '' ? htmlspecialchars($qopt['price']) : '';
                                                                                 $seg = '';
                                                                                 if ($ql !== '') $seg = htmlspecialchars($ql);
                                                                                 elseif ($qv !== '') $seg = htmlspecialchars((string)$qv);
-                                                                                if ($qpr !== '') {
-                                                                                    // render the price as a badge for higher legibility
-                                                                                    $seg .= ($seg !== '' ? ' — ' : '') . '<span class="price-badge">$' . $qpr . '</span>';
-                                                                                }
                                                                                 if ($seg !== '') $parts[] = $seg;
                                                                             }
                                                                             if (count($parts)) echo 'Options: '.implode(' | ', $parts);
@@ -609,14 +637,40 @@ $cssVersion = file_exists($cssPath) ? filemtime($cssPath) : time();
                         row.appendChild(left);
                         var rp = '';
                         if (Array.isArray(it.quantities) && it.quantities.length) {
-                            var firstQ = it.quantities[0]; if (firstQ && firstQ.price) rp = '$' + firstQ.price; else if (it.price) rp = '$' + it.price;
+                            if (it.quantities.length >= 2) {
+                                var segs = [];
+                                for (var qi = 0; qi < 2; qi++) {
+                                    var qopt = it.quantities[qi] || {};
+                                    var label = qopt.label ? qopt.label : (qopt.value !== undefined ? String(qopt.value) : '');
+                                    var price = qopt.price ? qopt.price : '';
+                                    if (price) {
+                                            if (section.id === 'wings-tenders') {
+                                                // prefer numeric value (e.g., 3) when available; fall back to label
+                                                var num = (qopt.value !== undefined && String(qopt.value) !== '') ? String(qopt.value) : label;
+                                                if (num) segs.push(num + ' for $' + price);
+                                                else if (label) segs.push(label + ' for $' + price);
+                                                else segs.push('$' + price);
+                                            } else {
+                                                if (label) segs.push(label + ' $' + price);
+                                                else segs.push('$' + price);
+                                            }
+                                        }
+                                }
+                                if (segs.length) rp = segs.join(' / ');
+                                else if (it.price) rp = '$' + it.price;
+                            } else {
+                                var firstQ = it.quantities[0] || {};
+                                var lead = firstQ.label ? firstQ.label : (firstQ.value !== undefined ? String(firstQ.value) : '');
+                                if (firstQ.price) rp = (lead ? lead + ' $' : '$') + firstQ.price;
+                                else if (it.price) rp = '$' + it.price;
+                            }
                         } else if (it.price) rp = '$' + it.price;
                         if (rp) { var priceDiv = document.createElement('div'); priceDiv.className = 'menu-price'; priceDiv.innerHTML = '<span class="price-badge">' + rp + '</span>'; row.appendChild(priceDiv); }
                         meta.appendChild(row);
                         if (it.short) { var s = document.createElement('div'); s.className = 'small'; s.style.color = '#666'; s.textContent = it.short; meta.appendChild(s); }
                         if (Array.isArray(it.quantities) && it.quantities.length) {
                             var opts = document.createElement('div'); opts.className = 'menu-qty-options small'; opts.style.marginTop = '.4rem'; var parts = [];
-                            it.quantities.forEach(function(q){ var seg=''; if (q.label) seg = q.label; else if (q.value) seg = String(q.value); if (q.price) seg += (seg? ' — ':'') + '$' + q.price; if (seg) parts.push(seg); });
+                            it.quantities.forEach(function(q){ var seg=''; if (q.label) seg = q.label; else if (q.value) seg = String(q.value); if (seg) parts.push(seg); });
                             if (parts.length) opts.textContent = 'Options: ' + parts.join(' | ');
                             meta.appendChild(opts);
                         }

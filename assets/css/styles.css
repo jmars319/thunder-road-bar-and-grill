@@ -679,7 +679,7 @@ body.overlay-open { overflow: hidden; }
     display: inline-block;
     background: rgba(0,0,0,0.6);
     color: var(--text-inverse);
-    padding: 0.18rem 0.5rem;
+    padding: 0.18rem 0.6rem; /* slightly wider to fit dual prices */
     border-radius: 999px;
     font-size: 0.95rem;
     font-weight: 700;
@@ -700,7 +700,7 @@ body.overlay-open { overflow: hidden; }
 }
 
 /* Ensure inline badges inside quantity lists don't break layout */
-.menu-qty-options .price-badge { font-size: 0.9rem; padding: 0.12rem 0.45rem; margin-left: 0.35rem; }
+.menu-qty-options .price-badge { display: none !important; }
 .menu-card .menu-details .section-item {
     background: linear-gradient(rgba(0,0,0,0.36), rgba(0,0,0,0.18));
     padding: .6rem;
