@@ -1,0 +1,170 @@
+{
+    "business_info": {
+        "name": "Thunder Road Bar and Grill",
+        "phone": "(336) 764-0890",
+        "email": "thundergrillmidway@gmail.com",
+        "address": "11141 Old US Hwy 52, Suite 2, Winston Salem, NC 27107"
+    },
+    "hero": {
+        "title": "Thunder Road Bar and Grill",
+        "subtitle": "Serving Midway since 2015",
+        "btn_text": "View Menu",
+        "btn_link": "#menu",
+        "btn2_text": "Order Online",
+        "btn2_link": "order.php"
+    },
+    "about": {
+        "title": "About Us",
+        "content": "Your about us content"
+    },
+    "hours": {
+        "monday": "Closed",
+        "tuesday": "11:00 AM - 9:00 PM",
+        "wednesday": "11:00 AM - 9:00 PM",
+        "thursday": "11:00 AM - 9:00 PM, Bar open till 10:00 PM",
+        "friday": "11:00 AM - 9:00 PM, Bar open till 10:00 PM",
+        "saturday": "11:00 AM - 9:00 PM, Bar open till 10:00 PM",
+        "sunday": "Closed"
+    },
+    "images": {
+        "logo": "logo-1759391867-68de307bb6469.png"
+    },
+    "last_updated": "2025-10-03 07:06:03",
+    "menu": [
+        {
+            "title": "Burgers & Sandwiches",
+            "id": "burgers-sandwiches",
+            "items": [
+                {
+                    "title": "Burger",
+                    "short": "Fresh Black Angus patty served on a brioche bun",
+                    "description": "",
+                    "image": "",
+                    "price": "8.50"
+                },
+                {
+                    "title": "Double Burger",
+                    "short": "Two Fresh Black Angus patties served on a brioche bun",
+                    "description": "",
+                    "image": "",
+                    "price": "11.50"
+                },
+                {
+                    "title": "Hot Dog",
+                    "short": "Black Angus frank",
+                    "description": "",
+                    "image": "",
+                    "price": "3.75",
+                    "quantity": ""
+                }
+            ],
+            "details": [
+                "Make it a Combo!\nAdd a Side + Drink for $4.50"
+            ]
+        },
+        {
+            "title": "Wings & Tenders",
+            "id": "wings-tenders",
+            "items": [
+                {
+                    "title": "Chicken Tenders",
+                    "short": "",
+                    "description": "",
+                    "image": "",
+                    "quantity": 3,
+                    "quantities": [
+                        {
+                            "label": "",
+                            "value": 3,
+                            "price": "6.00"
+                        },
+                        {
+                            "label": "",
+                            "value": 5,
+                            "price": "9.00"
+                        }
+                    ]
+                },
+                {
+                    "title": "Bone-In Wings",
+                    "short": "",
+                    "description": "",
+                    "image": "",
+                    "quantities": [
+                        {
+                            "label": "",
+                            "value": 5,
+                            "price": "9.00"
+                        },
+                        {
+                            "label": "",
+                            "value": 10,
+                            "price": "15.50"
+                        }
+                    ]
+                }
+            ],
+            "details": [
+                "Served plain or tossed in your choice of sauce: Mild, Medium, Hot, Extra Hot, BBQ, Garlic Parmesan, Kickin' Bourbon, Sweet Teriyaki, Hot Honey",
+                "Make it a Combo!\nAdd a Side + Drink for $4.50"
+            ]
+        },
+        {
+            "title": "Salads",
+            "id": "salads",
+            "items": [
+                {
+                    "title": "Burger Salad",
+                    "short": "One Black Angus patty, lettuce, tomato, onion, cheddar",
+                    "description": "",
+                    "image": "",
+                    "price": "9.50",
+                    "quantity": ""
+                }
+            ],
+            "details": []
+        },
+        {
+            "title": "Flatbread Pizza",
+            "id": "flatbread-pizza",
+            "items": [
+                {
+                    "title": "Flatbread Pizza",
+                    "short": "Prepared on flatbread with your choice of toppings",
+                    "description": "",
+                    "image": "",
+                    "price": "8.00",
+                    "quantity": ""
+                }
+            ],
+            "details": [
+                "Toppings: Pepperoni | Sausage | Bacon | Ham | Red Onion | Green Pepper | Tomato | Jalapeno",
+                "Make it a Combo!\nAdd a Side + Drink for $4.50"
+            ]
+        },
+        {
+            "title": "Sides",
+            "id": "sides",
+            "items": [],
+            "details": []
+        },
+        {
+            "title": "Additions & Dressings",
+            "id": "additions-dressings",
+            "items": [],
+            "details": []
+        },
+        {
+            "title": "Hershey's Ice Cream",
+            "id": "hersheys-ice-cream",
+            "items": [],
+            "details": []
+        },
+        {
+            "title": "Current Ice Cream Flavors",
+            "id": "current-ice-cream-flavors",
+            "items": [],
+            "details": []
+        }
+    ]
+}

@@ -1,0 +1,7 @@
+{
+  "name": "thunder-road/bar-and-grill",
+  "description": "Thunder Road site helper deps",
+  "require": {
+    "phpmailer/phpmailer": "^6.11"
+  }
+}

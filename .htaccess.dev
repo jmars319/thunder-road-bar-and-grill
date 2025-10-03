@@ -1,0 +1,38 @@
+# Development .htaccess — shorter cache TTLs and relaxed optimization
+# Use this file instead of .htaccess while developing locally.
+
+# Security Headers (kept)
+<IfModule mod_headers.c>
+    Header always set X-Frame-Options "DENY"
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set X-XSS-Protection "1; mode=block"
+    Header always set Strict-Transport-Security "max-age=63072000"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>
+
+# Compression (keep)
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/css application/javascript
+</IfModule>
+
+# Browser Caching — shorter durations for development
+<IfModule mod_expires.c>
+    ExpiresActive on
+    ExpiresByType text/css "access plus 1 hour"
+    ExpiresByType application/javascript "access plus 1 hour"
+    ExpiresByType image/png "access plus 1 day"
+    ExpiresByType image/jpg "access plus 1 day"
+    ExpiresByType image/jpeg "access plus 1 day"
+</IfModule>
+
+# Prevent directory browsing
+Options -Indexes
+
+# Protect sensitive files
+<Files ~ "\.(htaccess|htpasswd|ini|log|sh|inc|bak|json)$">
+    Order Allow,Deny
+    Deny from all
+</Files>
+
+# Note: To use this file locally, replace your .htaccess with .htaccess.dev
+# or copy it into place while developing. Do NOT use this in production.

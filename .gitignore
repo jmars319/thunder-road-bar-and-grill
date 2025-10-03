@@ -1,0 +1,9 @@
+/# Local untracked credentials
+admin/auth.json
+
+# Composer vendor dir
+vendor/
+
+# Ignore local macOS files and temporary renamed files created during maintenance
+.DS_Store
+*.old

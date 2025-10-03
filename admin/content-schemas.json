@@ -1,0 +1,43 @@
+{
+  "hero": {
+    "label": "Hero",
+    "fields": [
+      {"key": "title", "type": "text", "label": "Headline"},
+      {"key": "subtitle", "type": "text", "label": "Subheadline"},
+      {"key": "image", "type": "image", "label": "Hero image"},
+      {"key": "btn_text", "type": "text", "label": "Primary CTA text"},
+      {"key": "btn_link", "type": "text", "label": "Primary CTA link"},
+      {"key": "btn2_text", "type": "text", "label": "Secondary CTA text (e.g. Order Online)"},
+      {"key": "btn2_link", "type": "text", "label": "Secondary CTA link"}
+    ]
+  },
+  "business_info": {
+    "label": "Business Info",
+    "fields": [
+      {"key": "name", "type": "text", "label": "Business name"},
+      {"key": "address", "type": "text", "label": "Address"},
+      {"key": "phone", "type": "text", "label": "Phone"},
+      {"key": "email", "type": "text", "label": "Email"}
+    ]
+  },
+  "hours": {
+    "label": "Hours",
+    "fields": [
+      {"key": "monday", "type": "text", "label": "Monday"},
+      {"key": "tuesday", "type": "text", "label": "Tuesday"},
+      {"key": "wednesday", "type": "text", "label": "Wednesday"},
+      {"key": "thursday", "type": "text", "label": "Thursday"},
+      {"key": "friday", "type": "text", "label": "Friday"},
+      {"key": "saturday", "type": "text", "label": "Saturday"},
+      {"key": "sunday", "type": "text", "label": "Sunday"}
+    ]
+  },
+  "about": {
+    "label": "About",
+    "fields": [
+      {"key": "heading", "type": "text", "label": "Heading"},
+      {"key": "body", "type": "textarea", "label": "Body HTML/Text"}
+    ]
+  }
+
+}

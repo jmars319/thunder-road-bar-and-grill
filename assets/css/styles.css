@@ -1,0 +1,1430 @@
+/* ==============================================
+   MODERN MODULAR FRAMEWORK - MAIN STYLESHEET
+   A comprehensive CSS framework for modern websites
+   ============================================== */
+
+/* Developer notes:
+ * - This stylesheet is the canonical visual system for the site.
+ * - Keep the variable names in sync with JavaScript code that
+ *   references layout-sensitive values (for example --footer-height).
+ * - Footer is fixed to the viewport only on desktop; any JS that
+ *   toggles the footer must update body padding to avoid overlap.
+ */
+
+/* ==============================================
+   CSS CUSTOM PROPERTIES (CSS VARIABLES)
+   Centralized design system for easy theming
+   ============================================== */
+:root {
+    /* Color Palette */
+    --primary-color: #dc2626;
+    --secondary-color: #92400e ;
+    --accent-color: #f59e0b;
+    --success-color: #059669;
+    --warning-color: #f59e0b;
+    --error-color: #ef4444;
+    
+    /* Background Colors */
+    --background-color: #fef7ed98;
+    --surface-color: #ffffff;
+    --overlay-color: rgba(0, 0, 0, 0.5);
+    
+    /* Text Colors */
+    --text-primary: #1c1917;
+    --text-secondary: #78716c;
+    --text-muted: #94a3b8;
+    --text-inverse: #ffffff;
+    
+    /* Border & Divider Colors */
+    --border-color: #e2e8f0;
+    --divider-color: #f1f5f9;
+    
+    /* Shadow System */
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+    --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+    
+    /* Spacing Scale */
+    --spacing-xs: 0.25rem;
+    --spacing-sm: 0.5rem;
+    --spacing-md: 1rem;
+    --spacing-lg: 1.5rem;
+    --spacing-xl: 2rem;
+    --spacing-2xl: 3rem;
+    
+    /* Border Radius */
+    --border-radius: 8px;
+    --border-radius-sm: 4px;
+    --border-radius-lg: 12px;
+    --border-radius-xl: 16px;
+    --border-radius-full: 9999px;
+    
+    /* Typography Scale */
+    --font-size-xs: 0.75rem;
+    --font-size-sm: 0.875rem;
+    --font-size-base: 1rem;
+    --font-size-lg: 1.125rem;
+    --font-size-xl: 1.25rem;
+    --font-size-2xl: 1.5rem;
+    --font-size-3xl: 1.875rem;
+    --font-size-4xl: 2.25rem;
+    --font-size-5xl: 3rem;
+    
+    /* Font Weights */
+    --font-weight-normal: 400;
+    --font-weight-medium: 500;
+    --font-weight-semibold: 600;
+    --font-weight-bold: 700;
+    --font-weight-extrabold: 800;
+    
+    /* Transitions */
+    --transition-fast: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-slow: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    /* Footer sizing used when footer is fixed on desktop. Change
+       this value together with the body padding in JS/CSS so the
+       footer does not overlap content. */
+    --footer-height: 72px;
+}
+
+    /* Accent variables for separators so color can be toggled easily */
+    :root {
+        --divider-accent-dark: rgba(255,255,255,0.16); /* neutral light line on dark surfaces */
+        --divider-accent-light: rgba(16,24,40,0.12); /* neutral dark line on light surfaces */
+    }
+
+/* ==============================================
+   RESET AND BASE STYLES
+   ============================================== */
+*,
+*::before,
+*::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    line-height: 1.15;
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
+    scroll-padding-top: 80px;
+}
+
+/* Note: scroll-behavior + scroll-padding-top ensures that anchor
+   navigation accounts for the fixed header height so target
+   elements are not hidden beneath the header. */
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 
+                 'Helvetica Neue', Arial, 'Noto Sans', sans-serif;
+    line-height: 1.6;
+    color: var(--text-primary);
+    background-color: var(--background-color);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-normal);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    margin: 0;
+    font-weight: var(--font-weight-bold);
+    line-height: 1.3;
+}
+
+p { margin: 0; line-height: 1.6; }
+
+a {
+    color: var(--primary-color);
+    text-decoration: none;
+    transition: var(--transition-fast);
+}
+
+/* Don't change color for anchor-styled buttons; only apply hover color to regular links */
+a:not(.btn):hover,
+a:not(.btn):focus {
+    color: #f59e0b;
+}
+
+ul, ol { list-style: none; margin: 0; padding: 0; }
+img { max-width: 100%; height: auto; display: block; }
+button { font-family: inherit; font-size: inherit; }
+
+/* ==============================================
+   LAYOUT COMPONENTS
+   ============================================== */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 var(--spacing-md);
+}
+
+.container-fluid {
+    width: 100%;
+    padding: 0 var(--spacing-md);
+}
+
+.container-narrow {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 var(--spacing-md);
+}
+
+/* Grid System */
+.grid { display: grid; gap: var(--spacing-xl); }
+.grid-1 { grid-template-columns: 1fr; }
+.grid-2 { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+.grid-3 { grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); }
+.grid-4 { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+
+/* Flex Utilities */
+.flex { display: flex; }
+.inline-flex { display: inline-flex; }
+.flex-col { flex-direction: column; }
+.flex-row { flex-direction: row; }
+.flex-wrap { flex-wrap: wrap; }
+.flex-nowrap { flex-wrap: nowrap; }
+
+/* Justify Content */
+.justify-start { justify-content: flex-start; }
+.justify-end { justify-content: flex-end; }
+.justify-center { justify-content: center; }
+.justify-between { justify-content: space-between; }
+.justify-around { justify-content: space-around; }
+.justify-evenly { justify-content: space-evenly; }
+
+/* Align Items */
+.align-start { align-items: flex-start; }
+.align-end { align-items: flex-end; }
+.align-center { align-items: center; }
+.align-baseline { align-items: baseline; }
+.align-stretch { align-items: stretch; }
+
+/* Gaps */
+.gap-1 { gap: var(--spacing-xs); }
+.gap-2 { gap: var(--spacing-sm); }
+.gap-4 { gap: var(--spacing-md); }
+.gap-6 { gap: var(--spacing-lg); }
+.gap-8 { gap: var(--spacing-xl); }
+
+/* ==============================================
+   COMPONENT STYLES
+   ============================================== */
+
+/* Header Component */
+.header {
+    background: var(--surface-color);
+    box-shadow: var(--shadow-sm);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    backdrop-filter: blur(10px);
+}
+
+/* Modal: footer contact modal styles (moved from inline index.php) */
+.modal { display: none; }
+.form-input {
+    width: 100%;
+    box-sizing: border-box;
+    background: #fff;
+    color: #111;
+    border: 1px solid #e6e9ee;
+    padding: .5rem;
+    border-radius: 6px;
+    font-size: 1rem;
+    line-height: 1.4;
+    transition: border-color 150ms ease, box-shadow 150ms ease;
+}
+.form-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(220,38,38,0.08);
+}
+.form-input[type="number"] {
+    -moz-appearance: textfield;
+    appearance: textfield;
+    /* Keep enough right padding for native controls; when wrapped in .stepper
+       the input will visually match the buttons because buttons use the same
+       padding/line-height. */
+    padding-right: .6rem;
+    position: relative;
+}
+
+/* Native webkit pseudo-spinners: make them subtle and consistent with theme */
+.form-input[type="number"]::-webkit-inner-spin-button,
+.form-input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+.form-input[type="number"]::-moz-focus-inner { border: 0; }
+.form-input[type="number"]::-moz-number-spin-box { -moz-appearance: textfield; }
+
+/* Stepper wrapper: make the input + buttons form a single visual control.
+   Buttons are sized by padding and font-size so they'll match the input height. */
+.stepper {
+    display: inline-flex;
+    align-items: stretch; /* ensure children align to same height */
+    gap: 0;
+    border-radius: 6px;
+    overflow: hidden;
+    background: transparent;
+    border: 1px solid var(--border-color);
+}
+
+.stepper .form-input[type="number"] {
+    border: 0; /* remove inner border; wrapper provides the border */
+    padding: .45rem .75rem;
+    margin: 0;
+    min-width: 4.2rem;
+    font-size: 1rem;
+    line-height: 1.4;
+}
+
+.stepper-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: .45rem .65rem;
+    font-size: 1rem;
+    line-height: 1.4;
+    background: var(--surface-color);
+    color: var(--text-primary);
+    border: 0; /* wrapper border handles outer stroke */
+    cursor: pointer;
+    user-select: none;
+    min-width: 2.6rem;
+}
+
+.stepper-btn + .form-input[type="number"],
+.form-input[type="number"] + .stepper-btn {
+    border-left: 1px solid var(--border-color);
+}
+
+.stepper-btn:hover {
+    background: linear-gradient(180deg, rgba(245,158,11,0.06), transparent);
+    color: var(--text-primary);
+}
+
+.stepper-btn:active { transform: translateY(1px); }
+.stepper-btn:focus { outline: 2px solid var(--primary-color); outline-offset: 2px; }
+
+/* Use accent color for a stronger contrast when a button is hovered or active */
+.stepper-btn:hover, .stepper-btn:focus {
+    box-shadow: 0 1px 0 rgba(0,0,0,0.04) inset;
+}
+
+/* Dark mode tweaks */
+@media (prefers-color-scheme: dark) {
+    .stepper { border-color: rgba(255,255,255,0.06); }
+    .stepper .form-input[type="number"] { background: var(--surface-color); color: var(--text-primary); }
+    .stepper-btn { background: rgba(255,255,255,0.02); color: var(--text-primary); }
+    .stepper-btn:hover { background: linear-gradient(180deg, rgba(245,158,11,0.08), transparent); }
+}
+.form-input[type="date"], .form-input[type="time"] { padding: .45rem .5rem; }
+.form-input[readonly], .form-input[disabled] { opacity: 0.8; }
+.form-input[type="search"] { padding-right: 2rem; }
+
+textarea.form-input { min-height: 70px; resize:vertical; }
+
+/* Consistent vertical spacing for form fields across all forms */
+.form-label { display: block; margin-bottom: 0.35rem; }
+.form-input { margin: 0 0 0.9rem 0; }
+.form-input + .form-input { margin-top: 0; }
+.form-input[type="checkbox"], .form-input[type="radio"] { margin-bottom: 0.5rem; }
+.card .form-input { margin-bottom: 0.9rem; }
+
+.form-note { color: var(--text-secondary); }
+.form-error { color: var(--error-color); display:block; }
+.modal.open { display: block; position: fixed; inset: 0; z-index: 20000; }
+.modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.6); }
+.modal-panel { position: relative; max-width: 720px; margin: 4vh auto; background: #0b1220; border-radius: 8px; padding: 1rem 1.25rem; z-index: 20001; box-shadow: 0 12px 40px rgba(0,0,0,0.6); color: #f9fafb; }
+.modal-panel h2 { color: #f9fafb; margin-top: 0; padding-bottom: .4rem; position: relative; z-index: 2; }
+.modal-panel form { margin-top: .6rem; position: relative; z-index: 1; }
+.modal-close { position: absolute; right: .75rem; top: .5rem; background: none; border: 0; font-size: 1.1rem; cursor: pointer; color: #f3f4f6 }
+.modal .form-input { width: 100%; box-sizing: border-box; background: #fff; color: #111; border: 1px solid #ddd; padding: .5rem; border-radius: 6px }
+.modal .form-input:first-of-type { margin-top: 0.25rem }
+.modal textarea.form-input { min-height: 110px }
+
+/* Ensure modal is responsive */
+@media (max-width: 520px) {
+    .modal-panel { margin: 2vh 1rem; padding: 0.75rem; }
+}
+
+.header-scrolled {
+    background: rgba(248, 250, 252, 0.95);
+    backdrop-filter: blur(10px);
+    box-shadow: var(--shadow-lg);
+}
+
+.navbar { padding: var(--spacing-md) 0; }
+
+.logo {
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--primary-color);
+    text-decoration: none;
+    transition: var(--transition-fast);
+}
+
+.logo:hover { transform: scale(1.05); }
+
+/* Logo badge: small oval background behind the site logo image for improved visibility */
+.logo-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 10px;
+    border-radius: 999px;
+    background: #ffffff; /* force white oval background */
+    box-shadow: 0 6px 20px rgba(16,24,40,0.08);
+}
+.site-logo-img { height: 44px; width: auto; display: inline-block; vertical-align: middle; }
+
+/* Keep the badge white in dark mode as well for consistent look */
+.site-logo-img { filter: drop-shadow(0 2px 6px rgba(0,0,0,0.12)); }
+
+.nav-menu {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.nav-link {
+    color: var(--text-secondary);
+    text-decoration: none;
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: var(--border-radius);
+    transition: var(--transition);
+    font-weight: var(--font-weight-medium);
+}
+
+.nav-link:hover,
+.nav-link.active {
+    background: var(--background-color);
+    color: var(--primary-color);
+    transform: translateY(-1px);
+}
+
+/* Mobile Menu */
+.stepper-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: .45rem .75rem;
+    font-size: 1rem;
+    line-height: 1.4;
+    background: var(--primary-color);
+    color: var(--text-inverse);
+    border: 0; /* wrapper border handles outer stroke */
+    cursor: pointer;
+    user-select: none;
+    min-width: 2.8rem;
+    transition: transform 120ms ease, box-shadow 140ms ease, background 120ms ease;
+    box-shadow: var(--shadow-sm);
+}
+
+.stepper-btn svg { width: 1.1rem; height: 1.1rem; display:block; }
+
+.stepper-btn:hover {
+    background: #b91c1c; /* slightly darker primary for hover */
+    transform: translateY(-1px);
+}
+
+.stepper-btn:active { transform: translateY(0); }
+.stepper-btn:focus {
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(220,38,38,0.16);
+}
+
+/* Mobile: increase tappable area */
+@media (max-width: 480px) {
+    .stepper-btn { padding: .6rem .9rem; min-width: 3.2rem; }
+}
+
+.card:hover {
+    transform: translateY(-8px) rotateX(2deg);
+    box-shadow: var(--shadow-xl);
+    border-color: var(--primary-color);
+}
+
+/* Animated elevation / flip for menu cards when expanded */
+.menu-card { perspective: 1200px; transform-style: preserve-3d; transition: transform .45s cubic-bezier(.2,.9,.25,1), box-shadow .35s ease; }
+.menu-card .menu-body { transform-origin: center top; transition: transform .45s cubic-bezier(.2,.9,.25,1); }
+.menu-card.expanded { transform: translateY(-12px) rotateX(0deg); box-shadow: var(--shadow-xxl); }
+.menu-card.expanded .menu-body { transform: rotateX(-4deg) translateZ(0); }
+
+/* Keyboard focus visible and accessible label spacing */
+.menu-card .expand-btn:focus { outline: 3px solid rgba(0,0,0,0.12); outline-offset: 3px; }
+
+.card-header { margin-bottom: var(--spacing-md); }
+
+.card-title {
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-semibold);
+    margin-bottom: var(--spacing-sm);
+    color: var(--text-primary);
+}
+
+.card-description {
+    color: var(--text-secondary);
+    font-size: var(--font-size-sm);
+    line-height: 1.5;
+}
+
+/* Menu card styles: image + expandable details */
+.menu-grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: var(--spacing-lg); }
+.menu-card { padding:0; overflow:hidden; display:flex; flex-direction:column; }
+.menu-card .menu-img { width:100%; height:160px; object-fit:cover; display:block }
+.menu-card .menu-body { padding: var(--spacing-md); display:flex; flex-direction:column; gap:.5rem }
+.menu-card .menu-title { font-size: var(--font-size-lg); font-weight: var(--font-weight-semibold); }
+.menu-card .menu-short { color: var(--text-secondary); font-size: var(--font-size-sm); }
+.menu-card .menu-details { max-height:0; overflow:hidden; transition:max-height .4s cubic-bezier(.2,.9,.2,1), padding .25s ease, opacity .25s ease; padding:0 var(--spacing-md); opacity:0 }
+.menu-card.expanded .menu-details { padding: var(--spacing-md); max-height: 1200px; opacity:1 }
+.menu-card .menu-actions { padding: var(--spacing-md); display:flex; justify-content:space-between; align-items:center; gap:.5rem }
+.menu-card .expand-btn { background:transparent; border:1px solid var(--border-color); color:var(--text-primary); padding:.4rem .6rem; border-radius:6px; cursor:pointer; display:inline-flex; align-items:center; gap:.5rem }
+.menu-card .expand-btn .expand-icon { transition: transform .28s cubic-bezier(.2,.9,.2,1); transform-origin:center; }
+.menu-card.expanded .expand-btn .expand-icon { transform: rotate(180deg); }
+
+/* Improve contrast and legibility for text inside menu cards */
+.menu-card, .menu-card .menu-body, .menu-card .section-item { color: var(--text-inverse); }
+.menu-card .menu-title { color: var(--text-inverse); text-shadow: 0 1px 2px rgba(0,0,0,0.65); }
+.menu-card .menu-short, .menu-card .menu-section-details, .menu-card .menu-qty-options { color: rgba(255,255,255,0.92); text-shadow: 0 1px 2px rgba(0,0,0,0.55); }
+.menu-card .menu-price { color: var(--text-inverse); font-weight: 700; text-shadow: 0 1px 2px rgba(0,0,0,0.6); }
+.menu-card .section-item { background: rgba(0,0,0,0.04); padding: .45rem; border-radius:6px; }
+
+/* Stronger contrast specifically for quantity/price/details inside menu cards */
+.menu-card .menu-qty-options, .menu-card .menu-qty-options * { color: var(--text-inverse) !important; font-weight: 600; font-size: .95rem; text-shadow: 0 1px 2px rgba(0,0,0,0.6); }
+.menu-card .menu-price, .menu-card .menu-price * { color: var(--text-inverse) !important; font-weight: 800; text-shadow: 0 1px 2px rgba(0,0,0,0.7); }
+.menu-card .menu-section-details, .menu-card .menu-section-details * { color: var(--text-inverse) !important; font-weight: 600; }
+
+/* darken section items a little more so text reads clearly on top of image */
+.menu-card .section-item { background: linear-gradient(rgba(0,0,0,0.32), rgba(0,0,0,0.18)); padding: .6rem; }
+.menu-card .section-item img { filter: brightness(.95); }
+
+/* If the root theme is light (text-primary dark), reduce inverse use to avoid low contrast on white cards */
+@media (prefers-color-scheme: light) {
+    .menu-card, .menu-card .menu-body, .menu-card .section-item { color: var(--text-primary); }
+    .menu-card .menu-title { text-shadow: none; }
+    .menu-card .menu-short, .menu-card .menu-section-details, .menu-card .menu-qty-options { color: var(--text-secondary); }
+    /* In light mode, keep quantities/prices more prominent but avoid white text */
+    .menu-card .menu-qty-options, .menu-card .menu-qty-options * { color: var(--text-primary) !important; font-weight: 600; }
+    .menu-card .menu-price, .menu-card .menu-price * { color: var(--text-primary) !important; font-weight: 700; }
+}
+
+/* Ensure every element within the expanded details is high-contrast on dark surfaces */
+.menu-card .menu-details, .menu-card .menu-details * {
+    color: var(--text-inverse) !important;
+}
+
+/* Animated separator between section-level details inside expanded menu cards */
+.menu-card .menu-details .menu-section-details {
+    padding: 0.45rem 0;
+    margin-bottom: 0.25rem;
+    position: relative;
+}
+.menu-card .menu-details .menu-section-details::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 2px; /* slightly thicker */
+    background: var(--divider-accent-dark);
+    transform-origin: left;
+    transform: scaleX(0);
+    opacity: 0;
+    transition: transform .36s cubic-bezier(.2,.9,.25,1), opacity .28s ease;
+}
+.menu-card.expanded .menu-details .menu-section-details::after {
+    transform: scaleX(1);
+    opacity: 1;
+}
+.menu-card .menu-details .menu-section-details:last-child::after {
+    display: none;
+}
+
+@media (prefers-color-scheme: light) {
+    .menu-card .menu-details .menu-section-details::after {
+        background: var(--divider-accent-light); /* primary-tinted on light backgrounds */
+    }
+}
+
+/* Semi-opaque overlay to improve legibility when menu cards use image backdrops */
+.menu-card { position: relative; }
+.menu-card .menu-overlay {
+    position: absolute;
+    inset: 0 0 0 0;
+    background: linear-gradient(180deg, rgba(0,0,0,0.28), rgba(0,0,0,0.22));
+    pointer-events: none;
+    z-index: 0;
+    transition: opacity .3s ease;
+}
+.menu-card .menu-body { position: relative; z-index: 2; }
+
+/* Price badges: compact pill with high contrast */
+.price-badge {
+    display: inline-block;
+    background: rgba(0,0,0,0.6);
+    color: var(--text-inverse);
+    padding: 0.18rem 0.5rem;
+    border-radius: 999px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    line-height: 1;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+    text-shadow: 0 1px 2px rgba(0,0,0,0.6);
+}
+
+/* Light theme adjustments: use primary color with slight transparency for badges */
+@media (prefers-color-scheme: light) {
+    .price-badge {
+        background: rgba(220,38,38,0.12);
+        color: var(--text-primary);
+        box-shadow: none;
+        text-shadow: none;
+    }
+    .menu-card .menu-overlay { background: linear-gradient(180deg, rgba(255,255,255,0.12), rgba(255,255,255,0.06)); }
+}
+
+/* Ensure inline badges inside quantity lists don't break layout */
+.menu-qty-options .price-badge { font-size: 0.9rem; padding: 0.12rem 0.45rem; margin-left: 0.35rem; }
+.menu-card .menu-details .section-item {
+    background: linear-gradient(rgba(0,0,0,0.36), rgba(0,0,0,0.18));
+    padding: .6rem;
+}
+.menu-card .menu-details .menu-price { color: var(--text-inverse) !important; font-weight: 800; }
+.menu-card .menu-details .menu-qty-options { color: var(--text-inverse) !important; font-weight: 700; }
+
+@media (prefers-color-scheme: light) {
+    .menu-card .menu-details, .menu-card .menu-details * { color: var(--text-primary) !important; }
+    .menu-card .menu-details .section-item { background: rgba(255,255,255,0.02); }
+}
+
+
+/* Button Component System */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-md) var(--spacing-lg);
+    border: none;
+    border-radius: var(--border-radius);
+    font-weight: var(--font-weight-medium);
+    font-size: var(--font-size-base);
+    text-decoration: none;
+    cursor: pointer;
+    transition: var(--transition);
+    line-height: 1;
+    white-space: nowrap;
+    user-select: none;
+    position: relative;
+    overflow: hidden;
+    will-change: transform;
+    backface-visibility: hidden;
+}
+
+.btn:focus {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
+}
+
+.btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+.btn-primary {
+    background: var(--primary-color);
+    color: var(--text-inverse);
+    box-shadow: var(--shadow-sm);
+}
+
+.btn-primary:hover {
+    /* darken the primary red on hover instead of switching to blue */
+    background: #b91c1c;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}
+
+.btn-secondary {
+    background: var(--surface-color);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-sm);
+}
+
+.btn-secondary:hover {
+    background: var(--background-color);
+    border-color: var(--primary-color);
+    transform: translateY(-1px);
+}
+
+.btn-outline {
+    background: transparent;
+    color: var(--primary-color);
+    border: 2px solid var(--primary-color);
+}
+
+.btn-outline:hover {
+    background: var(--primary-color);
+    color: var(--text-inverse);
+}
+
+/* ==============================================
+   BUTTON SELECTION / TAP-HIGHLIGHT FIX
+   Prevent the ::selection highlight (and mobile tap highlight)
+   from using the primary color inside buttons which can
+   make white button text invisible.
+   ============================================== */
+.btn::selection,
+.btn *::selection {
+    /* subtle dark overlay to preserve contrast on colored buttons */
+    background: rgba(0, 0, 0, 0.12);
+    color: inherit;
+}
+.btn::-moz-selection,
+.btn *::-moz-selection {
+    background: rgba(0, 0, 0, 0.12);
+    color: inherit;
+}
+/* Slight tap highlight for mobile that doesn't flash the primary color */
+.btn,
+.btn * {
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0.12);
+}
+
+/* Ensure button text stays on top and remains readable even when hover/active
+   states or ripple overlays are applied. Use !important to override any
+   accidental rules that might make text transparent. */
+.btn,
+.btn:hover,
+.btn:active,
+.btn:focus {
+    color: var(--text-inverse) !important;
+    -webkit-text-fill-color: var(--text-inverse) !important;
+}
+
+/* Create a stacking context for the button and place ripple behind content */
+.btn {
+    position: relative;
+    z-index: 1;
+}
+.btn .ripple {
+    z-index: 0;
+    pointer-events: none;
+}
+
+/* Ensure inline child elements (icons/spans) render above the ripple */
+.btn > * {
+    position: relative;
+    z-index: 2;
+}
+
+/* HIGH-SPECIFICITY FALLBACKS
+   Some browsers, extensions, or user-agent styles can still override hover/background
+   colors. This block forces anchor-style primary buttons to use the intended
+   darker red and preserve readable white text on all interaction states. */
+a.btn.btn-primary,
+a.btn.btn-primary:link,
+a.btn.btn-primary:visited,
+a.btn.btn-primary:hover,
+a.btn.btn-primary:active,
+a.btn.btn-primary:focus {
+    background: #b91c1c !important;
+    color: var(--text-inverse) !important;
+    -webkit-text-fill-color: var(--text-inverse) !important;
+    text-decoration: none !important;
+}
+
+/* Button Sizes */
+.btn-sm {
+    padding: var(--spacing-sm) var(--spacing-md);
+    font-size: var(--font-size-sm);
+}
+
+.btn-lg {
+    padding: var(--spacing-lg) var(--spacing-2xl);
+    font-size: var(--font-size-lg);
+}
+
+/* Theme UI removed: theme now follows system preference */
+
+/* Footer preference controls */
+/* footer pref controls removed: keeping stylesheet lean */
+
+/* Hero Section Component */
+.hero {
+    background: linear-gradient(135deg, var(--primary-color), #3b82f6);
+    color: var(--text-inverse);
+    padding: var(--spacing-2xl) 0;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 100" fill="white" opacity="0.1"><polygon points="0,100 1000,0 1000,100"/></svg>');
+    background-size: cover;
+    background-position: bottom;
+}
+
+.hero > .container {
+    position: relative;
+    z-index: 1;
+}
+
+.hero-title {
+    font-size: var(--font-size-5xl);
+    font-weight: var(--font-weight-extrabold);
+    margin-bottom: var(--spacing-md);
+    line-height: 1.1;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.hero-subtitle {
+    font-size: var(--font-size-xl);
+    opacity: 0.9;
+    margin-bottom: var(--spacing-xl);
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.4;
+}
+
+/* Section Component */
+.section { padding: calc(var(--spacing-2xl) * 2) 0; }
+
+.section-header {
+    text-align: center;
+    margin-bottom: calc(var(--spacing-2xl) * 1.5);
+}
+
+.section-title {
+    font-size: var(--font-size-4xl);
+    font-weight: var(--font-weight-bold);
+    margin-bottom: var(--spacing-md);
+    color: var(--text-primary);
+}
+
+.section-subtitle {
+    font-size: var(--font-size-lg);
+    color: var(--text-secondary);
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.6;
+}
+
+/* Image Handling */
+.image-placeholder {
+    height: 200px;
+    background: linear-gradient(45deg, #f3f4f6, #e5e7eb);
+    border-radius: var(--border-radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-secondary);
+    font-weight: var(--font-weight-medium);
+    overflow: hidden;
+}
+
+/* About section map: responsive height so map is taller on desktop */
+.about-map {
+    width: 100%;
+    height: 220px; /* mobile-friendly default */
+    border-radius: var(--border-radius-sm);
+    overflow: hidden;
+}
+
+@media (min-width: 769px) {
+    .about-map { height: 380px; }
+}
+
+/* Small button-style link group used under embedded maps */
+.map-links {
+    display: flex;
+    /* split space evenly between buttons (they will each flex to fill half) */
+    justify-content: space-between;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+    /* start hidden for a subtle entrance animation */
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 320ms ease, transform 320ms ease;
+    /* ensure the action row fills the map width and respects padding */
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0.5rem 0;
+}
+.map-links .btn-sm { padding: 0.35rem 0.6rem; font-size: 0.85rem; }
+
+/* Icons inside map buttons and responsive label hiding */
+.map-links .btn .icon { display:inline-block; width:1em; height:1em; vertical-align:middle; margin-right:0.4rem; }
+.map-links .btn .label { display:inline-block; vertical-align:middle; white-space: normal; }
+/* Make the two buttons split the available horizontal space evenly */
+.map-links .btn { flex: 1 1 0; max-width: none; }
+
+/* On very small screens show icons only (hide text labels) */
+@media (max-width: 480px) {
+    /* Stack buttons on narrow viewports and ensure full label visibility */
+    .map-links { flex-direction: column; align-items: stretch; gap: 0.5rem; }
+    .map-links .btn { padding: 0.5rem 0.75rem; width: 100%; justify-content: flex-start; }
+    .map-links .btn .label { display: inline-block; white-space: normal; }
+    .map-links .btn .icon { margin-right: 0.5rem; }
+}
+
+/* When JS reveals the buttons add this class to animate in */
+.map-links.visible { opacity: 1; transform: none; }
+
+.responsive-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: var(--border-radius-sm);
+}
+
+/* Footer Component */
+.footer {
+    /* Base footer styles used when footer is in document flow. Use a
+       contrasting surface color so footer reads as a separate band. */
+    background: var(--surface-color);
+    color: var(--text-primary);
+    padding: var(--spacing-lg) 0;
+    text-align: center;
+    margin-top: auto;
+    border-top: 1px solid var(--border-color);
+}
+
+.footer p { opacity: 0.8; }
+
+/* Footer color adjustments for dark mode */
+@media (prefers-color-scheme: dark) {
+    .footer { background: #0b1220; color: #e6eef8; border-top-color: rgba(255,255,255,0.04); }
+    .footer a { color: #a3dafe; }
+}
+
+/* ==============================================
+   RESPONSIVE DESIGN
+   ============================================== */
+
+/* Tablet Styles */
+@media (max-width: 768px) {
+    :root {
+        --spacing-xl: 1.5rem;
+        --spacing-2xl: 2rem;
+    }
+    
+    .mobile-menu-btn { display: block; }
+    
+    .nav-menu {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: var(--surface-color);
+        box-shadow: var(--shadow-lg);
+        border-radius: 0 0 var(--border-radius) var(--border-radius);
+        transform: translateY(-10px);
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+        flex-direction: column;
+        padding: 1rem 0;
+    }
+    
+    .nav-menu-open {
+        transform: translateY(0);
+        opacity: 1;
+        visibility: visible;
+    }
+    
+    .nav-link {
+        padding: 0.75rem 1.5rem;
+        width: 100%;
+        text-align: left;
+    }
+    
+    .hero-title { font-size: var(--font-size-3xl); }
+    .section-title { font-size: var(--font-size-2xl); }
+    
+    .navbar { flex-direction: column; gap: var(--spacing-md); }
+    
+    .hero { padding: calc(var(--spacing-xl) * 1.5) 0; }
+    .section { padding: var(--spacing-2xl) 0; }
+    .card { padding: var(--spacing-lg); }
+    
+    .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+}
+
+/* Mobile Styles */
+@media (max-width: 480px) {
+    .container { padding: 0 var(--spacing-sm); }
+    
+    .hero-title { font-size: clamp(2rem, 8vw, 3rem); }
+    .hero-subtitle { font-size: var(--font-size-base); }
+    .section-title { font-size: clamp(1.5rem, 6vw, 2.5rem); }
+    .card-title { font-size: clamp(1rem, 4vw, 1.25rem); }
+    
+    .btn {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .flex { flex-direction: column; }
+    .gap-4 { gap: var(--spacing-sm); }
+}
+
+/* ==============================================
+   DARK MODE SUPPORT
+   ============================================== */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --background-color: #0f172a;
+        --surface-color: #1e293b;
+        --text-primary: #f1f5f9;
+        --text-secondary: #94a3b8;
+        --text-muted: #64748b;
+        --border-color: #334155;
+        --divider-color: #475569;
+    }
+    
+    .hero { background: linear-gradient(135deg, #1e40af, #1d4ed8); }
+    .card { border-color: var(--border-color); }
+}
+
+[data-theme="dark"] {
+    --background-color: #0f172a;
+    --surface-color: #1e293b;
+    --text-primary: #f1f5f9;
+    --text-secondary: #94a3b8;
+    --text-muted: #64748b;
+    --border-color: #334155;
+    --divider-color: #475569;
+    color-scheme: dark;
+}
+
+[data-theme="dark"] .hero {
+    background: linear-gradient(135deg, #1e40af, #1d4ed8);
+}
+
+[data-theme="dark"] .card {
+    border-color: var(--border-color);
+}
+
+[data-theme="dark"] .header-scrolled {
+    background: rgba(30, 41, 59, 0.95);
+}
+
+[data-theme="dark"] .form-success {
+    background: rgba(16, 185, 129, 0.2);
+}
+
+[data-theme="dark"] .form-error {
+    background: rgba(239, 68, 68, 0.2);
+}
+
+[data-theme="dark"] .mobile-menu-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* ==============================================
+   ACCESSIBILITY IMPROVEMENTS
+   ============================================== */
+*:focus {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+    
+    .animate-ready {
+        transform: none;
+        opacity: 1;
+    }
+}
+
+@media (prefers-contrast: high) {
+    :root {
+        --border-color: #000000;
+        --shadow-md: none;
+        --shadow-lg: none;
+    }
+    
+    .card {
+        border: 2px solid var(--border-color);
+    }
+}
+
+/* ==============================================
+   CUSTOM SCROLLBAR
+   ============================================== */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: var(--background-color); }
+::-webkit-scrollbar-thumb {
+    background: var(--secondary-color);
+    border-radius: var(--border-radius-full);
+}
+::-webkit-scrollbar-thumb:hover { background: var(--primary-color); }
+
+[data-theme="dark"] ::-webkit-scrollbar-thumb {
+    background: var(--text-secondary);
+}
+
+/* ==============================================
+   SELECTION STYLES
+   ============================================== */
+::selection {
+    background: var(--primary-color);
+    color: var(--text-inverse);
+}
+
+::-moz-selection {
+    background: var(--primary-color);
+    color: var(--text-inverse);
+}
+
+/* ==============================================
+   UTILITY ANIMATIONS
+   ============================================== */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideInUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideInDown {
+    from { opacity: 0; transform: translateY(-30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideInLeft {
+    from { opacity: 0; transform: translateX(-30px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes slideInRight {
+    from { opacity: 0; transform: translateX(30px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+@keyframes bounce {
+    0%, 20%, 53%, 80%, 100% { transform: translateY(0); }
+    40%, 43% { transform: translateY(-10px); }
+    70% { transform: translateY(-5px); }
+    90% { transform: translateY(-2px); }
+}
+
+.fade-in { animation: fadeIn 0.6s ease; }
+.slide-in-up { animation: slideInUp 0.6s ease; }
+.slide-in-down { animation: slideInDown 0.6s ease; }
+.slide-in-left { animation: slideInLeft 0.6s ease; }
+.slide-in-right { animation: slideInRight 0.6s ease; }
+.pulse { animation: pulse 2s infinite; }
+.bounce { animation: bounce 1s; }
+
+/* ==============================================
+   PRINT STYLES
+   ============================================== */
+@media print {
+    .header,
+    .footer,
+    .mobile-menu-btn,
+    .ripple {
+        display: none;
+    }
+    
+    .section { padding: 1rem 0; }
+    
+    .card {
+        break-inside: avoid;
+        box-shadow: none;
+        border: 1px solid #ccc;
+        transform: none;
+    }
+    
+    .animate-ready {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+/*
+UTILITY CLASSES
+   ============================================== */
+
+/* Page spacing: ensure a comfortable visual gap between the last main section and the footer */
+#job-application {
+    margin-top: var(--spacing-2xl);
+    margin-bottom: var(--spacing-2xl);
+    padding-bottom: var(--spacing-md);
+}
+
+/* Utility: visually-hidden
+    Use for elements that should be available to screen readers
+    but hidden visually. Follows the common accessible pattern. */
+.visually-hidden {
+  position: absolute !important;
+  height: 1px; width: 1px;
+  overflow: hidden;
+  clip: rect(1px, 1px, 1px, 1px);
+  white-space: nowrap;
+  border: 0; padding: 0; margin: -1px;
+}
+
+/* Footer padding to separate it visually from content */
+.footer {
+    padding-top: var(--spacing-md);
+    padding-bottom: var(--spacing-md);
+}
+
+/* Fixed footer only on desktop */
+@media (min-width: 769px) {
+    /* On larger screens we pin the footer to the bottom of the
+       viewport to keep small legal/backup links visible while the
+       main content scrolls. The body gets extra bottom padding so
+       the fixed footer does not cover any content. */
+    .footer.footer--fixed {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: var(--surface-color);
+        backdrop-filter: blur(6px);
+        box-shadow: 0 -6px 18px rgba(0,0,0,0.08);
+        transition: transform 220ms ease, opacity 180ms ease, box-shadow 180ms ease, backdrop-filter 180ms ease;
+        will-change: transform, opacity;
+        z-index: 999;
+        height: var(--footer-height);
+        display: flex;
+        align-items: center;
+    }
+
+    .footer.footer--fixed .container { display:flex; justify-content:space-between; align-items:center; }
+
+    /* Ensure body leaves room for the fixed footer on desktop only when applied via JS */
+    body.footer-has-fixed-footer { padding-bottom: calc(var(--footer-height) + var(--spacing-md)); }
+}
+
+/* Footer layout: three-column style (left legal, center contact, right nav) */
+.footer .container { display:flex; justify-content:space-between; align-items:center; gap:1rem; }
+.footer .container > div { flex: 1 1 auto; }
+.footer .container > div.small { flex: 0 1 auto; }
+.footer .footer-left { text-align:left; }
+.footer .footer-center { text-align:center; }
+.footer .footer-right { text-align:right; }
+
+.footer a { color: var(--primary-color); }
+.footer a:hover { color: #b91c1c; }
+
+/* Tighter footer typography for compactness */
+.footer { font-size: 0.95rem; }
+.footer .biz-name { font-size: 1rem; }
+.footer .biz-address, .footer .biz-contact { font-size: 0.9rem; color: var(--text-secondary); }
+
+/* Compact footer links */
+.footer .footer-links { display:flex; gap: .5rem; align-items:center; justify-content:flex-end; }
+.footer .footer-links a { padding: .25rem .4rem; font-size: 0.95rem; display:inline-block; }
+
+/* Today badge */
+.hours-list .today-badge { background: var(--accent-color); color: #111; padding: 0 .4rem; border-radius: 999px; font-size: .75rem; margin-left:.5rem; font-weight:700 }
+
+/* Make the footer slightly taller on desktop to fit extra info */
+@media (min-width: 769px) {
+    :root { --footer-height: 96px; }
+    .footer { padding-top: 1rem; padding-bottom: 1rem; }
+}
+
+/* Hours modal: highlight today's row */
+.hours-list { font-size: 0.95rem; color: var(--text-primary); }
+.hours-list div { border-bottom: 1px dashed var(--divider-color); padding: .35rem 0; }
+.hours-list .hours-today { background: linear-gradient(90deg, rgba(245,158,11,0.06), transparent); padding: .35rem; border-radius:6px; font-weight:600; }
+
+@media (max-width: 480px) {
+    /* On small screens the footer remains in the document flow so
+       it stacks naturally after content; adjust height variable to
+       keep spacing consistent. */
+    :root { --footer-height: 56px; }
+    .footer { height: var(--footer-height); }
+}
+
+/* Utility: hide footer (translate + fade)
+   Use this class when you want to temporarily hide the fixed
+   footer (for example during downward scrolling to show more
+   content). It should only be toggled on viewports where the
+   footer is fixed. */
+.footer-hidden {
+    transform: translateY(110%);
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* Smooth scrolling is enabled on html via scroll-behavior; scroll-padding-top helps anchor offsets */
+.text-left { text-align: left; }
+.text-center { text-align: center; }
+.text-right { text-align: right; }
+.text-justify { text-align: justify; }
+
+.font-normal { font-weight: var(--font-weight-normal); }
+.font-medium { font-weight: var(--font-weight-medium); }
+.font-semibold { font-weight: var(--font-weight-semibold); }
+.font-bold { font-weight: var(--font-weight-bold); }
+
+.text-primary { color: var(--text-primary); }
+.text-secondary { color: var(--text-secondary); }
+.text-muted { color: var(--text-muted); }
+
+.m-0 { margin: 0; }
+.mt-4 { margin-top: var(--spacing-md); }
+.mb-4 { margin-bottom: var(--spacing-md); }
+.ml-4 { margin-left: var(--spacing-md); }
+.mr-4 { margin-right: var(--spacing-md); }
+.mx-auto { margin-left: auto; margin-right: auto; }
+
+.p-0 { padding: 0; }
+.p-4 { padding: var(--spacing-md); }
+.pt-4 { padding-top: var(--spacing-md); }
+.pb-4 { padding-bottom: var(--spacing-md); }
+.pl-4 { padding-left: var(--spacing-md); }
+.pr-4 { padding-right: var(--spacing-md); }
+
+.hidden { display: none; }
+.block { display: block; }
+.inline-block { display: inline-block; }
+
+.relative { position: relative; }
+.absolute { position: absolute; }
+.fixed { position: fixed; }
+.sticky { position: sticky; }
+
+/* ==============================================
+   ANIMATION STYLES
+   ============================================== */
+.animate-ready {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+    will-change: transform;
+    backface-visibility: hidden;
+}
+
+.animate-in {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.animate-ready:nth-child(1) { transition-delay: 0.1s; }
+.animate-ready:nth-child(2) { transition-delay: 0.2s; }
+.animate-ready:nth-child(3) { transition-delay: 0.3s; }
+.animate-ready:nth-child(4) { transition-delay: 0.4s; }
+.animate-ready:nth-child(5) { transition-delay: 0.5s; }
+.animate-ready:nth-child(6) { transition-delay: 0.6s; }
+
+/* Ripple Effect */
+.ripple {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(0);
+    animation: ripple 0.6s linear;
+    pointer-events: none;
+}
+
+@keyframes ripple {
+    to {
+        transform: scale(4);
+        opacity: 0;
+    }
+}
+
+/* Loading Spinner */
+.loading-spinner {
+    display: inline-block;
+    width: 1rem;
+    height: 1rem;
+    border: 2px solid transparent;
+    border-top: 2px solid currentColor;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-right: 0.5rem;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* ==============================================
+   FORM VALIDATION STYLES
+   ============================================== */
+.field-error {
+    border-color: var(--error-color) !important;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+.field-error-message {
+    color: var(--error-color);
+    font-size: var(--font-size-sm);
+    margin-top: var(--spacing-xs);
+    display: block;
+}
+
+.form-message {
+    padding: var(--spacing-md);
+    border-radius: var(--border-radius);
+    margin-top: var(--spacing-md);
+    font-weight: var(--font-weight-medium);
+}
+
+.form-success {
+    background: rgba(16, 185, 129, 0.1);
+    border: 1px solid var(--success-color);
+    color: var(--success-color);
+}
+
+.form-error {
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid var(--error-color);
+    color: var(--error-color);
+}
+
+/* ==============================================
+   LAZY LOADING STYLES
+   ============================================== */
+img[data-src] {
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+img.loaded {
+    opacity: 1;
+}
+
+/* ==============================================
