@@ -116,6 +116,10 @@ body.admin { overflow-x: hidden; }
 /* Menu admin layout and preview */
 .menu-admin-wrap { gap:1rem }
 .menu-admin-wrap #menu-list { max-height:620px; overflow:auto; padding-right:.25rem }
+/* Ensure preview area matches the menu list height and can scroll independently */
+#menu-preview { display:flex; flex-direction:column; }
+#menu-list { flex:1 1 auto; min-height:0; }
+#preview-area { flex:1 1 auto; min-height:0; overflow:auto; }
 .menu-admin-wrap .menu-admin-row, .menu-admin-wrap .menu-admin-row * { box-sizing:border-box }
 .menu-admin-wrap input[type="text"], .menu-admin-wrap textarea { padding:.45rem; border-radius:8px; border:1px solid #eef2ff }
 .menu-admin-wrap /* Menu section toggle / transition styles */ .menu-section-header { display:flex; align-items:center; justify-content:space-between; gap:.5rem }

@@ -554,7 +554,7 @@ header('Content-Type: text/html; charset=utf-8');
       </form>
       <span class="small">If the JS editor doesn't show new fields, use this to append a blank item server-side and then reload the page.</span>
     </div>
-    <div id="menu-admin-wrap" class="menu-admin-wrap" style="display:flex;gap:1rem;align-items:flex-start;margin-top:.5rem">
+  <div id="menu-admin-wrap" class="menu-admin-wrap" style="display:flex;gap:1rem;align-items:stretch;margin-top:.5rem">
   <div id="menu-admin" style="flex:1">
     <div style="margin-bottom:.5rem">
     <button id="add-menu-item" type="button" class="btn btn-primary">Add Section</button>
@@ -588,9 +588,9 @@ header('Content-Type: text/html; charset=utf-8');
           fin.addEventListener('keydown', function(e){ if (e.key === 'Enter') { e.preventDefault(); fb.click(); } });
         })();
       </script>
-      <div id="menu-preview" style="flex:1;min-width:300px;max-width:480px">
+      <div id="menu-preview" style="flex:1;min-width:300px;max-width:480px;display:flex;flex-direction:column">
         <h3 style="margin-top:0">Live Preview</h3>
-        <div id="preview-area" style="border:1px solid #eef2ff;border-radius:8px;padding:.6rem;background:#fff;min-height:240px;overflow:auto"></div>
+        <div id="preview-area" style="border:1px solid #eef2ff;border-radius:8px;padding:.6rem;background:#fff;min-height:240px;overflow:auto;flex:1;min-height:0;max-height:640px"></div>
       </div>
     </div>
     
