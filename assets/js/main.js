@@ -7,6 +7,17 @@
 
 'use strict';
 
+// Enable verbose console output when running in development.
+// Set window.__devMode = true in the browser console to opt-in.
+window.__devMode = window.__devMode || false;
+
+// devLog helper: only logs when __devMode is true. Use devLog(...) instead of console.log
+function devLog(...args) {
+    if (window.__devMode && console && console.log) {
+        console.log(...args);
+    }
+}
+
 /* Developer note:
  * This file assumes a browser DOM (document/window). It is not suitable
  * for direct `require()` in Node without a DOM shim (JSDOM) because it
@@ -27,7 +38,7 @@ const Navigation = {
         this.setupActiveStates();
         this.setupMobileMenu();
         this.setupScrollHeader();
-        console.log('✅ Navigation module initialized');
+    if (window.__devMode) console.log('✅ Navigation module initialized');
     },
 
     setupSmoothScrolling() {
@@ -227,7 +238,7 @@ const ThemeManager = {
         this.applySystemTheme();
         // Watch for changes to the system preference and update live.
         this.watchSystemPreference();
-        console.log('✅ Theme manager initialized');
+    devLog('✅ Theme manager initialized');
     },
 
     applySystemTheme() {
@@ -277,7 +288,7 @@ const AnimationManager = {
         this.setupScrollAnimations();
         this.setupHoverEffects();
         this.setupParallaxEffects();
-        console.log('✅ Animation manager initialized');
+    devLog('✅ Animation manager initialized');
     },
 
     setupScrollAnimations() {
@@ -388,7 +399,7 @@ const FormHandler = {
         // reuse validators across multiple form elements.
         this.setupFormValidation();
         this.setupFormSubmission();
-        console.log('✅ Form handler initialized');
+    devLog('✅ Form handler initialized');
     },
 
     setupFormValidation() {
@@ -596,14 +607,14 @@ const PerformanceMonitor = {
     init() {
         this.monitorPageLoad();
         this.setupLazyLoading();
-        console.log('✅ Performance monitor initialized');
+    devLog('✅ Performance monitor initialized');
     },
 
     monitorPageLoad() {
         window.addEventListener('load', () => {
             const perfData = performance.getEntriesByType('navigation')[0];
             const loadTime = perfData.loadEventEnd - perfData.loadEventStart;
-            console.log(`📊 Page loaded in ${loadTime}ms`);
+            devLog(`📊 Page loaded in ${loadTime}ms`);
         });
     },
 
@@ -845,8 +856,8 @@ document.addEventListener('DOMContentLoaded', function() {
             PositionAgeRules.init();
         PerformanceMonitor.init();
 
-        console.log('🚀 Modern Modular Framework initialized successfully!');
-        console.log(`📱 Viewport: ${Utils.getViewport().width}x${Utils.getViewport().height}`);
+    devLog('🚀 Modern Modular Framework initialized successfully!');
+    devLog(`📱 Viewport: ${Utils.getViewport().width}x${Utils.getViewport().height}`);
         
         if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
             window.ModularFramework = {
@@ -857,7 +868,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 PerformanceMonitor,
                 Utils
             };
-            console.log('🔧 Development mode: Framework modules exposed to window.ModularFramework');
+            devLog('🔧 Development mode: Framework modules exposed to window.ModularFramework');
         }
 
         window.dispatchEvent(new CustomEvent('frameworkReady', {
@@ -872,7 +883,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 window.addEventListener('resize', Utils.debounce(() => {
-    console.log(`📱 Window resized: ${Utils.getViewport().width}x${Utils.getViewport().height}`);
+    devLog(`📱 Window resized: ${Utils.getViewport().width}x${Utils.getViewport().height}`);
     
     window.dispatchEvent(new CustomEvent('viewportChanged', {
         detail: Utils.getViewport()
@@ -881,16 +892,16 @@ window.addEventListener('resize', Utils.debounce(() => {
 
 document.addEventListener('visibilitychange', () => {
     if (document.hidden) {
-        console.log('👁️ Page hidden');
+        devLog('👁️ Page hidden');
     } else {
-        console.log('👁️ Page visible');
+        devLog('👁️ Page visible');
     }
 });
 
 window.addEventListener('online', () => {
-    console.log('🌐 Connection restored');
+    devLog('🌐 Connection restored');
 });
 
 window.addEventListener('offline', () => {
-    console.log('📴 Connection lost');
+    devLog('📴 Connection lost');
 });

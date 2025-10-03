@@ -79,6 +79,15 @@
   // expose a global helper so other inline/admin scripts can use the same modal
   try { window.showAdminConfirm = showConfirm; window.showAdminToast = showToast; } catch(e){}
 
+  // Admin dev logging: set window.__adminDevMode = true in the console to enable logs
+  window.__adminDevMode = window.__adminDevMode || false;
+  function adminDevLog() {
+    if (window.__adminDevMode && console && console.log) {
+      console.log.apply(console, arguments);
+    }
+  }
+  try { window.adminDevLog = adminDevLog; } catch (e) {}
+
   // Main
   const sectionSelect = document.getElementById('section-select');
   const schemaFields = document.getElementById('schema-fields');

@@ -1,4 +1,3 @@
-$php_start = true;
 <?php
 /**
  * index.php
@@ -25,7 +24,6 @@ $php_start = true;
 // Load the site content (stored as JSON in data/content.json).
 // This file is the single source of truth for editable content (hero text, menu, images, etc.).
 $contentFile = 'data/content.json';
-$content = file_exists($contentFile) ? json_decode(file_get_contents($contentFile), true) : [];
 $content = file_exists($contentFile) ? json_decode(file_get_contents($contentFile), true) : [];
 
 // Developer debug code was used during diagnosis and has been removed.
@@ -266,7 +264,7 @@ $cssVersion = file_exists($cssPath) ? filemtime($cssPath) : time();
                                             $img = $first['image'] ?? '';
                                             if ($img) { $firstImg = preg_match('#^https?://#i', $img) ? $img : 'uploads/images/'.ltrim($img,'/'); }
                                         }
-                                        echo '<div class="card menu-card section-card" data-section-idx="'.$sidx.'">';
+                                        echo '<div class="card menu-card section-card" data-section-idx="'.$sidx.'" data-section-id="'.htmlspecialchars($sectionId).'">';
                                         // collapsed card: only show section title and the expand button
                                         echo '<div class="menu-body">';
                                         // decorative overlay to improve legibility on image-backed cards
@@ -297,8 +295,7 @@ $cssVersion = file_exists($cssPath) ? filemtime($cssPath) : time();
                                                                         $img = $it['image'] ?? '';
                                                                         $imgUrl = '';
                                                                         if ($img) { $imgUrl = preg_match('#^https?://#i', $img) ? $img : 'uploads/images/'.ltrim($img,'/'); }
-                                                                        // debug comment to help trace missing descriptions in rendered HTML
-                                                                        echo '<!-- DEBUG ITEM: ' . htmlspecialchars($t) . ' DESC_PRESENT: ' . ($d !== '' ? '1' : '0') . ' -->';
+                                                                        // debug comment removed
                                                                         echo '<div class="card section-item">';
                                                                         if ($imgUrl) echo '<img src="'.htmlspecialchars($imgUrl).'" alt="'.htmlspecialchars($t).'">';
                                                                         echo '<div class="preview-meta">';

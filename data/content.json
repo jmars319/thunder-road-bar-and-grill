@@ -16,8 +16,8 @@
     "about": {
         "title": "About Us",
         "content": "Your about us content",
-        "heading": "About Our Restaurant",
-        "body": "This restaurant is committed to providing a unique dining experience that showcases the best of local and seasonal ingredients.\n\nEvery dish is crafted with care, using only the freshest ingredients sourced from local farms and markets."
+        "heading": "Placeholder",
+        "body": "This is placeholder text that will be updated once I get more details."
     },
     "hours": {
         "monday": "Closed",
@@ -31,7 +31,7 @@
     "images": {
         "logo": "logo-1759391867-68de307bb6469.png"
     },
-    "last_updated": "2025-10-03 17:42:15",
+    "last_updated": "2025-10-03 20:46:04",
     "menu": [
         {
             "title": "Burgers & Sandwiches",
@@ -414,7 +414,7 @@
                     "short": "",
                     "description": "American | Cheddar | Provolone | Pimento | Cheese Sauce",
                     "image": "",
-                    "price": ".50",
+                    "price": "0.50",
                     "quantities": []
                 },
                 {
@@ -422,7 +422,7 @@
                     "short": "",
                     "description": "",
                     "image": "",
-                    "price": ".50",
+                    "price": "0.50",
                     "quantities": []
                 },
                 {
@@ -438,7 +438,7 @@
                     "short": "",
                     "description": "",
                     "image": "",
-                    "price": ".50",
+                    "price": "0.50",
                     "quantities": []
                 },
                 {
@@ -446,7 +446,7 @@
                     "short": "",
                     "description": "",
                     "image": "",
-                    "price": ".50",
+                    "price": "0.50",
                     "quantities": []
                 },
                 {
@@ -461,7 +461,7 @@
                     "short": "",
                     "description": "Ranch || Italian || 1000 Island || Balsamic Vinaigrette || Honey Mustard",
                     "image": "",
-                    "price": ".50",
+                    "price": "0.50",
                     "quantities": []
                 }
             ],
@@ -554,174 +554,54 @@
             "details": []
         },
         {
-            "title": "Current Ice Cream Flavors",
+            "title": "Drinks",
             "id": "current-ice-cream-flavors",
             "items": [
                 {
-                    "title": "Award Winning Chocolate",
+                    "title": "Soft Drinks",
                     "short": "",
-                    "description": "",
+                    "description": "Pepsi || Diet Pepsi || Mountain Dew || Dr. Pepper || Diet Dr. Pepper || Cheerwine || Starry || Pink Lemonade || Club Soda || Sweet Tea || Unsweetened Tea || Water",
+                    "image": "",
+                    "quantities": [
+                        {
+                            "label": "",
+                            "value": "",
+                            "price": "2.50"
+                        }
+                    ]
+                },
+                {
+                    "title": "Bottled Beer",
+                    "short": "",
+                    "description": "Miller Lite || Miller High Life || Michelob Ultra || Coors Light || Coors Banquet || Yuengling Lager || Yuengling Flight || Bud Light || Budweiser || Foothills Hoppyum IPA || Foothills Jade IPA || Red Oak Amber Lager || Corona Extra || Dos Equis Lager || Smirnoff OG || Boldrock - Blackberry, Apple and Pineapple",
                     "image": "",
                     "quantities": []
                 },
                 {
-                    "title": "Strawberry",
+                    "title": "Draft Beer",
                     "short": "",
-                    "description": "",
+                    "description": "Miller Lite || Sweetwater 420 || Dos Equis Amber || Blue Moon",
                     "image": "",
                     "quantities": []
                 },
                 {
-                    "title": "Vanilla",
+                    "title": "White Wine",
                     "short": "",
-                    "description": "",
+                    "description": "Peter Mertes Riesling || Kendall Jackson Chardonnay || Cavaliere Pinot Grigio || Sutter Home White Zinfandel || Cupcake Vineyards Moscato d'Asti",
                     "image": "",
                     "quantities": []
                 },
                 {
-                    "title": "Butter Pecan",
+                    "title": "Red Wine",
                     "short": "",
-                    "description": "",
+                    "description": "J. Lohr Merlot || Josh Cellars Cabernet || Trinity Oaks Pinot Noir",
                     "image": "",
                     "quantities": []
                 },
                 {
-                    "title": "Moosetracks",
+                    "title": "Cocktails",
                     "short": "",
-                    "description": "",
-                    "image": "",
-                    "quantities": []
-                },
-                {
-                    "title": "Black Cherry",
-                    "short": "",
-                    "description": "",
-                    "image": "",
-                    "quantities": []
-                },
-                {
-                    "title": "Coconut",
-                    "short": "",
-                    "description": "",
-                    "image": "",
-                    "quantities": []
-                },
-                {
-                    "title": "Blueberry Cheesecake",
-                    "short": "",
-                    "description": "",
-                    "image": "",
-                    "quantities": []
-                },
-                {
-                    "title": "Banana Pudding",
-                    "short": "",
-                    "description": "",
-                    "image": "",
-                    "quantities": []
-                },
-                {
-                    "title": "Rum Raisin",
-                    "short": "",
-                    "description": "",
-                    "image": "",
-                    "quantities": []
-                },
-                {
-                    "title": "Graham Central Station",
-                    "short": "",
-                    "description": "",
-                    "image": "",
-                    "quantities": []
-                },
-                {
-                    "title": "Brown Butter Bourbon Truffle",
-                    "short": "",
-                    "description": "",
-                    "image": "",
-                    "quantities": []
-                },
-                {
-                    "title": " Key Lime Pie",
-                    "short": "",
-                    "description": "",
-                    "image": "",
-                    "quantities": []
-                },
-                {
-                    "title": "Coffee",
-                    "short": "",
-                    "description": "",
-                    "image": "",
-                    "quantities": []
-                },
-                {
-                    "title": "Whitehouse Cherry",
-                    "short": "",
-                    "description": "",
-                    "image": "",
-                    "quantities": []
-                },
-                {
-                    "title": " Peanut Butter Twist",
-                    "short": "",
-                    "description": "",
-                    "image": "",
-                    "quantities": []
-                },
-                {
-                    "title": "Green Mint Chip",
-                    "short": "",
-                    "description": "",
-                    "image": "",
-                    "quantities": []
-                },
-                {
-                    "title": "Road Runner Raspberry",
-                    "short": "",
-                    "description": "",
-                    "image": "",
-                    "quantities": []
-                },
-                {
-                    "title": "Rainbow Sorbet",
-                    "short": "",
-                    "description": "",
-                    "image": "",
-                    "quantities": []
-                },
-                {
-                    "title": "Strawberry Cheesecake",
-                    "short": "",
-                    "description": "",
-                    "image": "",
-                    "quantities": []
-                },
-                {
-                    "title": "Orange Blossom",
-                    "short": "",
-                    "description": "",
-                    "image": "",
-                    "quantities": []
-                },
-                {
-                    "title": "Superman",
-                    "short": "",
-                    "description": "",
-                    "image": "",
-                    "quantities": []
-                },
-                {
-                    "title": "**SUGAR FREE** Vanilla",
-                    "short": "",
-                    "description": "",
-                    "image": "",
-                    "quantities": []
-                },
-                {
-                    "title": "**SUGAR FREE** Turtle Sundae",
-                    "short": "",
-                    "description": "",
+                    "description": "Cocktail List coming soon - Come visit us while we make it!",
                     "image": "",
                     "quantities": []
                 }
