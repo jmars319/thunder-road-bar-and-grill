@@ -29,7 +29,7 @@
     "images": {
         "logo": "logo-1759391867-68de307bb6469.png"
     },
-    "last_updated": "2025-10-03 07:06:03",
+    "last_updated": "2025-10-03 15:10:35",
     "menu": [
         {
             "title": "Burgers & Sandwiches",
@@ -37,25 +37,126 @@
             "items": [
                 {
                     "title": "Burger",
-                    "short": "Fresh Black Angus patty served on a brioche bun",
-                    "description": "",
+                    "short": "",
+                    "description": "Fresh Black Angus patty served on a brioche bun",
                     "image": "",
-                    "price": "8.50"
-                },
-                {
-                    "title": "Double Burger",
-                    "short": "Two Fresh Black Angus patties served on a brioche bun",
-                    "description": "",
-                    "image": "",
-                    "price": "11.50"
+                    "quantities": [
+                        {
+                            "label": "",
+                            "value": "Single",
+                            "price": "8.50"
+                        },
+                        {
+                            "label": "",
+                            "value": "Double",
+                            "price": "11.50"
+                        }
+                    ]
                 },
                 {
                     "title": "Hot Dog",
-                    "short": "Black Angus frank",
-                    "description": "",
+                    "short": "",
+                    "description": "Black Angus frank",
                     "image": "",
                     "price": "3.75",
-                    "quantity": ""
+                    "quantity": "",
+                    "quantities": []
+                },
+                {
+                    "title": "Beef Philly",
+                    "short": "",
+                    "description": "Shaved beef and provolone served on a sub roll",
+                    "image": "",
+                    "price": "9.00",
+                    "quantities": []
+                },
+                {
+                    "title": "Ham Sub",
+                    "short": "",
+                    "description": "Sliced ham served hot or cold on a sub roll",
+                    "image": "",
+                    "price": "8.50",
+                    "quantities": []
+                },
+                {
+                    "title": "BLT",
+                    "short": "",
+                    "description": "Bacon, lettuce, and tomato served on a brioche bun",
+                    "image": "",
+                    "price": "6.50",
+                    "quantities": []
+                },
+                {
+                    "title": "Turkey Sub",
+                    "short": "",
+                    "description": "Sliced turkey served hot or cold on a sub roll",
+                    "image": "",
+                    "price": "8.50",
+                    "quantities": []
+                },
+                {
+                    "title": "Grilled Chicken Sandwich",
+                    "short": "",
+                    "description": "Chicken breast served on a brioche bun",
+                    "image": "",
+                    "price": "7.50",
+                    "quantities": []
+                },
+                {
+                    "title": "Crispy Chicken Sandwich",
+                    "short": "",
+                    "description": "Two chicken tenders served on a brioche bun",
+                    "image": "",
+                    "price": "6.75",
+                    "quantities": []
+                },
+                {
+                    "title": "Chicken Philly",
+                    "short": "",
+                    "description": "Shaved chicken and provolone served on a sub roll",
+                    "image": "",
+                    "price": "8.50",
+                    "quantities": []
+                },
+                {
+                    "title": "Club Sub",
+                    "short": "",
+                    "description": "Sliced ham, sliced turkey, and bacon served hot or cold on a sub roll",
+                    "image": "",
+                    "price": "9.00",
+                    "quantities": []
+                },
+                {
+                    "title": "Chicken Bacon Ranch",
+                    "short": "",
+                    "description": "Shredded chicken, bacon, ranch, provolone and American cheeses served on a brioche bun",
+                    "image": "",
+                    "price": "9.00",
+                    "quantities": []
+                },
+                {
+                    "title": " Impossible Burger",
+                    "short": "",
+                    "description": "Vegetarian patty served on a brioche bun",
+                    "image": "",
+                    "price": "10.50",
+                    "quantities": []
+                },
+                {
+                    "title": "Grilled Cheese",
+                    "short": "",
+                    "description": "Available cheese options: American | Cheddar | Provolone | Pimento | Cheese Sauce",
+                    "image": "",
+                    "price": "5.00",
+                    "quantities": []
+                },
+                {
+                    "title": "BBQ Sandwich",
+                    "short": "",
+                    "description": "BBQ with your choice of red or white slaw served on a brioche bun",
+                    "image": "",
+                    "price": "8.00",
+                    "quantities": []
                 }
             ],
             "details": [
@@ -119,7 +220,14 @@
                     "description": "",
                     "image": "",
                     "price": "9.50",
-                    "quantity": ""
+                    "quantity": "",
+                    "quantities": [
+                        {
+                            "label": "",
+                            "value": "",
+                            "price": "9.50"
+                        }
+                    ]
                 }
             ],
             "details": []
@@ -134,7 +242,14 @@
                     "description": "",
                     "image": "",
                     "price": "8.00",
-                    "quantity": ""
+                    "quantity": "",
+                    "quantities": [
+                        {
+                            "label": "",
+                            "value": "",
+                            "price": "8.00"
+                        }
+                    ]
                 }
             ],
             "details": [

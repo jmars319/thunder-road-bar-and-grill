@@ -90,6 +90,12 @@
   const schemaUrl = window.__schemaUrl || 'content-schemas.json';
 
   let schemas = {};
+  // Configurable client-side sanity limit for items per menu section.
+  // Historically users have run into a small implicit cap; increase this
+  // to a comfortable default so admins can add many items (e.g. 50).
+  // This is only a client-side UX guard; the server accepts arbitrary
+  // arrays when saving JSON. Adjust as needed.
+  const MAX_ITEMS_PER_SECTION = 50;
 
   function fetchSchemas(){
     return fetch(schemaUrl).then(r=>{ if (!r.ok) throw new Error('Failed to load schemas'); return r.json(); }).catch(()=>({}));
@@ -417,7 +423,15 @@
           } catch (e) { /* ignore storage errors */ }
         });
 
-  const addItemBtn = document.createElement('button'); addItemBtn.type='button'; addItemBtn.textContent='Add Item'; addItemBtn.className='btn btn-ghost'; addItemBtn.addEventListener('click', ()=>{ menuData[sidx].items.push({ title:'', short:'', description:'', image:'', price: '', quantities: [] }); render(); });
+        const addItemBtn = document.createElement('button'); addItemBtn.type='button'; addItemBtn.textContent='Add Item'; addItemBtn.className='btn btn-ghost'; addItemBtn.addEventListener('click', ()=>{
+          // Prevent creating an excessive number of items in a single section.
+          if (!Array.isArray(menuData[sidx].items)) menuData[sidx].items = [];
+          if (menuData[sidx].items.length >= MAX_ITEMS_PER_SECTION) {
+            showToast('Item limit reached for this section. Remove existing items or increase MAX_ITEMS_PER_SECTION in admin.js', 'error');
+            return;
+          }
+          menuData[sidx].items.push({ title:'', short:'', description:'', image:'', price: '', quantities: [] }); render();
+        });
         const upS = document.createElement('button'); upS.type='button'; upS.textContent='↑'; upS.title='Move section up'; upS.className='btn btn-ghost'; upS.addEventListener('click', ()=>{ if (sidx<=0) return; [menuData[sidx-1], menuData[sidx]] = [menuData[sidx], menuData[sidx-1]]; render(); });
         const downS = document.createElement('button'); downS.type='button'; downS.textContent='↓'; downS.title='Move section down'; downS.className='btn btn-ghost'; downS.addEventListener('click', ()=>{ if (sidx>=menuData.length-1) return; [menuData[sidx+1], menuData[sidx]] = [menuData[sidx], menuData[sidx+1]]; render(); });
         const delS = document.createElement('button'); delS.type='button'; delS.textContent='Delete'; delS.className='btn btn-danger'; delS.addEventListener('click', async ()=>{ if (!await showConfirm('Delete this section and its items?')) return; menuData.splice(sidx,1); render(); });
@@ -425,19 +439,20 @@
         header.appendChild(hdrControls);
         secWrap.appendChild(header);
 
-        // items list
+        // items list: outer wrapper preserves expand/collapse transition; inner container is the scrollable area
   const itemsWrap = document.createElement('div'); itemsWrap.className = 'menu-section-items'; itemsWrap.style.marginTop='.6rem';
+        // inner scroll container (each section gets its own scroller)
+        const itemsInner = document.createElement('div'); itemsInner.className = 'menu-section-items-inner';
         const items = Array.isArray(section.items) ? section.items : [];
         if (!items.length) {
-          const hint = document.createElement('div'); hint.textContent = 'No items — use "Add Item"'; hint.className='small'; itemsWrap.appendChild(hint);
+          const hint = document.createElement('div'); hint.textContent = 'No items — use "Add Item"'; hint.className='small'; itemsInner.appendChild(hint);
         }
         items.forEach((it, idx) => {
           const row = document.createElement('div'); row.style.display='grid'; row.style.gridTemplateColumns='1fr 200px'; row.style.gap='.5rem'; row.style.marginTop='.5rem'; row.style.borderTop='1px dashed #eee'; row.style.paddingTop='.5rem';
           const leftCol = document.createElement('div');
             const titleIn = makeInput(it.title||'', 'e.g. Classic Cheeseburger'); titleIn.title = 'Item title shown on the menu'; titleIn.addEventListener('input', ()=> menuData[sidx].items[idx].title = titleIn.value);
-            const shortIn = makeInput(it.short||'', 'e.g. With lettuce, tomato & pickles'); shortIn.title = 'Short subtitle or note shown under the title'; shortIn.style.marginTop='.3rem'; shortIn.addEventListener('input', ()=> menuData[sidx].items[idx].short = shortIn.value);
             const descIn = makeTextarea(it.description||'', 'Detailed description, ingredients, or notes'); descIn.title = 'Long description shown when the item is expanded'; descIn.style.marginTop='.3rem'; descIn.addEventListener('input', ()=> menuData[sidx].items[idx].description = descIn.value);
-            leftCol.appendChild(titleIn); leftCol.appendChild(shortIn); leftCol.appendChild(descIn);
+            leftCol.appendChild(titleIn); leftCol.appendChild(descIn);
 
             // price is optional for certain sections (e.g., Current Ice Cream Flavors)
             const allowPrice = !(section && section.id === 'current-ice-cream-flavors');
@@ -448,8 +463,9 @@
               leftCol.insertBefore(priceIn, descIn);
             }
 
-            // quantity options: allow multiple quantity choices per item for specific sections
-            const allowQuantity = section && (section.id === 'wings-tenders' || section.id === 'sides');
+            // quantity options: allow multiple quantity choices per item for all sections
+            // keep special numeric stepper behavior for Wings & Tenders
+            const allowQuantity = true;
             let qtyContainer = null;
             if (allowQuantity) {
               // Ensure backward compatibility: convert old single `quantity` value into `quantities` array
@@ -536,7 +552,7 @@
           const preview = document.createElement('img'); preview.style.width='100%'; preview.style.height='80px'; preview.style.objectFit='cover'; preview.style.marginTop='.4rem'; if (imgIn.value) preview.src = '../uploads/images/' + imgIn.value;
           imgIn.addEventListener('input', ()=>{ menuData[sidx].items[idx].image = imgIn.value; if (imgIn.value) preview.src = '../uploads/images/' + imgIn.value; else preview.removeAttribute('src'); renderPreview(); });
           // Also update preview when textual fields change
-          titleIn.addEventListener('input', renderPreview); shortIn.addEventListener('input', renderPreview); if (priceIn) priceIn.addEventListener('input', renderPreview); descIn.addEventListener('input', renderPreview);
+          titleIn.addEventListener('input', renderPreview); if (priceIn) priceIn.addEventListener('input', renderPreview); descIn.addEventListener('input', renderPreview);
 
           const itemControls = document.createElement('div'); itemControls.style.display='flex'; itemControls.style.gap='.4rem';
           const up = document.createElement('button'); up.type='button'; up.textContent='↑'; up.title='Move up'; up.className='btn btn-ghost'; up.addEventListener('click', ()=>{ if (idx<=0) return; [menuData[sidx].items[idx-1], menuData[sidx].items[idx]] = [menuData[sidx].items[idx], menuData[sidx].items[idx-1]]; render(); });
@@ -549,7 +565,7 @@
           rightCol.appendChild(imgRow); rightCol.appendChild(preview); rightCol.appendChild(itemControls);
 
           row.appendChild(leftCol); row.appendChild(rightCol);
-          itemsWrap.appendChild(row);
+          itemsInner.appendChild(row);
         });
 
         // honor persisted expanded state: default collapsed (not expanded)
@@ -562,15 +578,102 @@
           toggleBtn.setAttribute('aria-expanded','true');
         }
 
-        secWrap.appendChild(itemsWrap);
+  // attach inner scroller to the outer wrapper
+  itemsWrap.appendChild(itemsInner);
+  secWrap.appendChild(itemsWrap);
   const footer = document.createElement('div'); footer.style.display='flex'; footer.style.justifyContent='flex-end'; footer.style.marginTop='.6rem';
   const saveSec = document.createElement('button'); saveSec.type='button'; saveSec.textContent='Save Sections'; saveSec.className='btn btn-primary'; saveSec.addEventListener('click', async ()=>{ await saveMenu(); renderPreview(); });
-        footer.appendChild(saveSec); secWrap.appendChild(footer);
+    const previewBtn = document.createElement('button'); previewBtn.type='button'; previewBtn.textContent='Preview changes'; previewBtn.className='btn btn-ghost'; previewBtn.addEventListener('click', async ()=>{ await previewChanges(); });
+    footer.appendChild(previewBtn); footer.appendChild(saveSec); secWrap.appendChild(footer);
 
         listEl.appendChild(secWrap);
       });
       // update preview after rendering admin list
       renderPreview();
+    }
+
+    // listen for a UI signal to expand all sections (useful when items seem hidden)
+    document.addEventListener('admin.expandAllMenuSections', function(){
+      try {
+        // mark all known section ids as expanded
+        menuData.forEach(function(section){ if (section && section.id) expandedSections.add(section.id); });
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(Array.from(expandedSections)));
+        render();
+      } catch(e) { /* ignore */ }
+    });
+
+    // listen for 'find item' events: payload { term: 'Club Sub' }
+    document.addEventListener('admin.findMenuItem', function(e){
+      try {
+        const term = (e && e.detail && e.detail.term) ? String(e.detail.term).toLowerCase().trim() : '';
+        if (!term) return;
+        // expand all sections first
+        menuData.forEach(function(section){ if (section && section.id) expandedSections.add(section.id); });
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(Array.from(expandedSections)));
+        render();
+        // give the DOM a tick to render
+        setTimeout(function(){
+          // find the first input for titles that match
+          const list = document.getElementById('menu-list');
+          if (!list) return;
+          const inputs = Array.from(list.querySelectorAll('input[type="text"]'));
+          let found = null;
+          for (let i = 0; i < inputs.length; i++) {
+            const v = (inputs[i].value || '').toLowerCase();
+            if (v.indexOf(term) !== -1) { found = inputs[i]; break; }
+          }
+          if (found) {
+            found.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            found.style.transition = 'box-shadow .18s ease, background-color .18s ease';
+            const prevBg = found.style.backgroundColor;
+            found.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.15)';
+            found.style.backgroundColor = '#fffbe6';
+            setTimeout(function(){ found.style.boxShadow = ''; found.style.backgroundColor = prevBg || ''; }, 3000);
+            // also focus
+            try { found.focus(); } catch(e){}
+          } else {
+            showToast('No matching item found for: ' + term, 'error');
+          }
+        }, 120);
+      } catch(err) { /* ignore */ }
+    });
+
+    // Preview modal helper
+    function makePreviewModal() {
+      let modal = document.getElementById('admin-preview-modal');
+      if (modal) return modal;
+      modal = document.createElement('div'); modal.id='admin-preview-modal'; modal.style.position='fixed'; modal.style.inset='0'; modal.style.display='none'; modal.style.alignItems='center'; modal.style.justifyContent='center'; modal.style.background='rgba(0,0,0,0.4)'; modal.style.zIndex='10000';
+      modal.innerHTML = '<div style="background:#fff;max-width:900px;width:calc(100% - 48px);max-height:80vh;overflow:auto;border-radius:8px;padding:1rem;">'<
+        + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem"><h3 style="margin:0">Preview changes</h3><button id="admin-preview-close" class="btn btn-ghost">Close</button></div>'
+        + '<div id="admin-preview-body" style="max-height:calc(80vh - 80px);overflow:auto;"></div>'
+        + '<div style="display:flex;justify-content:flex-end;margin-top:.6rem"><button id="admin-preview-apply" class="btn btn-primary">Apply and Save</button></div>';
+      document.body.appendChild(modal);
+      modal.querySelector('#admin-preview-close').addEventListener('click', ()=>{ modal.style.display='none'; });
+      modal.querySelector('#admin-preview-apply').addEventListener('click', async ()=>{ modal.style.display='none'; await saveMenu(); render(); });
+      return modal;
+    }
+
+    async function previewChanges(){
+      try {
+        const modal = makePreviewModal();
+        const body = { menu: menuData };
+        const csrf = (document.querySelector('input[name="csrf_token"]')||{}).value || window.__csrfToken || '';
+        const res = await fetch('admin/preview-diff.php', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrf }, body: JSON.stringify(body) });
+        const j = await res.json();
+        const out = modal.querySelector('#admin-preview-body'); out.innerHTML = '';
+        if (!j || !j.success) { out.textContent = 'Preview failed: ' + (j && j.message ? j.message : 'unknown'); modal.style.display='flex'; return; }
+        const diff = j.diff || {};
+        Object.keys(diff).forEach(function(secKey){
+          const sec = diff[secKey];
+          const secWrap = document.createElement('div'); secWrap.style.borderTop='1px solid #eee'; secWrap.style.padding='8px 0';
+          const h = document.createElement('div'); h.style.fontWeight='700'; h.textContent = secKey; secWrap.appendChild(h);
+          if ((sec.added||[]).length) { const a = document.createElement('div'); a.style.color='green'; a.textContent = 'Added: ' + sec.added.join(', '); secWrap.appendChild(a); }
+          if ((sec.removed||[]).length) { const r = document.createElement('div'); r.style.color='crimson'; r.textContent = 'Removed: ' + sec.removed.join(', '); secWrap.appendChild(r); }
+          if ((sec.changed||[]).length) { const ch = document.createElement('div'); ch.style.color='#444'; ch.textContent = 'Changed: ' + sec.changed.map(c=> c.title + ' (' + c.changes.join(',') + ')' ).join('; '); secWrap.appendChild(ch); }
+          out.appendChild(secWrap);
+        });
+        modal.style.display='flex';
+      } catch (err) { showToast('Preview error: '+err.message,'error'); }
     }
 
     function renderPreview(){
@@ -678,7 +781,12 @@
       } catch(err){ showToast('Save error: '+err.message,'error'); }
     }
 
-    if (addBtn) addBtn.addEventListener('click', ()=>{ menuData.push({ title:'New Section', id:'section-'+Date.now(), items:[] }); render(); });
+    if (addBtn) addBtn.addEventListener('click', ()=>{
+      // Optional: cap number of sections to prevent pathological cases in UI
+      if (!Array.isArray(menuData)) menuData = [];
+      if (menuData.length >= 1000) { showToast('Section limit reached', 'error'); return; }
+      menuData.push({ title:'New Section', id:'section-'+Date.now(), items:[] }); render();
+    });
     render();
   }
 

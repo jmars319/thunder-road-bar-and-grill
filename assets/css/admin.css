@@ -107,6 +107,9 @@ body.admin { overflow-x: hidden; }
 .menu-admin-wrap .menu-toggle[aria-expanded="true"] svg { transform: rotate(180deg); color: var(--accent) }
 .menu-admin-wrap .menu-section-items { transition: max-height .28s cubic-bezier(.2,.8,.2,1), opacity .18s ease; overflow:hidden; max-height:0; opacity:0 }
 .menu-admin-wrap .menu-section-items.expanded { max-height:2000px; opacity:1 }
+#menu-list .menu-section-items-inner { max-height:380px; overflow:auto; padding-right:.4rem; padding-bottom:.4rem }
+.menu-section-items-inner::-webkit-scrollbar { width:10px; height:10px }
+.menu-section-items-inner::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.08); border-radius:6px }
 #menu-preview h3 { margin:0 0 .5rem 0 }
 .preview-section { border-bottom:1px solid #f3f6ff; padding:.5rem 0 }
 .preview-section .preview-title { font-weight:700 }

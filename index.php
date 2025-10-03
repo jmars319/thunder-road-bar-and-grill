@@ -28,6 +28,15 @@ $contentFile = 'data/content.json';
 $content = file_exists($contentFile) ? json_decode(file_get_contents($contentFile), true) : [];
 $content = file_exists($contentFile) ? json_decode(file_get_contents($contentFile), true) : [];
 
+// Developer debug code was used during diagnosis and has been removed.
+
+// Client-side dev diagnostics: when ?dev=1, also emit a small script that
+// parses the embedded per-section JSON blobs (if present), logs them to the
+// console, and renders a tiny overlay showing a few items and whether their
+// descriptions are present. This helps confirm whether the browser received
+// the same content the server rendered.
+// client-side dev overlay removed
+
 /**
  * Helper: getContent
  * Fetches a nested key from the $content array using dot notation.
@@ -288,11 +297,14 @@ $cssVersion = file_exists($cssPath) ? filemtime($cssPath) : time();
                                                                         $img = $it['image'] ?? '';
                                                                         $imgUrl = '';
                                                                         if ($img) { $imgUrl = preg_match('#^https?://#i', $img) ? $img : 'uploads/images/'.ltrim($img,'/'); }
-                                                                        echo '<div class="card section-item" style="margin-bottom:.5rem;display:flex;gap:.6rem;align-items:flex-start">';
-                                                                        if ($imgUrl) echo '<img src="'.htmlspecialchars($imgUrl).'" style="width:88px;height:64px;object-fit:cover;border-radius:6px">';
-                                                                        echo '<div style="flex:1">';
+                                                                        // debug comment to help trace missing descriptions in rendered HTML
+                                                                        echo '<!-- DEBUG ITEM: ' . htmlspecialchars($t) . ' DESC_PRESENT: ' . ($d !== '' ? '1' : '0') . ' -->';
+                                                                        echo '<div class="card section-item">';
+                                                                        if ($imgUrl) echo '<img src="'.htmlspecialchars($imgUrl).'" alt="'.htmlspecialchars($t).'">';
+                                                                        echo '<div class="preview-meta">';
                                                                         // title row (title left, representative price/placeholder right)
-                                                                        echo '<div style="display:flex;justify-content:space-between;align-items:center"><div style="font-weight:700">'.$t.'</div>';
+                                                                        echo '<div class="preview-row"><div style="font-weight:700">'.$t.'</div>';
+                                                                        // (debug flag removed)
                                                                         // Prefer to show per-quantity pricing when available
                                                                         if ($sectionId !== 'current-ice-cream-flavors' && isset($it['quantities']) && is_array($it['quantities']) && count($it['quantities'])) {
                                                                             // Show the first quantity's price in the summary row (representative)
@@ -331,22 +343,24 @@ $cssVersion = file_exists($cssPath) ? filemtime($cssPath) : time();
                                                                             if (count($parts)) echo 'Options: '.implode(' | ', $parts);
                                                                             echo '</div>';
                                                                         } else {
-                                                                            // fallback: show description and legacy quantity if present
-                                                                            if ($d) echo '<div style="margin-top:.4rem">'.nl2br($d).'</div>';
+                                                                            // fallback: legacy quantity display when no explicit quantities are present
                                                                             if (!empty($it['quantity']) && in_array($sectionId, ['wings-tenders', 'sides'])) {
                                                                                 echo '<div class="menu-quantity small">Qty: '.htmlspecialchars((string)$it['quantity']).'</div>';
                                                                             }
                                                                         }
-                                                                        // If description wasn't already printed above, print it now
-                                                                        if (!isset($it['quantities']) || !is_array($it['quantities']) || !count($it['quantities'])) {
-                                                                            // description may already have been shown above
-                                                                        }
+                                                                        // Always render item description (placed after quantity/options for clarity)
+                                                                        if ($d) echo '<div class="item-desc" style="margin-top:.4rem">'.nl2br($d).'</div>';
                                                                         echo '</div></div>';
                                                                 }
                                                             } else {
                                             echo '<div class="small">No items in this section yet.</div>';
                                         }
                                         echo '</div></div>'; // section-items + menu-details
+                                        // Embed a JSON blob for this section so client-side overlay can render it reliably
+                                        // include the numeric section index so we can always find it
+                                        $jsonRaw = json_encode($section, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+                                        echo '<script type="application/json" class="menu-section-data" data-section-idx="' . intval($sidx) . '" data-section-id="' . htmlspecialchars($sectionId) . '">' . $jsonRaw . '</script>';
+                                        
                                         echo '</div>';
                                     }
                                 } else {
@@ -524,30 +538,121 @@ $cssVersion = file_exists($cssPath) ? filemtime($cssPath) : time();
     </script>
 
         <script>
-            // Menu card expand/collapse (toggle class + aria and label)
+            // Menu card expand -> full-width overlay panel. Replaces inline expansion
             (function(){
-                    function toggleForButton(btn){
-                        var card = btn.closest('.menu-card'); if (!card) return;
-                        var expanded = card.classList.toggle('expanded');
-                        btn.setAttribute('aria-expanded', expanded ? 'true' : 'false');
-                        var label = btn.querySelector('.expand-label'); if (label) label.textContent = expanded ? 'Less' : 'View All';
-                        return expanded;
+                // Create overlay element and append to body (so it's available)
+                var overlay = document.createElement('div'); overlay.className = 'section-overlay';
+                overlay.innerHTML = '<div class="panel" role="dialog" aria-modal="true"><div class="panel-header"><h3 id="overlay-title">Section</h3><button class="close-btn" aria-label="Close">Close</button></div><div class="panel-body" id="overlay-body"></div></div>';
+                document.body.appendChild(overlay);
+
+                var openBtnLabel = function(btn, open){ var label = btn.querySelector('.expand-label'); if (label) label.textContent = open ? 'Less' : 'View All'; };
+
+                function openOverlayForButton(btn){
+                    var card = btn.closest('.menu-card'); if (!card) return;
+                    var title = card.querySelector('.menu-title');
+                    var body = overlay.querySelector('#overlay-body');
+                    var titleEl = overlay.querySelector('#overlay-title');
+                    // Find the embedded JSON for this section (prioritize data-section-idx)
+                    var sectionIdx = card.getAttribute('data-section-idx');
+                    var sectionId = card.getAttribute('data-section-id') || card.querySelector('.menu-title') && card.querySelector('.menu-title').textContent;
+                    var jsonEl = document.querySelector('.menu-section-data[data-section-idx="' + sectionIdx + '"]') || document.querySelector('.menu-section-data[data-section-id="' + sectionId + '"]');
+                    body.innerHTML = '';
+                    if (jsonEl) {
+                        try {
+                            var data = JSON.parse(jsonEl.textContent || jsonEl.innerText || '{}');
+                            renderSectionIntoOverlay(data, body);
+                        } catch(e) {
+                            body.textContent = 'Error loading section.';
+                        }
+                    } else {
+                        // fallback: clone existing HTML details if JSON not found
+                        var details = card.querySelector('.menu-details');
+                        if (details) body.appendChild(details.cloneNode(true));
                     }
+                    titleEl.textContent = title ? title.textContent : 'Section';
 
-                    document.addEventListener('click', function(e){
-                        var btn = e.target.closest && e.target.closest('.expand-btn');
-                        if (!btn) return;
-                        toggleForButton(btn);
-                    });
+                    // animate open by adding the show class
+                    overlay.classList.add('show');
+                    document.body.classList.add('overlay-open');
+                    // set aria
+                    btn.setAttribute('aria-expanded','true');
+                    openBtnLabel(btn, true);
+                    // remember which button opened the overlay so close can restore state
+                    overlay._openedBy = btn;
+                }
 
-                    // keyboard activation: support Enter and Space on the button
-                    document.addEventListener('keydown', function(e){
-                        if (!e.target) return;
-                        if (!e.target.classList || !e.target.classList.contains('expand-btn')) return;
-                        if (e.key === 'Enter') { e.preventDefault(); toggleForButton(e.target); }
-                        if (e.key === ' ') { e.preventDefault(); toggleForButton(e.target); }
+                function closeOverlay(){
+                    var btn = overlay._openedBy;
+                    // remove show to run the fade/scale out animation
+                    overlay.classList.remove('show');
+                    document.body.classList.remove('overlay-open');
+                    if (btn) { btn.setAttribute('aria-expanded','false'); openBtnLabel(btn, false); }
+                    overlay._openedBy = null;
+                }
+
+                // Render section data into the overlay body element
+                function renderSectionIntoOverlay(section, container) {
+                    // title/details
+                    if (section.details) {
+                        var hd = document.createElement('div'); hd.className = 'menu-details-header';
+                        if (Array.isArray(section.details)) section.details.forEach(function(d){ var p = document.createElement('div'); p.className = 'menu-section-details small'; p.textContent = d; hd.appendChild(p); });
+                        else { var p = document.createElement('div'); p.className = 'menu-section-details small'; p.textContent = section.details; hd.appendChild(p); }
+                        container.appendChild(hd);
+                    }
+                    var itemsWrap = document.createElement('div'); itemsWrap.className = 'section-items';
+                    (section.items || []).forEach(function(it){
+                        var card = document.createElement('div'); card.className = 'card section-item';
+                        if (it.image) { var img = document.createElement('img'); img.src = it.image.match(/^https?:\/\//) ? it.image : ('uploads/images/' + it.image.replace(/^\//,'') ); img.alt = it.title || ''; card.appendChild(img); }
+                        var meta = document.createElement('div'); meta.className = 'preview-meta';
+                        var row = document.createElement('div'); row.className = 'preview-row';
+                        var left = document.createElement('div'); left.style.fontWeight = '700'; left.textContent = it.title || '';
+                        row.appendChild(left);
+                        var rp = '';
+                        if (Array.isArray(it.quantities) && it.quantities.length) {
+                            var firstQ = it.quantities[0]; if (firstQ && firstQ.price) rp = '$' + firstQ.price; else if (it.price) rp = '$' + it.price;
+                        } else if (it.price) rp = '$' + it.price;
+                        if (rp) { var priceDiv = document.createElement('div'); priceDiv.className = 'menu-price'; priceDiv.innerHTML = '<span class="price-badge">' + rp + '</span>'; row.appendChild(priceDiv); }
+                        meta.appendChild(row);
+                        if (it.short) { var s = document.createElement('div'); s.className = 'small'; s.style.color = '#666'; s.textContent = it.short; meta.appendChild(s); }
+                        if (Array.isArray(it.quantities) && it.quantities.length) {
+                            var opts = document.createElement('div'); opts.className = 'menu-qty-options small'; opts.style.marginTop = '.4rem'; var parts = [];
+                            it.quantities.forEach(function(q){ var seg=''; if (q.label) seg = q.label; else if (q.value) seg = String(q.value); if (q.price) seg += (seg? ' — ':'') + '$' + q.price; if (seg) parts.push(seg); });
+                            if (parts.length) opts.textContent = 'Options: ' + parts.join(' | ');
+                            meta.appendChild(opts);
+                        }
+
+                        // Always render the item description when present. Previously this
+                        // was only rendered when quantities were absent; that hid descriptions
+                        // for items that have quantity-price pairs. Show description after
+                        // the quantity options for clarity.
+                        if (it.description) {
+                            var d = document.createElement('div');
+                            d.style.marginTop = '.4rem';
+                            d.innerHTML = escapeHtml(it.description).replace(/\n/g,'<br>');
+                            meta.appendChild(d);
+                        }
+                        card.appendChild(meta);
+                        itemsWrap.appendChild(card);
                     });
-                })();
+                    container.appendChild(itemsWrap);
+                }
+
+                function escapeHtml(str){ if (!str) return ''; return String(str).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"}[c]; }); }
+
+                document.addEventListener('click', function(e){
+                    var btn = e.target.closest && e.target.closest('.expand-btn');
+                    if (btn) { e.preventDefault(); openOverlayForButton(btn); return; }
+
+                    var close = e.target.closest && e.target.closest('.close-btn');
+                    if (close) { closeOverlay(); return; }
+
+                    // click outside panel should close overlay
+                    if (overlay.classList.contains('show') && !e.target.closest('.panel')) { closeOverlay(); }
+                });
+
+                // keyboard support: close on Escape
+                document.addEventListener('keydown', function(e){ if (e.key === 'Escape' && overlay.classList.contains('show')) { closeOverlay(); } });
+            })();
         </script>
 
     <!-- Footer will be rendered at the end of the page to ensure it stays below main content -->

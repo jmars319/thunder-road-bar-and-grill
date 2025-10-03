@@ -454,7 +454,7 @@ textarea.form-input { min-height: 70px; resize:vertical; }
 /* Animated elevation / flip for menu cards when expanded */
 .menu-card { perspective: 1200px; transform-style: preserve-3d; transition: transform .45s cubic-bezier(.2,.9,.25,1), box-shadow .35s ease; }
 .menu-card .menu-body { transform-origin: center top; transition: transform .45s cubic-bezier(.2,.9,.25,1); }
-.menu-card.expanded { transform: translateY(-12px) rotateX(0deg); box-shadow: var(--shadow-xxl); }
+.menu-card.expanded { transform: translateY(-12px) rotateX(0deg); box-shadow: var(--shadow-xxl); z-index: 60; overflow: visible; }
 .menu-card.expanded .menu-body { transform: rotateX(-4deg) translateZ(0); }
 
 /* Keyboard focus visible and accessible label spacing */
@@ -482,8 +482,82 @@ textarea.form-input { min-height: 70px; resize:vertical; }
 .menu-card .menu-body { padding: var(--spacing-md); display:flex; flex-direction:column; gap:.5rem }
 .menu-card .menu-title { font-size: var(--font-size-lg); font-weight: var(--font-weight-semibold); }
 .menu-card .menu-short { color: var(--text-secondary); font-size: var(--font-size-sm); }
+.desc-flag { display:none; }
 .menu-card .menu-details { max-height:0; overflow:hidden; transition:max-height .4s cubic-bezier(.2,.9,.2,1), padding .25s ease, opacity .25s ease; padding:0 var(--spacing-md); opacity:0 }
-.menu-card.expanded .menu-details { padding: var(--spacing-md); max-height: 1200px; opacity:1 }
+.menu-card.expanded .menu-details { padding: var(--spacing-md); max-height: 9999px; opacity:1 }
+/* When a menu card is expanded, lay out the section items in multiple columns
+   on larger screens so long lists don't become an unwieldy single column. */
+.menu-card.expanded .section-items {
+    display: grid;
+    gap: calc(var(--spacing-md) + 0.35rem);
+    align-items: start;
+    /* Default to single column on narrow viewports */
+    grid-template-columns: 1fr;
+}
+
+/* On tablet/desktop show two equal columns to reduce vertical length */
+@media (min-width: 720px) {
+    .menu-card.expanded .section-items {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* Keep a maximum of 2 columns even on very wide screens to avoid overlapping neighbors */
+@media (min-width: 1200px) {
+    .menu-card.expanded .section-items {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* Ensure individual section items behave as block-level cards inside the grid.
+   Use specificity to override any inline display rules added by server-side
+   templates so the responsive grid can take effect. */
+.menu-card .section-item {
+    display: block !important;
+    /* restore spacing between items to avoid overlap with following entries */
+    margin-bottom: .65rem !important;
+}
+
+/* Improve inner layout for section-item contents when presented in columns */
+.menu-card .section-item > img {
+    width: 100%;
+    height: 140px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: .5rem;
+}
+.menu-card .section-item .preview-meta { display:block; }
+.menu-card .section-item .preview-meta .preview-price { margin-top: .4rem; }
+
+/* Full-screen overlay for expanded section details */
+.section-overlay {
+    position: fixed;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0,0,0,0.5);
+    z-index: 120;
+    padding: 2rem;
+}
+.section-overlay.show { display: flex; }
+.section-overlay .panel {
+    width: 100%;
+    max-width: 1100px;
+    max-height: 90vh;
+    overflow: auto;
+    background: var(--surface-color);
+    color: var(--text-primary);
+    border-radius: 10px;
+    box-shadow: var(--shadow-xxl);
+    padding: var(--spacing-lg);
+}
+.section-overlay .panel .panel-header { display:flex; justify-content:space-between; align-items:center; gap:1rem; margin-bottom: .75rem; }
+.section-overlay .panel .panel-header h3 { margin:0; font-size: var(--font-size-2xl); }
+.section-overlay .close-btn { background: transparent; border: 1px solid var(--border-color); padding: .4rem .6rem; border-radius: 6px; cursor: pointer; }
+
+/* Prevent body scroll while overlay open */
+body.overlay-open { overflow: hidden; }
 .menu-card .menu-actions { padding: var(--spacing-md); display:flex; justify-content:space-between; align-items:center; gap:.5rem }
 .menu-card .expand-btn { background:transparent; border:1px solid var(--border-color); color:var(--text-primary); padding:.4rem .6rem; border-radius:6px; cursor:pointer; display:inline-flex; align-items:center; gap:.5rem }
 .menu-card .expand-btn .expand-icon { transition: transform .28s cubic-bezier(.2,.9,.2,1); transform-origin:center; }
@@ -502,8 +576,43 @@ textarea.form-input { min-height: 70px; resize:vertical; }
 .menu-card .menu-section-details, .menu-card .menu-section-details * { color: var(--text-inverse) !important; font-weight: 600; }
 
 /* darken section items a little more so text reads clearly on top of image */
-.menu-card .section-item { background: linear-gradient(rgba(0,0,0,0.32), rgba(0,0,0,0.18)); padding: .6rem; }
+.menu-card .section-item { background: linear-gradient(rgba(0,0,0,0.32), rgba(0,0,0,0.18)); padding: .6rem; margin-bottom: .65rem; }
+.menu-card .section-item { position: relative; z-index: 1; padding-bottom: .8rem; }
+.preview-row { display:flex; gap:.6rem; align-items:center; justify-content:space-between }
 .menu-card .section-item img { filter: brightness(.95); }
+
+/* Item description styling inside section items */
+.item-desc { margin-top: .5rem; color: rgba(255,255,255,0.95); font-size: .98rem; line-height: 1.5; }
+@media (prefers-color-scheme: light) { .item-desc { color: var(--text-secondary); } }
+/* Ensure descriptions are painted above following items to avoid visual overlap */
+.menu-card .section-item .item-desc { position: relative; z-index: 2; }
+
+/* Enhanced overlap protection: create an isolated stacking context for the items
+   and ensure gaps and overflow allow descriptions to be visible above next items. */
+.menu-card .section-items {
+    isolation: isolate;
+    gap: calc(var(--spacing-md) + 0.8rem) !important;
+}
+.menu-card .section-item {
+    overflow: visible !important;
+}
+.menu-card .section-item .item-desc {
+    z-index: 10 !important;
+    position: relative !important;
+    background: transparent !important;
+}
+
+/* Ensure quantity controls cannot visually cover descriptions. Give qty controls a lower stacking
+   context and make descriptions clear previous floats/absolutes so they render unobstructed. */
+.menu-card .menu-qty-options {
+    position: relative; /* keep in-flow but establish a stacking context */
+    z-index: 1; /* lower than .item-desc */
+}
+.menu-card .section-item .item-desc {
+    clear: both; /* ensure description flows beneath floated/absolute siblings */
+}
+
+/* debug-overlap helper removed */
 
 /* If the root theme is light (text-primary dark), reduce inverse use to avoid low contrast on white cards */
 @media (prefers-color-scheme: light) {
@@ -806,26 +915,7 @@ a.btn.btn-primary:focus {
 /* Section Component */
 .section { padding: calc(var(--spacing-2xl) * 2) 0; }
 
-.section-header {
-    text-align: center;
-    margin-bottom: calc(var(--spacing-2xl) * 1.5);
-}
-
-.section-title {
-    font-size: var(--font-size-4xl);
-    font-weight: var(--font-weight-bold);
-    margin-bottom: var(--spacing-md);
-    color: var(--text-primary);
-}
-
-.section-subtitle {
-    font-size: var(--font-size-lg);
-    color: var(--text-secondary);
-    max-width: 600px;
-    margin: 0 auto;
-    line-height: 1.6;
-}
-
+/* section header (kept empty intentionally for layout overrides) */
 /* Image Handling */
 .image-placeholder {
     height: 200px;

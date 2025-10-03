@@ -96,146 +96,154 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($is_sequential) {
             $content[$section] = $payload;
         } else {
-            // If payload is associative array, merge recursively
-            if (is_array($payload)) {
+            // If the incoming payload is for the `menu` section treat it as the
+            // authoritative representation (replace stored menu) but still run the
+            // menu-specific sanitization/normalization below. For other sections we
+            // preserve the existing merge semantics.
+            if ($section === 'menu' && is_array($payload)) {
+                $merged = $payload;
+            } elseif (is_array($payload)) {
+                // If payload is associative array, merge recursively
                 $merged = array_recursive_merge($content[$section], $payload);
-                // If saving the menu, sanitize price fields
-                if ($section === 'menu' && is_array($merged)) {
-                    foreach ($merged as $si => $sdata) {
-                        // Extract a stable identifier for the menu section, if present.
-                        // We use this to apply section-specific rules below (for example,
-                        // the ice-cream flavors section stores only names and should not
-                        // include price fields).
-                        $secId = isset($sdata['id']) ? $sdata['id'] : '';
+            } else {
+                // scalar payload - set to value
+                $content[$section] = $payload;
+                $merged = null;
+            }
 
-                        if (isset($sdata['items']) && is_array($sdata['items'])) {
-                            foreach ($sdata['items'] as $ii => $item) {
-                                // Special-case: if this is the "current-ice-cream-flavors"
-                                // section we intentionally remove any `price` fields because
-                                // flavors are stored as names only. After removing the
-                                // price we `continue` so the rest of the validation for
-                                // this item is skipped.
-                                if ($secId === 'current-ice-cream-flavors') {
-                                    if (isset($merged[$si]['items'][$ii]['price'])) unset($merged[$si]['items'][$ii]['price']);
-                                    // NOTE: we continue here to skip additional validation for
-                                    // ice-cream flavor entries. Any code placed below this
-                                    // `continue` inside this same `if` block will be
-                                    // unreachable and therefore is intentionally bypassed.
-                                    continue;
-                                    // (Historically there was quantity validation here but it
-                                    // is unreachable because of the continue above; the
-                                    // authoritative quantity checks are implemented later
-                                    // for non-flavor items.)
-                                    // historic code path for legacy single `quantity` is skipped because of continue
-                                }
+            // If we have merged data for the menu, sanitize/normalize it
+            if (isset($merged) && is_array($merged) && $section === 'menu') {
+                foreach ($merged as $si => $sdata) {
+                    // Extract a stable identifier for the menu section, if present.
+                    $secId = isset($sdata['id']) ? $sdata['id'] : '';
 
-                                // New: support `quantities` array (multiple quantity options)
-                                if (isset($item['quantities']) && is_array($item['quantities'])) {
-                                    foreach ($item['quantities'] as $qidx => $qopt) {
-                                        // qopt may be string or associative; prefer associative with 'value'
-                                        $val = null;
-                                        if (is_array($qopt) && isset($qopt['value'])) $val = $qopt['value'];
-                                        elseif (!is_array($qopt)) $val = $qopt;
-                                        $qclean = preg_replace('/[^0-9\-]/', '', (string)$val);
-                                        if ($qclean === '' || !is_numeric($qclean)) {
-                                            http_response_code(400);
-                                            echo json_encode(['success' => false, 'message' => 'Invalid quantity option for item: ' . ($item['title'] ?? 'unknown')]);
-                                            exit;
-                                        }
-                                        $qint = intval($qclean);
-                                        if ($secId === 'wings-tenders') {
-                                            if ($qint < 1) {
-                                                http_response_code(400);
-                                                echo json_encode(['success' => false, 'message' => 'Quantity option must be 1 or more for Wings & Tenders: ' . ($item['title'] ?? 'unknown')]);
-                                                exit;
-                                            }
-                                        } else {
-                                            if ($qint < 0) {
-                                                http_response_code(400);
-                                                echo json_encode(['success' => false, 'message' => 'Invalid quantity option for item: ' . ($item['title'] ?? 'unknown')]);
-                                                exit;
-                                            }
-                                        }
-                                        // optional per-quantity price validation and normalization
-                                        $price = '';
-                                        if (is_array($qopt) && isset($qopt['price'])) {
-                                            $raw = preg_replace('/[^0-9\.\-]/', '', (string)$qopt['price']);
-                                            if ($raw === '' || !is_numeric($raw)) {
-                                                http_response_code(400);
-                                                echo json_encode(['success' => false, 'message' => 'Invalid price for quantity option in item: ' . ($item['title'] ?? 'unknown')]);
-                                                exit;
-                                            }
-                                            $price = number_format((float)$raw, 2, '.', '');
-                                        }
-                                        // normalize back into merged structure
-                                        $merged[$si]['items'][$ii]['quantities'][$qidx] = [
-                                            'label' => is_array($qopt) && isset($qopt['label']) ? $qopt['label'] : '',
-                                            'value' => $qint,
-                                            'price' => $price
-                                        ];
-                                    }
-                                } elseif (isset($item['quantity'])) {
-                                    // Backwards compatibility: accept legacy single `quantity` value
-                                    $qclean = preg_replace('/[^0-9\-]/', '', (string)$item['quantity']);
+                    if (isset($sdata['items']) && is_array($sdata['items'])) {
+                        foreach ($sdata['items'] as $ii => $item) {
+                            // If an incoming item has `short` but no `description`,
+                            // promote `short` -> `description` so long descriptions
+                            // are always stored in the canonical `description` key.
+                            if (( !isset($merged[$si]['items'][$ii]['description']) || trim((string)$merged[$si]['items'][$ii]['description']) === '' ) && isset($item['short']) && trim((string)$item['short']) !== '') {
+                                $merged[$si]['items'][$ii]['description'] = trim((string)$item['short']);
+                            }
+                            // Special-case: if this is the "current-ice-cream-flavors"
+                            // section we intentionally remove any `price` fields because
+                            // flavors are stored as names only. After removing the
+                            // price we `continue` so the rest of the validation for
+                            // this item is skipped.
+                            if ($secId === 'current-ice-cream-flavors') {
+                                if (isset($merged[$si]['items'][$ii]['price'])) unset($merged[$si]['items'][$ii]['price']);
+                                continue;
+                            }
+
+                            // New: support `quantities` array (multiple quantity options)
+                            if (isset($item['quantities']) && is_array($item['quantities'])) {
+                                foreach ($item['quantities'] as $qidx => $qopt) {
+                                    // qopt may be string or associative; prefer associative with 'value'
+                                    $val = null;
+                                    if (is_array($qopt) && isset($qopt['value'])) $val = $qopt['value'];
+                                    elseif (!is_array($qopt)) $val = $qopt;
+                                    $qclean = preg_replace('/[^0-9\-]/', '', (string)$val);
                                     if ($qclean === '' || !is_numeric($qclean)) {
                                         http_response_code(400);
-                                        echo json_encode(['success' => false, 'message' => 'Invalid quantity for item: ' . ($item['title'] ?? 'unknown')]);
+                                        echo json_encode(['success' => false, 'message' => 'Invalid quantity option for item: ' . ($item['title'] ?? 'unknown')]);
                                         exit;
                                     }
                                     $qint = intval($qclean);
                                     if ($secId === 'wings-tenders') {
                                         if ($qint < 1) {
                                             http_response_code(400);
-                                            echo json_encode(['success' => false, 'message' => 'Quantity must be 1 or more for Wings & Tenders: ' . ($item['title'] ?? 'unknown')]);
+                                            echo json_encode(['success' => false, 'message' => 'Quantity option must be 1 or more for Wings & Tenders: ' . ($item['title'] ?? 'unknown')]);
                                             exit;
                                         }
                                     } else {
                                         if ($qint < 0) {
                                             http_response_code(400);
-                                            echo json_encode(['success' => false, 'message' => 'Invalid quantity for item: ' . ($item['title'] ?? 'unknown')]);
+                                            echo json_encode(['success' => false, 'message' => 'Invalid quantity option for item: ' . ($item['title'] ?? 'unknown')]);
                                             exit;
                                         }
                                     }
-                                    $merged[$si]['items'][$ii]['quantity'] = $qint;
+                                    // optional per-quantity price validation and normalization
+                                    $price = '';
+                                    if (is_array($qopt) && isset($qopt['price'])) {
+                                        $raw = preg_replace('/[^0-9\.\-]/', '', (string)$qopt['price']);
+                                        if ($raw === '' || !is_numeric($raw)) {
+                                            http_response_code(400);
+                                            echo json_encode(['success' => false, 'message' => 'Invalid price for quantity option in item: ' . ($item['title'] ?? 'unknown')]);
+                                            exit;
+                                        }
+                                        $price = number_format((float)$raw, 2, '.', '');
+                                    }
+                                    // normalize back into merged structure
+                                    $merged[$si]['items'][$ii]['quantities'][$qidx] = [
+                                        'label' => is_array($qopt) && isset($qopt['label']) ? $qopt['label'] : '',
+                                        'value' => $qint,
+                                        'price' => $price
+                                    ];
                                 }
-
-                                // Price sanitization and normalization. We permit numeric
-                                // strings (for example "$12.00" or "12") so we first
-                                // strip everything except digits, dot, and minus sign.
-                                // After that we confirm it's numeric, cast to float and
-                                // store a normalized fixed-precision string with two
-                                // decimal places. This keeps the stored JSON consistent
-                                // (e.g. "12.00").
-                                if (isset($item['price'])) {
-                                    // allow numeric strings, strip non-numeric except dot and minus
-                                    $clean = preg_replace('/[^0-9\.\-]/', '', (string)$item['price']);
-                                    if ($clean === '' || !is_numeric($clean)) {
+                            } elseif (isset($item['quantity'])) {
+                                // Backwards compatibility: accept legacy single `quantity` value
+                                $qclean = preg_replace('/[^0-9\-]/', '', (string)$item['quantity']);
+                                if ($qclean === '' || !is_numeric($qclean)) {
+                                    http_response_code(400);
+                                    echo json_encode(['success' => false, 'message' => 'Invalid quantity for item: ' . ($item['title'] ?? 'unknown')]);
+                                    exit;
+                                }
+                                $qint = intval($qclean);
+                                if ($secId === 'wings-tenders') {
+                                    if ($qint < 1) {
                                         http_response_code(400);
-                                        echo json_encode(['success' => false, 'message' => 'Invalid price for item: ' . ($item['title'] ?? 'unknown')]);
+                                        echo json_encode(['success' => false, 'message' => 'Quantity must be 1 or more for Wings & Tenders: ' . ($item['title'] ?? 'unknown')]);
                                         exit;
                                     }
-                                    $num = (float)$clean;
-                                    // number_format ensures we store prices like "12.00"
-                                    $merged[$si]['items'][$ii]['price'] = number_format($num, 2, '.', '');
-                                }
-                                    // Preserve optional section-level 'details' if provided (support array or string)
-                                    if (isset($sdata['details'])) {
-                                        if (is_array($sdata['details'])) {
-                                            // ensure all entries are strings
-                                            $clean = array_map(function($x){ return is_scalar($x) ? (string)$x : json_encode($x); }, $sdata['details']);
-                                            $merged[$si]['details'] = $clean;
-                                        } else {
-                                            $merged[$si]['details'] = (string)$sdata['details'];
-                                        }
+                                } else {
+                                    if ($qint < 0) {
+                                        http_response_code(400);
+                                        echo json_encode(['success' => false, 'message' => 'Invalid quantity for item: ' . ($item['title'] ?? 'unknown')]);
+                                        exit;
                                     }
+                                }
+                                $merged[$si]['items'][$ii]['quantity'] = $qint;
+                            }
+
+                            // Price sanitization and normalization. We permit numeric
+                            // strings (for example "$12.00" or "12") so we first
+                            // strip everything except digits, dot, and minus sign.
+                            // After that we confirm it's numeric, cast to float and
+                            // store a normalized fixed-precision string with two
+                            // decimal places. This keeps the stored JSON consistent
+                            // (e.g. "12.00").
+                            if (isset($item['price'])) {
+                                // allow numeric strings, strip non-numeric except dot and minus
+                                $clean = preg_replace('/[^0-9\.\-]/', '', (string)$item['price']);
+                                if ($clean === '' || !is_numeric($clean)) {
+                                    http_response_code(400);
+                                    echo json_encode(['success' => false, 'message' => 'Invalid price for item: ' . ($item['title'] ?? 'unknown')]);
+                                    exit;
+                                }
+                                $num = (float)$clean;
+                                // number_format ensures we store prices like "12.00"
+                                $merged[$si]['items'][$ii]['price'] = number_format($num, 2, '.', '');
                             }
                         }
                     }
                 }
+                // Ensure every item has either a 'quantities' array or a legacy 'quantity' integer.
+                // This makes downstream rendering and the admin UI more predictable.
+                foreach ($merged as $si => $sdata) {
+                    if (!isset($merged[$si]['items']) || !is_array($merged[$si]['items'])) continue;
+                    $secId = isset($sdata['id']) ? $sdata['id'] : '';
+                    foreach ($merged[$si]['items'] as $ii => $item) {
+                        if (!isset($merged[$si]['items'][$ii]['quantities']) && !isset($merged[$si]['items'][$ii]['quantity'])) {
+                            // For wings/tenders default to 1 (common serving quantity), otherwise default to 0.
+                            $merged[$si]['items'][$ii]['quantity'] = ($secId === 'wings-tenders') ? 1 : 0;
+                        }
+                    }
+                }
                 $content[$section] = $merged;
-            } else {
-                // scalar payload - set to value
-                $content[$section] = $payload;
+            }
+            if (isset($merged) && is_array($merged) && $section !== 'menu') {
+                // Non-menu merged associative payload -> store merged
+                $content[$section] = $merged;
             }
         }
     } else {

@@ -1,0 +1,30 @@
+name: PHP Lint
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  php-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+      - name: Find PHP files
+        run: |
+          echo "PHP files:"; find . -type f -name '*.php' -not -path './vendor/*' -print
+      - name: Run php -l on all PHP files
+        run: |
+          set -e
+          files=$(find . -type f -name '*.php' -not -path './vendor/*')
+          rc=0
+          for f in $files; do
+            echo "Linting $f"
+            if ! php -l "$f"; then rc=1; fi
+          done
+          exit $rc

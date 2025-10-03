@@ -533,11 +533,61 @@ header('Content-Type: text/html; charset=utf-8');
     <hr class="spaced-hr">
     <h2>Menu Management</h2>
     <p class="small">Manage menu items shown on the public site.</p>
+    <div style="margin-bottom:.5rem">
+      <form method="post" action="add-menu-item.php" style="display:inline-block;margin-right:1rem">
+        <?php echo csrf_input_field(); ?>
+        <label for="quick-section">Quick add blank item to:</label>
+        <select name="section_id" id="quick-section">
+          <?php
+            $existingSections = [];
+            if (!empty($siteContent['menu']) && is_array($siteContent['menu'])) {
+              foreach ($siteContent['menu'] as $sec) {
+                $sid = $sec['id'] ?? ($sec['title'] ?? '');
+                if ($sid) { $existingSections[] = $sid; echo '<option value="' . htmlspecialchars($sid) . '">' . htmlspecialchars($sec['title'] ?? $sid) . '</option>'; }
+              }
+            }
+            // if burgers-sandwiches not present, include it for convenience
+            if (!in_array('burgers-sandwiches', $existingSections)) echo '<option value="burgers-sandwiches">Burgers & Sandwiches</option>';
+          ?>
+        </select>
+        <button type="submit" class="btn btn-ghost">Quick add blank item</button>
+      </form>
+      <span class="small">If the JS editor doesn't show new fields, use this to append a blank item server-side and then reload the page.</span>
+    </div>
     <div id="menu-admin-wrap" class="menu-admin-wrap" style="display:flex;gap:1rem;align-items:flex-start;margin-top:.5rem">
   <div id="menu-admin" style="flex:1">
-  <div style="margin-bottom:.5rem"><button id="add-menu-item" type="button" class="btn btn-primary">Add Section</button></div>
+    <div style="margin-bottom:.5rem">
+    <button id="add-menu-item" type="button" class="btn btn-primary">Add Section</button>
+    <button id="expand-all-sections" type="button" class="btn btn-ghost" style="margin-left:.5rem">Expand all</button>
+    <label style="margin-left:.6rem; font-weight:600; font-size:0.95rem; display:inline-block">Find item:</label>
+    <input id="find-menu-input" type="text" placeholder="Item title (e.g. Club Sub)" style="margin-left:.4rem; padding:.35rem; border-radius:6px; border:1px solid #eef2ff">
+    <button id="find-menu-button" type="button" class="btn btn-ghost" style="margin-left:.25rem">Find</button>
+  </div>
         <div id="menu-list"></div>
       </div>
+      <script>
+        (function(){
+          var btn = document.getElementById('expand-all-sections');
+          if (!btn) return;
+          btn.addEventListener('click', function(){
+            try { document.dispatchEvent(new Event('admin.expandAllMenuSections')); } catch(e) { }
+          });
+        })();
+      </script>
+      <script>
+        (function(){
+          var fb = document.getElementById('find-menu-button');
+          var fin = document.getElementById('find-menu-input');
+          if (!fb || !fin) return;
+          fb.addEventListener('click', function(){
+            var term = (fin.value || '').trim();
+            if (!term) { alert('Please enter an item title to find'); return; }
+            try { document.dispatchEvent(new CustomEvent('admin.findMenuItem', { detail: { term: term } })); } catch(e) { }
+          });
+          // allow enter key in input to trigger find
+          fin.addEventListener('keydown', function(e){ if (e.key === 'Enter') { e.preventDefault(); fb.click(); } });
+        })();
+      </script>
       <div id="menu-preview" style="flex:1;min-width:300px;max-width:480px">
         <h3 style="margin-top:0">Live Preview</h3>
         <div id="preview-area" style="border:1px solid #eef2ff;border-radius:8px;padding:.6rem;background:#fff;min-height:240px;overflow:auto"></div>
