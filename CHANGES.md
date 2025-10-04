@@ -17,3 +17,11 @@ Notes:
 
 Notes:
 - All changes are present in the repo and were committed on `main`. The public content store remains `data/content.json` as the single source of truth.
+
+2025-10-04 — Remove React/Vite frontend scaffold
+
+- Removed an experimental React + Vite frontend scaffold that was added under `frontend/`.
+- Project will remain PHP-based; no production behavior was changed. The removed files were deleted from the working tree and the removal was committed to `main`.
+
+Notes:
+- The `react` branch did not exist on the remote and the local `react` branch was removed. If you need to restore the scaffold later it can be recovered from the commit history.
