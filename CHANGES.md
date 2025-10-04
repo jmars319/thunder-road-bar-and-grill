@@ -23,5 +23,7 @@ Notes:
 - Removed an experimental React + Vite frontend scaffold that was added under `frontend/`.
 - Project will remain PHP-based; no production behavior was changed. The removed files were deleted from the working tree and the removal was committed to `main`.
 
+-Reason: Simplify the codebase and avoid introducing a parallel build toolchain while the PHP site remains the authoritative implementation.
+
 Notes:
 - The `react` branch did not exist on the remote and the local `react` branch was removed. If you need to restore the scaffold later it can be recovered from the commit history.
