@@ -41,13 +41,18 @@ if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true
         }
         
         .login-container {
-            background: #fff7f2; /* warm cream to match admin card surface */
+            background: var(--card-bg); /* warm cream to match admin card surface */
             padding: 2.5rem;
             border-radius: 12px;
             box-shadow: 0 20px 25px -5px rgba(0,0,0,0.3);
             width: 100%;
             max-width: 400px;
         }
+
+        /* Ensure logo badge renders correctly on the standalone login page
+           even if external admin CSS is not loaded. Matches admin badge sizing. */
+        .logo-badge { display:inline-flex; align-items:center; justify-content:center; padding:6px 10px; border-radius:999px; background: var(--surface-color); box-shadow: 0 6px 20px rgba(16,24,40,0.06); }
+        .logo-badge .site-logo-img { height: 40px; width: auto; display: inline-block; vertical-align: middle; }
         
         .login-header {
             text-align: center;
@@ -71,13 +76,13 @@ if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true
             display: block;
             font-weight: 600;
             margin-bottom: 0.5rem;
-            color: #1e293b;
+            color: var(--text-primary);
         }
         
         .form-input {
             width: 100%;
             padding: 0.75rem;
-            border: 1px solid #e2e8f0;
+            border: 1px solid var(--border-color);
             border-radius: 6px;
             font-size: 1rem;
         }
@@ -126,7 +131,7 @@ if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true
                             if ($logo) { $logoUrl = preg_match('#^https?://#i', $logo) ? $logo : '../uploads/images/'.ltrim($logo, '/'); }
                         ?>
                         <?php if ($logoUrl): ?>
-                            <img src="<?php echo htmlspecialchars($logoUrl); ?>" alt="Admin" style="height:72px;margin-bottom:0.5rem">
+                            <span class="logo-badge" aria-hidden="true"><img class="site-logo-img" src="<?php echo htmlspecialchars($logoUrl); ?>" alt="Admin"></span>
                         <?php else: ?>
                             <h1>🔐 Admin Login</h1>
                         <?php endif; ?>
@@ -140,7 +145,7 @@ if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true
         <?php endif; ?>
         
         <?php if (isset($_GET['logout'])): ?>
-        <div class="alert" style="background: rgba(5,150,105,0.08); color: var(--success-color); border-color: rgba(5,150,105,0.16);">
+        <div class="alert success-alert">
             ✅ You have been logged out successfully
         </div>
         <?php endif; ?>
@@ -161,7 +166,7 @@ if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true
             <button type="submit" class="btn-login">Login</button>
         </form>
         
-        <p style="text-align: center; margin-top: 1.5rem; color: #64748b; font-size: 0.875rem;">
+    <p style="text-align: center; margin-top: 1.5rem; color: var(--text-secondary); font-size: 0.875rem;">
             Forgot password? Contact your administrator
         </p>
     </div>
