@@ -29,3 +29,15 @@ Note: some admin actions (download, purge, clear) are POST forms that use `csrf_
 Security recommendations:
 - Avoid using the development `.htaccess` on production. Keep long Expires headers for static assets in production.
 - Consider moving admin functionality behind basic auth or a separate secure host when in production.
+
+
+Recent changes
+--------------
+- Admin UI theme tokens aligned with the public site and dark-mode support added.
+- Destructive actions in the admin UI use a muted red danger style (`btn-danger-soft` / `btn-danger-filled`).
+- Hero content block now supports multiple images (slideshow). Uploaded images append to the hero images list and can be reordered in the editor using SortableJS.
+- Image list endpoint filters out dotfiles and non-image extensions so `.htaccess` no longer appears in pickers.
+- Change-password flow updates `admin/auth.json` when possible and bumps an internal password version to avoid accidental session breakage.
+- Applications actions were consolidated into a single submenu and received keyboard/ARIA improvements. Client-side confirm handling is centralized (`data-confirm`).
+
+Keep an eye on file permissions for `data/` and `uploads/images/` after migrations.

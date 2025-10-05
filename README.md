@@ -14,6 +14,21 @@ From the project root run one of these (zsh):
 Bind to localhost only (recommended):
 
 ```
+
+Recent changes
+--------------
+The project has received a series of admin-side improvements. Quick highlights:
+
+- Removed React artifacts to keep the project PHP server-rendered and minimal.
+- Admin UI colors and tokens were aligned with the public site and now include dark-mode tweaks.
+- Destructive actions (logout, delete/move to trash, purge) now use a muted red "danger" button style for clarity.
+- The Content Editor's hero block supports multiple images (slideshow): uploads append to the hero image list, thumbnails show in the admin UI and can be reordered via drag-and-drop (SortableJS).
+- The image listing endpoint now filters dotfiles and non-image extensions to avoid showing files such as `.htaccess` in the picker.
+- Change-password flow now prefers writing a new hash to `admin/auth.json` (and bumps an internal version) with a safe fallback to `admin/config.php` when needed.
+- The Applications menu was consolidated into a single submenu and received keyboard/ARIA improvements; data-confirm handling was centralized in the admin JS.
+
+If you maintain automated tooling or scripts that rely on older admin behaviors, scan `admin/` for updated endpoints and token usage (CSRF tokens are required for all POST actions).
+
 # Thunder Road Bar & Grill — Local Development
 
 Small dev README with the quick commands and notes you'll need when working locally.
