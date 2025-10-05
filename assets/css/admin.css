@@ -388,6 +388,10 @@ body.admin { overflow-x: hidden; }
 	.content-editor input[type="text"], .content-editor textarea, .content-editor select { background: var(--surface); border:1px solid var(--input-border); color: var(--text-primary); box-shadow:none }
 	#image-list > div, .current-page { background: var(--surface); border:1px solid var(--input-border); color:var(--text-primary); }
 
+	/* Ensure pm-combo expanded border and toggle shadow remain visible in dark mode */
+	.pm-combo .pm-combo-menu.open { border-color: rgba(37,99,235,0.28); box-shadow: 0 12px 34px rgba(37,99,235,0.12); }
+	.pm-combo.open > .pm-combo-toggle { box-shadow: 0 8px 22px rgba(37,99,235,0.10); }
+
 	/* buttons and ghost variations */
 	.btn-ghost { color: var(--text-primary); border:1px solid var(--input-border); }
 
