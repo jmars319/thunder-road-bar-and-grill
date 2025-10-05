@@ -10,8 +10,9 @@
 	/* Align admin colors with public site design tokens */
 	--admin-grad-1: #dc2626; /* primary */
 	--admin-grad-2: #92400e; /* secondary */
-	--card-bg: #ffffff;
-	--surface: #ffffff; /* use same surface as public site */
+	/* slightly warm surface for admin cards so they don't appear stark white */
+	--card-bg: #fff7f2;
+	--surface: #fff7f2; /* warm cream surface to better match the site tone */
 	--muted: #78716c; /* text-secondary */
 	--muted-2: #94a3b8;
 	--accent: #f59e0b; /* golden accent */
@@ -26,7 +27,7 @@ html, body { height: 100%; }
 .admin { -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; }
 .admin body, body.admin { background: linear-gradient(135deg, rgba(220,38,38,0.12) 0%, rgba(146,64,14,0.08) 100%); }
 .admin .page-wrap { min-height:100vh; display:flex; align-items:flex-start; justify-content:center; padding:2rem 0.75rem; }
-.admin .admin-card { width:100%; max-width:1100px; max-width: calc(100% - 2rem); background: var(--surface); border-radius:12px; box-shadow:0 18px 40px rgba(2,6,23,0.12); padding:1.25rem; border:1px solid rgba(15,23,42,0.06); box-sizing:border-box; position:relative; overflow:hidden }
+.admin .admin-card { width:100%; max-width:1100px; max-width: calc(100% - 2rem); background: var(--card-bg); border-radius:12px; box-shadow:0 18px 40px rgba(2,6,23,0.12); padding:1.25rem; border:1px solid rgba(15,23,42,0.06); box-sizing:border-box; position:relative; overflow:hidden }
 /* subtle colored accent stripe */
 .admin .admin-card::before { content: ''; position:absolute; left:0; top:0; bottom:0; width:6px; background: linear-gradient(180deg,var(--admin-grad-1),var(--admin-grad-2)); border-top-left-radius:12px; border-bottom-left-radius:12px; }
 .admin .header-row { display:flex; align-items:center; justify-content:space-between; gap:1rem; margin-bottom:.75rem; flex-wrap:wrap; }
