@@ -111,6 +111,17 @@ body.admin { overflow-x: hidden; }
 .btn-primary { background: linear-gradient(90deg,var(--admin-grad-1),var(--accent)); color: var(--text-inverse); box-shadow:0 10px 24px rgba(0,0,0,0.08); }
 .btn-primary:hover { transform:translateY(-1px); box-shadow:0 14px 32px rgba(0,0,0,0.10) }
 .btn-ghost { background:transparent; border:1px solid rgba(15,23,42,0.06); color: var(--text-primary); }
+.btn:focus { outline: none; box-shadow: 0 0 0 4px rgba(37,99,235,0.08); }
+.btn:focus-visible { outline: none; box-shadow: 0 0 0 4px rgba(37,99,235,0.12); }
+
+/* Danger / destructive buttons */
+.btn-danger { background: var(--error-color); color: var(--text-inverse); border: none; }
+.btn-danger:hover { filter: brightness(0.95); }
+.btn-ghost.btn-danger { background: transparent; border:1px solid rgba(239,68,68,0.12); color: var(--error-color); }
+.btn-ghost.btn-danger:hover { background: rgba(239,68,68,0.04); }
+
+/* stronger hover/focus for ghost buttons so they contrast more */
+.btn-ghost:hover, .btn-ghost:focus { border-color: rgba(15,23,42,0.12); box-shadow: 0 6px 16px rgba(2,6,23,0.06); }
 
 /* Upload area */
 #upload-form { display:flex; gap:.5rem; align-items:center; flex-wrap:wrap; }
