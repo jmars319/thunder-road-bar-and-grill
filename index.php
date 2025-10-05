@@ -184,12 +184,13 @@ $cssVersion = file_exists($cssPath) ? filemtime($cssPath) : time();
                 (function(){
                     var heroImages = [];
                     <?php
-                        $imgs = [];
-                        if (!empty($content['hero']['images']) && is_array($content['hero']['images'])) {
-                            foreach ($content['hero']['images'] as $i) { if ($i) $imgs[] = $i; }
-                        } elseif (!empty($content['hero']['image'])) {
-                            $imgs[] = $content['hero']['image'];
-                        }
+                            $imgs = [];
+                            // Prefer new `images` array; fall back to legacy `image` key for older content
+                            if (!empty($content['hero']['images']) && is_array($content['hero']['images'])) {
+                                foreach ($content['hero']['images'] as $i) { if ($i) $imgs[] = $i; }
+                            } elseif (!empty($content['hero']['image'])) {
+                                $imgs[] = $content['hero']['image'];
+                            }
                         $out = [];
                         foreach ($imgs as $fn) {
                             if (preg_match('#^https?://#i', $fn)) $out[] = $fn; else $out[] = 'uploads/images/'.ltrim($fn, '/');

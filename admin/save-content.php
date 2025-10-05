@@ -242,6 +242,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $content[$section] = $merged;
             }
             if (isset($merged) && is_array($merged) && $section !== 'menu') {
+                // Normalizations for certain sections before storing
+                if ($section === 'hero') {
+                    // If a legacy single 'image' key exists (string or comma-list), convert to images array
+                    if (isset($merged['image']) && !isset($merged['images'])) {
+                        if (is_string($merged['image'])) {
+                            $imgs = array_filter(array_map('trim', explode(',', $merged['image'])));
+                            $merged['images'] = array_values($imgs);
+                        } elseif (is_array($merged['image'])) {
+                            $merged['images'] = array_values($merged['image']);
+                        }
+                        unset($merged['image']);
+                    }
+                    // If images is accidentally a comma-separated string, normalize to array
+                    if (isset($merged['images']) && !is_array($merged['images'])) {
+                        if (is_string($merged['images'])) {
+                            $imgs = array_filter(array_map('trim', explode(',', $merged['images'])));
+                            $merged['images'] = array_values($imgs);
+                        } else {
+                            $merged['images'] = [];
+                        }
+                    }
+                    if (!isset($merged['images'])) $merged['images'] = [];
+                }
                 // Non-menu merged associative payload -> store merged
                 $content[$section] = $merged;
             }
