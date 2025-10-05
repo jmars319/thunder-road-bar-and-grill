@@ -22,8 +22,8 @@
 	--admin-menu-line-height: 1.25;
 
 	/* page background behind admin cards (soft, warm tone) */
-	--admin-page-bg: #fff8f6; /* slightly warmer, very light cream with brand tint */
-	--admin-page-gradient-overlay: linear-gradient(135deg, rgba(220,38,38,0.035), rgba(146,64,14,0.02));
+	--admin-page-bg: #fffbfa; /* slightly lighter, very subtle warm tint */
+	--admin-page-gradient-overlay: linear-gradient(135deg, rgba(220,38,38,0.02), rgba(146,64,14,0.008));
 }
 .admin * { box-sizing: border-box; }
 .admin { -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; }
@@ -282,7 +282,7 @@ body.admin { overflow-x: hidden; }
 	}
 
 	/* admin page background in dark mode */
-	html.admin, body.admin, .admin, .page-wrap { --admin-page-bg: #07101a; --admin-page-gradient-overlay: linear-gradient(135deg, rgba(220,38,38,0.02), rgba(146,64,14,0.01)); }
+	html.admin, body.admin, .admin, .page-wrap { --admin-page-bg: #07101a; --admin-page-gradient-overlay: linear-gradient(135deg, rgba(220,38,38,0.01), rgba(146,64,14,0.005)); }
 
 	/* subtle adjustment to the page background gradient so it reads on dark */
 	.admin body, body.admin { background: linear-gradient(135deg, rgba(220,38,38,0.08) 0%, rgba(146,64,14,0.06) 100%); }
