@@ -32,7 +32,8 @@ if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true
         
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            /* use site primary/secondary colors instead of purple */
+            background: linear-gradient(135deg, rgba(220,38,38,0.12) 0%, rgba(146,64,14,0.08) 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -40,7 +41,7 @@ if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true
         }
         
         .login-container {
-            background: white;
+            background: #fff7f2; /* warm cream to match admin card surface */
             padding: 2.5rem;
             border-radius: 12px;
             box-shadow: 0 20px 25px -5px rgba(0,0,0,0.3);
@@ -54,12 +55,12 @@ if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true
         }
         
         .login-header h1 {
-            color: #1e293b;
+            color: #1c1917;
             margin-bottom: 0.5rem;
         }
         
         .login-header p {
-            color: #64748b;
+            color: #78716c;
         }
         
         .form-group {
@@ -83,14 +84,14 @@ if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true
         
         .form-input:focus {
             outline: none;
-            border-color: #2563eb;
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+            border-color: #dc2626;
+            box-shadow: 0 0 0 3px rgba(220,38,38,0.08);
         }
         
         .btn-login {
             width: 100%;
             padding: 0.875rem;
-            background: #2563eb;
+            background: #dc2626;
             color: white;
             border: none;
             border-radius: 6px;
@@ -101,7 +102,7 @@ if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true
         }
         
         .btn-login:hover {
-            background: #1d4ed8;
+            background: #b91c1c;
         }
         
         .alert {
