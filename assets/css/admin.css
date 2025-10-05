@@ -218,6 +218,38 @@ body.admin { overflow-x: hidden; }
 #modal-header { display:flex; align-items:center; justify-content:space-between; padding:1rem 1.25rem; border-bottom:1px solid rgba(0,0,0,0.04); }
 #modal-title { margin:0; font-size:1rem }
 #modal-close { background:transparent; border:none; font-size:1.05rem; cursor:pointer }
+
+/* Logo badge for admin header (mirror public site) */
+.logo-badge { display:inline-flex; align-items:center; justify-content:center; padding:6px 10px; border-radius:999px; background: var(--surface); box-shadow: 0 6px 20px rgba(16,24,40,0.08); }
+.logo-badge .site-logo-img { height: 40px; width: auto; display: inline-block; vertical-align: middle; }
+
+/* success alert variant used on logout */
+.success-alert { background: rgba(16,185,129,0.08); color: var(--success-color); border: 1px solid rgba(16,185,129,0.16); }
+
+/* Login page specific tweaks */
+.login-container { background: var(--card-bg); padding: 2.5rem; border-radius: 12px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.08); width: 100%; max-width: 400px; }
+.login-header { text-align: center; margin-bottom: 2rem; }
+.login-header h1 { color: var(--text-primary); margin-bottom: 0.5rem; }
+.login-header p { color: var(--text-secondary); }
+.form-group { margin-bottom: 1.5rem; }
+.form-label { display: block; font-weight: 600; margin-bottom: 0.5rem; color: var(--text-primary); }
+.form-input { width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: 6px; font-size: 1rem; background: var(--surface); color: var(--text-primary); }
+.form-input:focus { outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(220,38,38,0.08); }
+.btn-login { width: 100%; padding: 0.875rem; background: var(--primary-color); color: var(--text-inverse); border: none; border-radius: 6px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: var(--transition-fast); }
+.btn-login:hover { filter: brightness(0.92); }
+
+/* Ensure logo badge renders correctly on the login page */
+.logo-badge { display:inline-flex; align-items:center; justify-content:center; padding:6px 10px; border-radius:999px; background: var(--surface); box-shadow: 0 6px 20px rgba(16,24,40,0.08); }
+.logo-badge .site-logo-img { height: 40px; width: auto; display: inline-block; vertical-align: middle; }
+
+/* Login page dark-mode adjustments */
+@media (prefers-color-scheme: dark) {
+	.login-container { background: var(--card-bg-dark, #0b1220); box-shadow: 0 10px 30px rgba(2,6,23,0.6); }
+	.form-input { background: var(--surface-dark, #071028); color: var(--text-inverse); border-color: rgba(255,255,255,0.06); }
+	.login-header h1 { color: var(--text-inverse); }
+	.login-header p { color: var(--text-muted); }
+	.btn-login { background: var(--primary-color); color: var(--text-inverse); }
+}
 .modal-body { padding:1rem 1.25rem; color:#0f172a }
 .modal .actions { padding: .75rem 1.25rem; display:flex; justify-content:flex-end; gap:.5rem; border-top:1px solid rgba(0,0,0,0.04); background: var(--card-bg) }
 

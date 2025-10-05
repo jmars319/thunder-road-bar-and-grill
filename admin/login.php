@@ -34,97 +34,12 @@ if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             /* use site primary/secondary colors instead of purple */
             background: linear-gradient(135deg, rgba(220,38,38,0.12) 0%, rgba(146,64,14,0.08) 100%);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .login-container {
-            background: var(--card-bg); /* warm cream to match admin card surface */
-            padding: 2.5rem;
-            border-radius: 12px;
-            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.3);
-            width: 100%;
-            max-width: 400px;
-        }
-
-        /* Ensure logo badge renders correctly on the standalone login page
-           even if external admin CSS is not loaded. Matches admin badge sizing. */
-        .logo-badge { display:inline-flex; align-items:center; justify-content:center; padding:6px 10px; border-radius:999px; background: var(--surface-color); box-shadow: 0 6px 20px rgba(16,24,40,0.06); }
-        .logo-badge .site-logo-img { height: 40px; width: auto; display: inline-block; vertical-align: middle; }
-        
-        .login-header {
-            text-align: center;
-            margin-bottom: 2rem;
-        }
-        
-        .login-header h1 {
-            color: var(--text-primary);
-            margin-bottom: 0.5rem;
-        }
-        
-        .login-header p {
-            color: var(--text-secondary);
-        }
-        
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-        
-        .form-label {
-            display: block;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-            color: var(--text-primary);
-        }
-        
-        .form-input {
-            width: 100%;
-            padding: 0.75rem;
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            font-size: 1rem;
-        }
-        
-        .form-input:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(220,38,38,0.08);
-        }
-        
-        .btn-login {
-            width: 100%;
-            padding: 0.875rem;
-            background: var(--primary-color);
-            color: var(--text-inverse);
-            border: none;
-            border-radius: 6px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.18s ease;
-        }
-
-        .btn-login:hover {
-            filter: brightness(0.92);
-        }
-        
-        .alert {
-            padding: 1rem;
-            border-radius: 6px;
-            margin-bottom: 1rem;
-            background: rgba(239,68,68,0.08);
-            color: var(--error-color);
-            border: 1px solid rgba(239,68,68,0.16);
-        }
-    </style>
-</head>
-<body>
-    <div class="login-container">
-                <div class="login-header">
-                        <?php
-                            $cfile = __DIR__ . '/../data/content.json';
+            <link rel="stylesheet" href="/assets/css/admin.css">
+            <style>
+              /* Small page-specific layout to center the card when admin.css isn't applied early */
+              html,body{height:100%;}
+              body{display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg, rgba(220,38,38,0.12) 0%, rgba(146,64,14,0.08) 100%);}
+            </style>
                             $c = file_exists($cfile) ? json_decode(file_get_contents($cfile), true) : [];
                             $logo = $c['images']['logo'] ?? '';
                             $logoUrl = '';
