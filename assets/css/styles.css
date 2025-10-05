@@ -15,6 +15,8 @@
    CSS CUSTOM PROPERTIES (CSS VARIABLES)
    Centralized design system for easy theming
    ============================================== */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&family=Roboto+Mono:wght@700&family=Pacifico&display=swap');
+
 :root {
     /* Color Palette */
     --primary-color: #dc2626;
@@ -77,6 +79,12 @@
     --font-weight-semibold: 600;
     --font-weight-bold: 700;
     --font-weight-extrabold: 800;
+
+    /* Typography families */
+    --font-family-base: 'Roboto', 'Open Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, 'Noto Sans', sans-serif;
+    --font-family-heading: 'Impact', 'Anton', 'Arial Black', 'Helvetica Neue', sans-serif;
+    --font-family-accent: 'Pacifico', 'Brush Script MT', cursive;
+    --font-family-mono: 'Roboto Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, 'Roboto Mono', monospace;
     
     /* Transitions */
     --transition-fast: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
@@ -117,8 +125,7 @@ html {
    elements are not hidden beneath the header. */
 
 body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 
-                 'Helvetica Neue', Arial, 'Noto Sans', sans-serif;
+    font-family: var(--font-family-base);
     line-height: 1.6;
     color: var(--text-primary);
     background-color: var(--background-color);
@@ -133,9 +140,16 @@ h1, h2, h3, h4, h5, h6 {
     margin: 0;
     font-weight: var(--font-weight-bold);
     line-height: 1.3;
+    font-family: var(--font-family-heading);
 }
 
 p { margin: 0; line-height: 1.6; }
+
+/* Accent / callout text (e.g. "Since 2008") */
+.accent-text { font-family: var(--font-family-accent); }
+
+/* Menu / pricing numbers should use a clear monospace */
+.menu-price, .preview-price { font-family: var(--font-family-mono); font-weight: 700; }
 
 a {
     color: var(--primary-color);

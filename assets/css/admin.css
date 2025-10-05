@@ -28,7 +28,7 @@
 	--error-color-muted: #ef5b5b; /* slightly darker muted red for non-logout destructive actions */
 }
 .admin * { box-sizing: border-box; }
-.admin { -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; }
+.admin { -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; font-family: var(--font-family-base); }
 html, body { height: 100%; }
 /* soft page background behind the admin card to reduce stark white; apply widely so all admin pages pick it up */
 html.admin, body.admin, .admin, .page-wrap { background-color: var(--admin-page-bg-alpha); background-image: var(--admin-page-gradient-overlay); }
@@ -39,6 +39,7 @@ html.admin, body.admin, .admin, .page-wrap { background-color: var(--admin-page-
 .admin .header-row { display:flex; align-items:center; justify-content:space-between; gap:1rem; margin-bottom:.75rem; flex-wrap:wrap; }
 .admin .header-row > * { min-width:0; }
 	.admin h1 { font-size:1.25rem; margin:0; color: var(--text-primary); letter-spacing:-0.01em }
+	.admin h1, .admin h2, .admin h3 { font-family: var(--font-family-heading); }
 .admin .topbar { display:flex; align-items:center; gap:1rem; }
 .admin .top-actions { margin-bottom:0; display:flex; gap:.5rem; align-items:center; flex-wrap:wrap; }
 .admin .top-actions form, .admin .top-actions a { margin:0; }
