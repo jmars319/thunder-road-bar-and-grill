@@ -370,7 +370,7 @@
     function render(){
       listEl.innerHTML = '';
       if (!menuData.length) {
-        const hint = document.createElement('div'); hint.textContent = 'No sections yet. Click "Add Section" to create one.'; hint.style.color='#666'; listEl.appendChild(hint);
+        const hint = document.createElement('div'); hint.textContent = 'No sections yet. Click "Add Section" to create one.'; hint.classList.add('muted-text'); listEl.appendChild(hint);
       }
 
       // render sections
@@ -379,7 +379,7 @@
         if (!section.id) {
           section.id = 'section-' + Date.now() + '-' + Math.floor(Math.random() * 1000);
         }
-        const secWrap = document.createElement('div'); secWrap.style.border='1px solid #e8e8e8'; secWrap.style.padding='.6rem'; secWrap.style.marginBottom='.8rem';
+  const secWrap = document.createElement('div'); secWrap.style.border='1px solid var(--input-border)'; secWrap.style.padding='.6rem'; secWrap.style.marginBottom='.8rem';
   const header = document.createElement('div'); header.className = 'menu-section-header'; header.style.display='flex'; header.style.justifyContent='space-between'; header.style.alignItems='center';
   const left = document.createElement('div'); left.style.flex='1';
   const titleIn = makeInput(section.title||'', 'Section title'); titleIn.addEventListener('input', ()=> menuData[sidx].title = titleIn.value);
@@ -457,7 +457,7 @@
           const hint = document.createElement('div'); hint.textContent = 'No items — use "Add Item"'; hint.className='small'; itemsInner.appendChild(hint);
         }
         items.forEach((it, idx) => {
-          const row = document.createElement('div'); row.style.display='grid'; row.style.gridTemplateColumns='1fr 200px'; row.style.gap='.5rem'; row.style.marginTop='.5rem'; row.style.borderTop='1px dashed #eee'; row.style.paddingTop='.5rem';
+          const row = document.createElement('div'); row.style.display='grid'; row.style.gridTemplateColumns='1fr 200px'; row.style.gap='.5rem'; row.style.marginTop='.5rem'; row.style.borderTop='1px dashed var(--divider-color)'; row.style.paddingTop='.5rem';
           const leftCol = document.createElement('div');
             const titleIn = makeInput(it.title||'', 'e.g. Classic Cheeseburger'); titleIn.title = 'Item title shown on the menu'; titleIn.addEventListener('input', ()=> menuData[sidx].items[idx].title = titleIn.value);
             const descIn = makeTextarea(it.description||'', 'Detailed description, ingredients, or notes'); descIn.title = 'Long description shown when the item is expanded'; descIn.style.marginTop='.3rem'; descIn.addEventListener('input', ()=> menuData[sidx].items[idx].description = descIn.value);
@@ -636,8 +636,9 @@
             found.style.transition = 'box-shadow .18s ease, background-color .18s ease';
             const prevBg = found.style.backgroundColor;
             found.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.15)';
-            found.style.backgroundColor = '#fffbe6';
-            setTimeout(function(){ found.style.boxShadow = ''; found.style.backgroundColor = prevBg || ''; }, 3000);
+            // prefer a CSS-driven highlight so dark mode can override the colour
+            found.classList.add('search-found');
+            setTimeout(function(){ found.style.boxShadow = ''; found.classList.remove('search-found'); if (prevBg) found.style.backgroundColor = prevBg; }, 3000);
             // also focus
             try { found.focus(); } catch(e){}
           } else {
@@ -652,10 +653,11 @@
       let modal = document.getElementById('admin-preview-modal');
       if (modal) return modal;
       modal = document.createElement('div'); modal.id='admin-preview-modal'; modal.style.position='fixed'; modal.style.inset='0'; modal.style.display='none'; modal.style.alignItems='center'; modal.style.justifyContent='center'; modal.style.background='rgba(0,0,0,0.4)'; modal.style.zIndex='10000';
-      modal.innerHTML = '<div style="background:#fff;max-width:900px;width:calc(100% - 48px);max-height:80vh;overflow:auto;border-radius:8px;padding:1rem;">'<
+      modal.innerHTML = '<div style="background:var(--card-bg);max-width:900px;width:calc(100% - 48px);max-height:80vh;overflow:auto;border-radius:8px;padding:1rem;">'
         + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem"><h3 style="margin:0">Preview changes</h3><button id="admin-preview-close" class="btn btn-ghost">Close</button></div>'
         + '<div id="admin-preview-body" style="max-height:calc(80vh - 80px);overflow:auto;"></div>'
-        + '<div style="display:flex;justify-content:flex-end;margin-top:.6rem"><button id="admin-preview-apply" class="btn btn-primary">Apply and Save</button></div>';
+        + '<div style="display:flex;justify-content:flex-end;margin-top:.6rem"><button id="admin-preview-apply" class="btn btn-primary">Apply and Save</button></div>'
+        + '</div>';
       document.body.appendChild(modal);
       modal.querySelector('#admin-preview-close').addEventListener('click', ()=>{ modal.style.display='none'; });
       modal.querySelector('#admin-preview-apply').addEventListener('click', async ()=>{ modal.style.display='none'; await saveMenu(); render(); });
@@ -674,11 +676,11 @@
         const diff = j.diff || {};
         Object.keys(diff).forEach(function(secKey){
           const sec = diff[secKey];
-          const secWrap = document.createElement('div'); secWrap.style.borderTop='1px solid #eee'; secWrap.style.padding='8px 0';
+          const secWrap = document.createElement('div'); secWrap.style.borderTop='1px solid var(--divider-color)'; secWrap.style.padding='8px 0';
           const h = document.createElement('div'); h.style.fontWeight='700'; h.textContent = secKey; secWrap.appendChild(h);
-          if ((sec.added||[]).length) { const a = document.createElement('div'); a.style.color='green'; a.textContent = 'Added: ' + sec.added.join(', '); secWrap.appendChild(a); }
-          if ((sec.removed||[]).length) { const r = document.createElement('div'); r.style.color='crimson'; r.textContent = 'Removed: ' + sec.removed.join(', '); secWrap.appendChild(r); }
-          if ((sec.changed||[]).length) { const ch = document.createElement('div'); ch.style.color='#444'; ch.textContent = 'Changed: ' + sec.changed.map(c=> c.title + ' (' + c.changes.join(',') + ')' ).join('; '); secWrap.appendChild(ch); }
+          if ((sec.added||[]).length) { const a = document.createElement('div'); a.style.color='var(--success)'; a.textContent = 'Added: ' + sec.added.join(', '); secWrap.appendChild(a); }
+          if ((sec.removed||[]).length) { const r = document.createElement('div'); r.style.color='var(--danger)'; r.textContent = 'Removed: ' + sec.removed.join(', '); secWrap.appendChild(r); }
+          if ((sec.changed||[]).length) { const ch = document.createElement('div'); ch.style.color='var(--muted)'; ch.textContent = 'Changed: ' + sec.changed.map(c=> c.title + ' (' + c.changes.join(',') + ')' ).join('; '); secWrap.appendChild(ch); }
           out.appendChild(secWrap);
         });
         modal.style.display='flex';

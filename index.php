@@ -176,7 +176,7 @@ $cssVersion = file_exists($cssPath) ? filemtime($cssPath) : time();
                 .hero .hero-slide.visible { opacity:1 }
                 .hero .hero-overlay { position:relative; z-index:5 }
                 .hero .hero-controls { position:absolute; left:0; right:0; top:50%; transform:translateY(-50%); display:flex; justify-content:space-between; gap:1rem; padding:0 1rem; z-index:10 }
-                .hero .hero-controls button { background:rgba(0,0,0,0.45); color:#fff; border:none; padding:.5rem .7rem; border-radius:6px; cursor:pointer }
+                .hero .hero-controls button { background:rgba(0,0,0,0.45); color:var(--text-inverse); border:none; padding:.5rem .7rem; border-radius:6px; cursor:pointer }
                 .hero .hero-controls button:focus { outline:2px solid rgba(255,255,255,0.7) }
                 </style>
 
@@ -280,10 +280,10 @@ $cssVersion = file_exists($cssPath) ? filemtime($cssPath) : time();
                                         if (!empty($section['details'])) {
                                             if (is_array($section['details'])) {
                                                 foreach ($section['details'] as $dline) {
-                                                    echo '<div class="menu-section-details small" style="color:#444">'.htmlspecialchars($dline).'</div>';
+                                                    echo '<div class="menu-section-details small muted-text">'.htmlspecialchars($dline).'</div>';
                                                 }
                                             } else {
-                                                echo '<div class="menu-section-details small" style="color:#444">'.htmlspecialchars($section['details']).'</div>';
+                                                echo '<div class="menu-section-details small muted-text">'.htmlspecialchars($section['details']).'</div>';
                                             }
                                         }
                                         echo '</div><div class="section-items">';
@@ -349,7 +349,7 @@ $cssVersion = file_exists($cssPath) ? filemtime($cssPath) : time();
                                                                             if ($price) echo '<div class="menu-price"><span class="price-badge">'.$price.'</span></div>';
                                                                         }
                                                                         echo '</div>';
-                                                                        if ($s) echo '<div class="small" style="color:#666">'.$s.'</div>';
+                                                                        if ($s) echo '<div class="small muted-text">'.htmlspecialchars($s, ENT_QUOTES, "UTF-8").'</div>';
                                                                         // Render per-quantity options (list) when present
                                                                         if (isset($it['quantities']) && is_array($it['quantities']) && count($it['quantities'])) {
                                                                             // Render quantity labels only in the options list. Prices should
@@ -663,7 +663,7 @@ $cssVersion = file_exists($cssPath) ? filemtime($cssPath) : time();
                         } else if (it.price) rp = '$' + it.price;
                         if (rp) { var priceDiv = document.createElement('div'); priceDiv.className = 'menu-price'; priceDiv.innerHTML = '<span class="price-badge">' + rp + '</span>'; row.appendChild(priceDiv); }
                         meta.appendChild(row);
-                        if (it.short) { var s = document.createElement('div'); s.className = 'small'; s.style.color = '#666'; s.textContent = it.short; meta.appendChild(s); }
+                        if (it.short) { var s = document.createElement('div'); s.className = 'small muted-text'; s.textContent = it.short; meta.appendChild(s); }
                         if (Array.isArray(it.quantities) && it.quantities.length) {
                             var opts = document.createElement('div'); opts.className = 'menu-qty-options small'; opts.style.marginTop = '.4rem'; var parts = [];
                             it.quantities.forEach(function(q){ var seg=''; if (q.label) seg = q.label; else if (q.value) seg = String(q.value); if (seg) parts.push(seg); });
