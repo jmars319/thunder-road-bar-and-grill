@@ -414,30 +414,23 @@ header('Content-Type: text/html; charset=utf-8');
               <button id="profile-btn" type="button" class="btn btn-ghost"><span class="pm-icon" aria-hidden="true"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7zM19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06A2 2 0 1 1 2.34 16.4l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09c.67 0 1.27-.4 1.51-1a1.65 1.65 0 0 0-.33-1.82l-.06-.06A2 2 0 1 1 7.6 2.34l.06.06c.45.45 1.02.7 1.64.7.22 0 .44-.03.65-.09.56-.17 1.16-.17 1.72 0 .21.06.43.09.65.09.62 0 1.19-.25 1.64-.7l.06-.06A2 2 0 1 1 21.66 7.6l-.06.06c-.17.17-.3.36-.4.57-.2.46-.2.98 0 1.44.1.21.23.4.4.57l.06.06A2 2 0 0 1 19.4 15z" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Admin Options ▾</button>
               <div id="profile-menu">
                 <div class="pm-item pm-sep">
-                    <div class="pm-combo">
-                    <button type="button" class="btn btn-ghost pm-combo-toggle" aria-expanded="false"><span class="pm-icon" aria-hidden="true"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 3v12M8 7l4-4 4 4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Download current applications ▾</button>
-                    <div class="pm-combo-menu">
-                        <a href="?download=applications&amp;format=csv" class="pm-subitem" role="menuitem"><span class="pm-icon" aria-hidden="true"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M4 7h16M4 12h10M4 17h16" stroke-linecap="round" stroke-linejoin="round"/></svg></span>CSV</a>
-                        <a href="?download=applications&amp;format=json" class="pm-subitem" role="menuitem"><span class="pm-icon" aria-hidden="true"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M7 7l10 5-10 5V7z" stroke-linecap="round" stroke-linejoin="round"/></svg></span>JSON</a>
-                    </div>
-                  </div>
-                </div>
-                <div class="pm-item pm-sep">
                   <div class="pm-combo">
-                    <button type="button" class="btn btn-ghost pm-combo-toggle" aria-expanded="false" data-confirm="Downloading all applications may create a large file. Continue?"><span class="pm-icon" aria-hidden="true"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M3 7h18v10H3zM7 3v4M17 3v4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Download all applications ▾</button>
+                    <button type="button" class="btn btn-ghost pm-combo-toggle" aria-expanded="false"><span class="pm-icon" aria-hidden="true"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M3 7h18M3 12h18M3 17h18" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Applications ▾</button>
                     <div class="pm-combo-menu">
-                        <a href="?download=applications_all&amp;format=csv" class="pm-subitem" role="menuitem"><span class="pm-icon" aria-hidden="true"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M4 6h16v12H4z" stroke-linecap="round" stroke-linejoin="round"/></svg></span>CSV</a>
-                        <a href="?download=applications_all&amp;format=json" class="pm-subitem" role="menuitem"><span class="pm-icon" aria-hidden="true"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M8 5h8v14H8z" stroke-linecap="round" stroke-linejoin="round"/></svg></span>JSON</a>
+                      <div style="padding:.4rem .5rem;font-weight:700;color:var(--muted);">Download current applications</div>
+                      <a href="?download=applications&amp;format=csv" class="pm-subitem" role="menuitem"><span class="pm-icon" aria-hidden="true"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M4 7h16M4 12h10M4 17h16" stroke-linecap="round" stroke-linejoin="round"/></svg></span>CSV</a>
+                      <a href="?download=applications&amp;format=json" class="pm-subitem" role="menuitem"><span class="pm-icon" aria-hidden="true"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M7 7l10 5-10 5V7z" stroke-linecap="round" stroke-linejoin="round"/></svg></span>JSON</a>
+                      <div style="padding:.4rem .5rem;font-weight:700;color:var(--muted);margin-top:.4rem">Download all (including archives)</div>
+                      <a href="?download=applications_all&amp;format=csv" class="pm-subitem" role="menuitem" data-confirm="Downloading all applications may create a large file. Continue?"><span class="pm-icon" aria-hidden="true"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M4 6h16v12H4z" stroke-linecap="round" stroke-linejoin="round"/></svg></span>CSV</a>
+                      <a href="?download=applications_all&amp;format=json" class="pm-subitem" role="menuitem" data-confirm="Downloading all applications may create a large file. Continue?"><span class="pm-icon" aria-hidden="true"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M8 5h8v14H8z" stroke-linecap="round" stroke-linejoin="round"/></svg></span>JSON</a>
+                      <form method="post" class="pm-form" data-confirm="This will archive and remove all logs — are you sure?" style="margin:0;margin-top:.5rem;padding:.25rem">
+                        <?php echo csrf_input_field(); ?>
+                        <input type="hidden" name="action" value="purge_logs">
+                        <button type="submit" class="pm-subitem pm-subitem-full btn btn-ghost" style="display:flex;align-items:center;gap:.5rem"><span class="pm-icon" aria-hidden="true"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Archive & clear all applications</button>
+                        <span class="tooltip" data-tooltip="This will create a backup and then permanently clear all current and archived submissions">?</span>
+                      </form>
                     </div>
                   </div>
-                </div>
-                <div class="pm-item pm-sep">
-                  <form method="post" class="pm-form" data-confirm="This will archive and remove all logs — are you sure?">
-                    <?php echo csrf_input_field(); ?>
-                    <input type="hidden" name="action" value="purge_logs">
-                    <button type="submit" class="btn btn-ghost"><span class="pm-icon" aria-hidden="true"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Archive & clear all applications</button>
-                    <span class="tooltip" data-tooltip="This will create a backup and then permanently clear all current and archived submissions">?</span>
-                  </form>
                 </div>
                 <!-- reservation audit submenu handled below -->
                 <div class="pm-item">
@@ -667,18 +660,24 @@ header('Content-Type: text/html; charset=utf-8');
     <p class="small">Edit named content sections and save. Changes are stored in <code><?php echo htmlspecialchars(CONTENT_FILE); ?></code>.</p>
 
     <div id="content-editor" class="content-editor-wrap">
-      <label for="section-select">Section</label>
-      <select id="section-select" class="section-select"></select>
+      <div class="left">
+        <label for="section-select">Section</label>
+        <select id="section-select" class="section-select"></select>
 
-      <div id="schema-form-wrap" class="schema-wrap">
-        <form id="schema-form">
-          <?php echo csrf_input_field(); ?>
-          <div id="schema-fields"></div>
-          <div class="form-actions">
-            <button id="save-section" type="submit" class="btn btn-primary">Save Section</button>
-          </div>
-        </form>
+        <div id="schema-form-wrap" class="schema-wrap">
+          <form id="schema-form">
+            <?php echo csrf_input_field(); ?>
+            <div id="schema-fields"></div>
+            <div class="form-actions">
+              <button id="save-section" type="submit" class="btn btn-primary">Save Section</button>
+            </div>
+              <div id="autosave-status" class="small muted-text" style="margin-top:.4rem"></div>
+          </form>
+        </div>
       </div>
+
+      <!-- right column intentionally left blank: live preview removed -->
+      <div class="right"></div>
     </div>
 
     <hr class="spaced-hr">
@@ -781,7 +780,9 @@ header('Content-Type: text/html; charset=utf-8');
         }, true);
       })();
     </script>
-    <script src="/assets/js/admin.js"></script>
+  <!-- SortableJS for thumbnail reordering -->
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+  <script src="/assets/js/admin.js"></script>
 
     <script>
       // lightweight toast (works even if admin.js scope doesn't expose showToast)
