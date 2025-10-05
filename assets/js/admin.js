@@ -15,12 +15,20 @@
 
 (function(){
   // Toast / modal helpers
-  function showToast(msg, type='default', timeout=3500){
+  // showToast supports optional action: { text, cb, timeout }
+  function showToast(msg, type='default', timeout=3500, action){
     const c = document.getElementById('toast-container');
     if (!c) return;
-    const el = document.createElement('div'); el.className='toast '+(type==='success'? 'success': type==='error' ? 'error':''); el.textContent=msg;
+    const el = document.createElement('div'); el.className='toast '+(type==='success'? 'success': type==='error' ? 'error':'');
+    const txt = document.createElement('span'); txt.textContent = msg; el.appendChild(txt);
+    if (action && action.text && typeof action.cb === 'function'){
+      const act = document.createElement('button'); act.type='button'; act.className='btn btn-ghost'; act.style.marginLeft='0.6rem'; act.textContent = action.text;
+      act.addEventListener('click', function(e){ try { action.cb(e); } catch(err){}; el.remove(); });
+      el.appendChild(act);
+    }
     c.appendChild(el);
-    setTimeout(()=>{ el.style.transition='opacity .3s'; el.style.opacity='0'; setTimeout(()=>el.remove(),350) }, timeout);
+    const t = (action && action.timeout) ? action.timeout : timeout;
+    setTimeout(()=>{ if (!el.parentNode) return; el.style.transition='opacity .3s'; el.style.opacity='0'; setTimeout(()=>el.remove(),350) }, t);
   }
   function showConfirm(message){
     return new Promise((resolve)=>{
@@ -110,6 +118,44 @@
     return fetch(schemaUrl).then(r=>{ if (!r.ok) throw new Error('Failed to load schemas'); return r.json(); }).catch(()=>({}));
   }
 
+  // AJAX save helper used for autosave when reordering/removing hero images
+  function ajaxSaveSection(section, payload){
+    const csrf = (document.querySelector('input[name="csrf_token"]') || {}).value || window.__csrfToken || '';
+    const body = { section: section, content: payload, csrf_token: csrf };
+    return fetch('save-content.php', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
+      .then(r=>r.json());
+  }
+
+  // simple debounce utility
+  function debounce(fn, wait){ let t = null; return function(){ const args = arguments; clearTimeout(t); t = setTimeout(()=> fn.apply(this, args), wait); }; }
+
+  // show/hide spinner next to a given element (strip container)
+  function showSpinner(strip, show){
+    if (!strip) return;
+    let s = strip.querySelector('.autosave-spinner');
+    if (show) {
+      if (!s) { s = document.createElement('span'); s.className='autosave-spinner'; strip.appendChild(s); }
+    } else {
+      if (s) s.remove();
+    }
+  }
+
+  // debounced autosave wrapper for hero images
+  const debouncedHeroSave = debounce(async function(input, strip){
+    try {
+      showSpinner(strip, true);
+      // show autosave status in the admin header area if present
+      const statusEl = document.getElementById('autosave-status'); if (statusEl) statusEl.textContent = 'Saving...';
+      const imgs = (input.value||'').split(',').map(s=>s.trim()).filter(Boolean);
+      const res = await ajaxSaveSection('hero', { images: imgs });
+      showSpinner(strip, false);
+      if (res && res.success) {
+        showToast('Saved', 'success');
+        if (statusEl) statusEl.textContent = 'Saved ' + (new Date()).toLocaleTimeString();
+      } else { showToast('Save failed', 'error'); if (statusEl) statusEl.textContent = 'Save failed'; }
+    } catch(e){ showSpinner(strip, false); showToast('Auto-save failed: '+(e.message||e), 'error'); }
+  }, 650);
+
   function makeOption(val, label){ const o = document.createElement('option'); o.value=val; o.textContent=label||val; return o; }
 
   function renderField(field, value){
@@ -125,8 +171,96 @@
       const row = document.createElement('div'); row.style.display='flex'; row.style.gap='0.5rem';
       input = document.createElement('input'); input.type='text'; input.name = field.key; input.style.flex='1'; input.value = value || '';
       input.setAttribute('data-field-type','image');
-      const pick = document.createElement('button'); pick.type='button'; pick.textContent='Pick'; pick.addEventListener('click', ()=> openImagePicker(input));
+      // If the current editor section is the hero, allow multiple images (slideshow)
+      try { if (sectionSelect && sectionSelect.value === 'hero') input.setAttribute('data-multiple','true'); } catch(e){}
+      const multiple = !!input.dataset.multiple;
+      const pick = document.createElement('button'); pick.type='button'; pick.textContent = (multiple ? 'Pick images' : 'Pick');
+      // contrasting button for hero/multiple mode
+      pick.className = multiple ? 'btn btn-primary' : 'btn btn-ghost';
+      pick.addEventListener('click', ()=> openImagePicker(input, multiple));
       row.appendChild(input); row.appendChild(pick); wrap.appendChild(row);
+      // thumbnail strip for multiple-image inputs (hero)
+      if (multiple) {
+        const strip = document.createElement('div'); strip.className = 'hero-thumb-strip'; strip.style.display='flex'; strip.style.gap='.5rem'; strip.style.marginTop='.5rem'; strip.style.flexWrap='wrap';
+        wrap.appendChild(strip);
+        // render thumbnails from the input value
+        function refreshThumbs(){
+          const vals = (input.value || '').split(',').map(s=>s.trim()).filter(Boolean);
+          strip.innerHTML = '';
+          vals.forEach((fn, idx)=>{
+            const el = document.createElement('div'); el.style.width='96px'; el.style.textAlign='center'; el.style.position='relative';
+            const img = document.createElement('img'); img.src = fn.match(/^https?:/i) ? fn : ('../uploads/images/'+fn); img.style.width='100%'; img.style.height='64px'; img.style.objectFit='cover'; img.style.borderRadius='6px';
+            const rm = document.createElement('button'); rm.type='button'; rm.className='btn btn-ghost'; rm.textContent='✕'; rm.title='Remove'; rm.style.position='absolute'; rm.style.top='4px'; rm.style.right='4px'; rm.style.padding='2px 6px'; rm.addEventListener('click', async ()=>{
+              if (!await showConfirm('Remove this image from the hero slideshow?')) return;
+              const current = (input.value||'').split(',').map(s=>s.trim()).filter(Boolean);
+              const removed = current.splice(idx,1)[0];
+              input.value = current.join(','); input.dispatchEvent(new Event('input',{bubbles:true})); refreshThumbs();
+              // autosave (debounced) and offer undo
+              const stripEl = strip;
+              debouncedHeroSave(input, stripEl);
+              showToast('Image removed', 'default', 5000, { text: 'Undo', cb: function(){
+                const cur = (input.value||'').split(',').map(s=>s.trim()).filter(Boolean); cur.splice(idx,0,removed); input.value = cur.join(','); input.dispatchEvent(new Event('input',{bubbles:true})); refreshThumbs();
+                // immediate save to restore
+                ajaxSaveSection('hero', { images: cur }).then(res=>{ if (res && res.success) showToast('Restored', 'success'); else showToast('Restore failed','error'); }).catch(err=> showToast('Restore failed: '+err.message,'error'));
+              }, timeout:5000 });
+            });
+            const left = document.createElement('button'); left.type='button'; left.className='btn btn-ghost'; left.textContent='◀'; left.title='Move left'; left.style.marginTop='.25rem'; left.addEventListener('click', ()=>{
+              const arr = (input.value||'').split(',').map(s=>s.trim()).filter(Boolean); if (idx<=0) return; const tmp = arr[idx-1]; arr[idx-1]=arr[idx]; arr[idx]=tmp; input.value = arr.join(','); input.dispatchEvent(new Event('input',{bubbles:true})); refreshThumbs();
+            });
+            const right = document.createElement('button'); right.type='button'; right.className='btn btn-ghost'; right.textContent='▶'; right.title='Move right'; right.style.marginTop='.25rem'; right.addEventListener('click', ()=>{
+              const arr = (input.value||'').split(',').map(s=>s.trim()).filter(Boolean); if (idx>=arr.length-1) return; const tmp = arr[idx+1]; arr[idx+1]=arr[idx]; arr[idx]=tmp; input.value = arr.join(','); input.dispatchEvent(new Event('input',{bubbles:true})); refreshThumbs();
+            });
+            // drag handle
+            const handle = document.createElement('div'); handle.className='drag-handle'; handle.textContent='⋮'; handle.title='Drag to reorder'; handle.style.left='6px'; handle.style.top='6px';
+            handle.style.position='absolute';
+            handle.style.padding='4px';
+            handle.style.cursor='grab';
+            el.appendChild(handle);
+            el.appendChild(img);
+            const ctr = document.createElement('div'); ctr.style.display='flex'; ctr.style.justifyContent='space-between'; ctr.style.gap='.25rem'; ctr.style.marginTop='.25rem'; ctr.appendChild(left); ctr.appendChild(right);
+            el.appendChild(ctr);
+            el.appendChild(rm);
+            // drag & drop behavior
+            el.draggable = true;
+            el.addEventListener('dragstart', function(ev){ el.classList.add('dragging'); ev.dataTransfer.setData('text/plain', String(idx)); });
+            el.addEventListener('dragend', function(){ el.classList.remove('dragging'); });
+            el.addEventListener('dragover', function(ev){ ev.preventDefault(); el.classList.add('drag-over'); });
+            el.addEventListener('dragleave', function(){ el.classList.remove('drag-over'); });
+            el.addEventListener('drop', async function(ev){ ev.preventDefault(); el.classList.remove('drag-over'); const from = parseInt(ev.dataTransfer.getData('text/plain'), 10); const to = idx; if (isNaN(from)) return; const arr = (input.value||'').split(',').map(s=>s.trim()).filter(Boolean); if (from === to) return; const item = arr.splice(from,1)[0]; arr.splice(to,0,item); input.value = arr.join(','); input.dispatchEvent(new Event('input',{bubbles:true})); refreshThumbs();
+              // debounced autosave for new order
+              debouncedHeroSave(input, strip);
+            });
+            strip.appendChild(el);
+          });
+        }
+        input.addEventListener('input', refreshThumbs);
+        // initial render
+        setTimeout(refreshThumbs, 10);
+        // initialize Sortable if available on the strip (use a mutation observer to wait until thumbs are rendered)
+        if (window.Sortable) {
+          let sortableInst = null;
+          const obs = new MutationObserver(()=>{
+            if (strip.children.length && !sortableInst) {
+              try {
+                sortableInst = Sortable.create(strip, {
+                  animation: 150,
+                  handle: '.drag-handle',
+                  onEnd: function(evt){
+                    // build ordered values from DOM
+                    const ordered = Array.from(strip.querySelectorAll('img')).map(img=>{
+                      const src = img.getAttribute('src') || '';
+                      return src.replace(/^..\/uploads\/images\//,'');
+                    }).filter(Boolean);
+                    input.value = ordered.join(','); input.dispatchEvent(new Event('input',{bubbles:true}));
+                    debouncedHeroSave(input, strip);
+                  }
+                });
+              } catch(e){}
+            }
+          });
+          obs.observe(strip, { childList: true, subtree: false });
+        }
+      }
       return wrap;
     } else {
       input = document.createElement('input'); input.type='text'; input.name = field.key; input.style.width='100%'; input.value = value || '';
@@ -135,7 +269,7 @@
     return wrap;
   }
 
-  function openImagePicker(targetInput){
+  function openImagePicker(targetInput, multiple){
     const backdrop = document.getElementById('modal-backdrop');
     const body = document.getElementById('modal-body');
     if (!backdrop || !body) return;
@@ -147,14 +281,23 @@
   // authenticated; the server-side endpoint enforces auth and CSRF
   // where appropriate. The picker only displays filenames — the
   // chosen value is written into the text input for later saving.
-  fetch('list-images.php').then(r=>r.json()).then(j=>{
+    fetch('list-images.php').then(r=>r.json()).then(j=>{
       if (!j || !Array.isArray(j.files)) { grid.innerHTML = '<i>No images</i>'; return; }
         j.files.forEach(f=>{
         const thumb = document.createElement('div'); thumb.style.width='120px'; thumb.style.cursor='pointer'; thumb.style.textAlign='center';
         const img = document.createElement('img'); img.src = '../uploads/images/'+f; img.style.width='100%'; img.style.height='80px'; img.style.objectFit='cover';
         const lab = document.createElement('div'); lab.textContent = f; lab.style.fontSize='0.8rem'; lab.style.overflow='hidden'; lab.style.textOverflow='ellipsis'; lab.style.whiteSpace='nowrap';
         thumb.appendChild(img); thumb.appendChild(lab);
-  thumb.addEventListener('click', ()=>{ targetInput.value = f; targetInput.dispatchEvent(new Event('input', { bubbles: true })); backdrop.style.display='none'; });
+  thumb.addEventListener('click', ()=>{
+    if (multiple) {
+      const existing = (targetInput.value || '').split(',').map(s=>s.trim()).filter(Boolean);
+      if (!existing.includes(f)) existing.push(f);
+      targetInput.value = existing.join(',');
+    } else {
+      targetInput.value = f;
+    }
+    targetInput.dispatchEvent(new Event('input', { bubbles: true })); backdrop.style.display='none';
+  });
         grid.appendChild(thumb);
       });
     }).catch(()=>{ grid.innerHTML = '<i>Failed to load</i>'; });
@@ -182,6 +325,8 @@
       schemaFields.appendChild(fld);
     });
   }
+
+  // Note: live preview removed per user request. No preview initialization.
 
   function populateSections(){
     if (!sectionSelect) return;
@@ -213,6 +358,23 @@
           out[name] = val;
         }
       });
+      // Convert hero image comma-list into hero.images array for storage
+      if (sec === 'hero') {
+        const imgInput = schemaFields.querySelector('input[data-field-type="image"]');
+        if (imgInput) {
+          if (imgInput.dataset.multiple) {
+            const arr = (imgInput.value || '').split(',').map(s=>s.trim()).filter(Boolean);
+            out['images'] = arr;
+            // remove legacy single 'image' key if present
+            if (out['image'] !== undefined) delete out['image'];
+          } else {
+            // single image -> keep backward compatible key 'image' but also set images array
+            if (imgInput.value && imgInput.value.trim()) {
+              out['images'] = [imgInput.value.trim()];
+            }
+          }
+        }
+      }
       const csrf = (document.querySelector('input[name="csrf_token"]') || {}).value || window.__csrfToken || '';
       const body = { section: sec, content: out, csrf_token: csrf };
       fetch('save-content.php', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
@@ -234,8 +396,18 @@
             const sec = sectionSelect.value;
             const upType = fd.get('type');
             if (upType === sec) {
+              // If this upload is for the hero slideshow, append to the hero images
               const imgInput = schemaFields.querySelector('input[data-field-type="image"]');
-              if (imgInput) { imgInput.value = j.filename; }
+              if (imgInput) {
+                if (imgInput.dataset.multiple) {
+                  const cur = (imgInput.value||'').split(',').map(s=>s.trim()).filter(Boolean);
+                  if (!cur.includes(j.filename)) cur.push(j.filename);
+                  imgInput.value = cur.join(',');
+                  imgInput.dispatchEvent(new Event('input',{bubbles:true}));
+                } else {
+                  imgInput.value = j.filename;
+                }
+              }
             }
             refreshImageList();
           } catch(e){}
@@ -257,16 +429,15 @@
         row.style.display='flex'; row.style.alignItems='center'; row.style.gap='1rem'; row.style.marginBottom='.5rem';
         const img = document.createElement('img'); img.src = '../uploads/images/'+f; img.style.height='48px'; img.style.objectFit='cover';
         const name = document.createElement('div'); name.textContent = f; name.style.flex='1';
-  const del = document.createElement('button'); del.type='button'; del.textContent='Delete'; del.className = 'btn btn-danger-soft'; del.addEventListener('click', async ()=>{
-          if (!await showConfirm('Delete '+f+'?')) return;
+        const del = document.createElement('button'); del.type='button'; del.textContent='Move to Trash'; del.title = 'Move to trash — can be restored from Trash'; del.className = 'btn btn-danger-soft'; del.addEventListener('click', async ()=>{
+          if (!await showConfirm('Move '+f+' to Trash?')) return;
           const fd = new FormData(); fd.append('filename', f); fd.append('csrf_token', (document.querySelector('input[name="csrf_token"]')||{}).value || window.__csrfToken || '');
           fetch('delete-image.php', { method: 'POST', body: fd }).then(r=>r.json()).then(res=>{
             if (res && res.success) { refreshImageList(); showToast('Moved to trash','success'); }
             else showToast('Delete failed','error');
           });
         });
-  const restoreBtn = document.createElement('button'); restoreBtn.type='button'; restoreBtn.textContent='Trash'; restoreBtn.className = 'btn btn-ghost'; restoreBtn.disabled=true; restoreBtn.title='In images list';
-        row.appendChild(img); row.appendChild(name); row.appendChild(del); row.appendChild(restoreBtn);
+        row.appendChild(img); row.appendChild(name); row.appendChild(del);
         list.appendChild(row);
       });
     }).catch(()=>{ list.innerHTML = '<i>Failed to list images</i>'; });
@@ -315,8 +486,34 @@
   // initial image list area
   const uploadFormElem = uploadForm;
   if (uploadFormElem && uploadFormElem.parentNode) {
-    const imageArea = document.createElement('div'); imageArea.id='image-list'; imageArea.style.marginTop='.5rem';
-    uploadFormElem.parentNode.insertBefore(imageArea, uploadFormElem.nextSibling);
+    // small dismissible notice shown above the image list to communicate helpful tips
+    try {
+      const NOTICE_KEY = 'admin.images.notice.dismissed_v1';
+      const alreadyDismissed = (() => { try { return !!localStorage.getItem(NOTICE_KEY); } catch (e) { return false; } })();
+      if (!alreadyDismissed) {
+        const notice = document.createElement('div');
+        notice.className = 'small muted-text admin-image-notice';
+        notice.style.marginTop = '.5rem';
+        notice.style.display = 'flex';
+        notice.style.alignItems = 'center';
+        notice.style.justifyContent = 'space-between';
+        notice.style.gap = '.6rem';
+        notice.innerHTML = '<span>Images are served from <code>uploads/images</code>. Supported types: JPG, PNG, GIF, WebP, SVG. Dotfiles are hidden.</span>';
+        const closeBtn = document.createElement('button'); closeBtn.type = 'button'; closeBtn.className = 'btn btn-ghost'; closeBtn.textContent = 'Dismiss';
+        closeBtn.addEventListener('click', function(){ try { localStorage.setItem(NOTICE_KEY, '1'); } catch(e){}; notice.remove(); });
+        notice.appendChild(closeBtn);
+        uploadFormElem.parentNode.insertBefore(notice, uploadFormElem.nextSibling);
+      }
+
+      const imageArea = document.createElement('div'); imageArea.id='image-list'; imageArea.style.marginTop='.5rem';
+      // if the notice was inserted, place imageArea after it; otherwise it'll still be nextSibling of uploadForm
+      const insertAfter = (uploadFormElem.nextSibling && uploadFormElem.nextSibling.classList && uploadFormElem.nextSibling.classList.contains && uploadFormElem.nextSibling.classList.contains('admin-image-notice')) ? uploadFormElem.nextSibling.nextSibling : uploadFormElem.nextSibling;
+      uploadFormElem.parentNode.insertBefore(imageArea, insertAfter);
+    } catch (e) {
+      // fallback: simple insertion
+      const imageArea = document.createElement('div'); imageArea.id='image-list'; imageArea.style.marginTop='.5rem';
+      uploadFormElem.parentNode.insertBefore(imageArea, uploadFormElem.nextSibling);
+    }
     ensureTrashToggle();
     refreshImageList();
   }
