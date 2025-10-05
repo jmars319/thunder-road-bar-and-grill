@@ -1031,4 +1031,61 @@
     // close on escape
     document.addEventListener('keydown', (e)=>{ if (e.key === 'Escape') { const m = document.getElementById('profile-menu'); if (m && m.style.display === 'block') closeMenu(); }});
   }
+
+  // Initialize pm-combo (submenu) accessibility, keyboard support, and confirm handling
+  (function initPmComboAndConfirm(){
+    // helper to close all open combos
+    function closeAllCombos(){ document.querySelectorAll('.pm-combo .pm-combo-menu.open').forEach(m=>{ m.classList.remove('open'); const p = m.closest('.pm-combo'); if (p) p.classList.remove('open'); const btn = p && p.querySelector('.pm-combo-toggle'); if (btn) btn.setAttribute('aria-expanded','false'); }); }
+
+    document.querySelectorAll('.pm-combo').forEach(function(combo){
+      const toggle = combo.querySelector('.pm-combo-toggle');
+      const menu = combo.querySelector('.pm-combo-menu');
+      if (!toggle || !menu) return;
+      // ensure ARIA
+      toggle.setAttribute('aria-haspopup','true');
+      toggle.setAttribute('aria-expanded', 'false');
+      menu.setAttribute('role', menu.getAttribute('role') || 'menu');
+      menu.querySelectorAll('a, button, [role="menuitem"]').forEach(i=> i.setAttribute('role', i.getAttribute('role') || 'menuitem'));
+
+      function openCombo(){ closeAllCombos(); menu.classList.add('open'); combo.classList.add('open'); toggle.setAttribute('aria-expanded','true');
+        // make items focusable and focus first item
+        const items = Array.from(menu.querySelectorAll('a, button, [role="menuitem"]')).filter(Boolean);
+        items.forEach(it=> it.tabIndex = 0);
+        if (items.length) { try { items[0].focus(); } catch(e){} }
+      }
+      function closeCombo(){ menu.classList.remove('open'); combo.classList.remove('open'); toggle.setAttribute('aria-expanded','false'); toggle.focus(); }
+
+      toggle.addEventListener('click', function(e){ e.preventDefault(); e.stopPropagation(); if (menu.classList.contains('open')) closeCombo(); else openCombo(); });
+      toggle.addEventListener('keydown', function(e){ if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle.click(); } if (e.key === 'ArrowDown') { e.preventDefault(); openCombo(); } });
+
+      // keyboard navigation inside the menu
+      menu.addEventListener('keydown', function(e){ const items = Array.from(menu.querySelectorAll('a, button, [role="menuitem"]')).filter(Boolean); if (!items.length) return; const idx = items.indexOf(document.activeElement);
+        if (e.key === 'ArrowDown') { e.preventDefault(); const ni = (idx + 1) % items.length; items[ni].focus(); }
+        if (e.key === 'ArrowUp') { e.preventDefault(); const ni = (idx - 1 + items.length) % items.length; items[ni].focus(); }
+        if (e.key === 'Escape') { e.preventDefault(); closeCombo(); }
+      });
+    });
+
+    // close combos on outside click
+    document.addEventListener('click', function(e){ if (!e.target.closest('.pm-combo')) closeAllCombos(); });
+
+    // centralized data-confirm handling for links and forms
+    document.addEventListener('click', function(e){
+      const el = e.target.closest('a[data-confirm]');
+      if (!el) return;
+      const msg = el.getAttribute('data-confirm');
+      if (!msg) return;
+      e.preventDefault();
+      showConfirm(msg).then(function(ok){ if (ok) { window.location = el.href; } });
+    });
+
+    document.addEventListener('submit', function(e){
+      const form = e.target;
+      if (!(form instanceof HTMLFormElement)) return;
+      const msg = form.getAttribute('data-confirm') || form.dataset.confirm;
+      if (!msg) return;
+      e.preventDefault();
+      showConfirm(msg).then(function(ok){ if (ok) form.submit(); });
+    }, true);
+  })();
 })();

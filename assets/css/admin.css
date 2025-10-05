@@ -241,6 +241,8 @@ body.admin { overflow-x: hidden; }
 .pm-combo-toggle { display:inline-flex; align-items:center; gap:.4rem }
 .pm-combo-menu { display:none; position:absolute; right:0; margin-top:.4rem; background:var(--card-bg); border:1px solid rgba(2,6,23,0.06); border-radius:8px; padding:.35rem; box-shadow:0 10px 30px rgba(2,6,23,0.08); min-width:220px }
 .pm-combo-menu.open { display:block; animation: submenuOpen .18s ease both }
+.pm-combo.open > .pm-combo-toggle { box-shadow: 0 6px 18px rgba(2,6,23,0.08); }
+.pm-combo .pm-combo-menu.open { border-color: rgba(37,99,235,0.18); box-shadow: 0 12px 34px rgba(37,99,235,0.06); }
 
 @keyframes submenuOpen {
 	from { opacity:0; transform: translateY(-6px); }
