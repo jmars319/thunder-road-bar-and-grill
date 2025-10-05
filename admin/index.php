@@ -478,7 +478,7 @@ header('Content-Type: text/html; charset=utf-8');
                   <form method="post" class="pm-form">
                     <?php echo csrf_input_field(); ?>
                     <input type="hidden" name="action" value="logout">
-                    <button type="submit" class="btn btn-danger btn-logout" style="background:var(--error-color); color:var(--text-inverse); border:none;"><span class="pm-icon" aria-hidden="true"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M16 17l5-5-5-5M21 12H9M13 19v2H5V3h8v2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Log out</button>
+                    <button type="submit" class="btn btn-danger btn-logout"><span class="pm-icon" aria-hidden="true"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M16 17l5-5-5-5M21 12H9M13 19v2H5V3h8v2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Log out</button>
                   </form>
                 </div>
               </div>

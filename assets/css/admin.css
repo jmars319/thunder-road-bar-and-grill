@@ -63,8 +63,18 @@ html.admin, body.admin, .admin, .page-wrap { background-color: var(--admin-page-
 	.admin .btn-logout { background: var(--error-color); color: var(--text-inverse); border:none; }
 	.admin .btn-logout:hover { filter: brightness(0.94); }
 
-	/* Stronger specificity: keep logout filled red even inside profile/combo menus */
-	.admin #profile-menu .btn-logout, .admin .pm-combo-menu .btn-logout { background: var(--error-color) !important; color: var(--text-inverse) !important; border: none !important; }
+	/* Stronger specificity: keep logout filled red even inside profile/combo menus.
+	   Use a more targeted selector to avoid inline styles while still overriding
+	   other button rules. We scope to forms and direct children to match markup. */
+	.admin #profile-menu form > .btn.btn-logout,
+	.admin #profile-menu .pm-form > .btn.btn-logout,
+	.admin .pm-combo-menu form > .btn.btn-logout,
+	.admin .pm-combo-menu .btn.btn-logout {
+		background: var(--error-color) !important;
+		color: var(--text-inverse) !important;
+		border: none !important;
+		box-shadow: none !important;
+	}
 
 	/* menu / combo items that are destructive but not logout should prefer the softer filled color when shown as filled */
 	.pm-combo-menu .pm-subitem.btn-danger-filled, .pm-combo-menu .btn.btn-danger-filled { background: var(--error-color-muted); color: var(--text-inverse); border: none; }
