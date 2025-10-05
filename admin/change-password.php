@@ -105,22 +105,47 @@ generate_csrf_token();
 ?>
 <!doctype html>
 <html>
-  <head>
-    <meta charset="utf-8">
-    <title>Change Admin Password</title>
-    <style>body{font-family:Arial,Helvetica,sans-serif;padding:20px}label{display:block;margin-bottom:.5rem}input{width:100%;padding:.5rem;margin-bottom:1rem}.error{color:var(--error-color)}.success{color:var(--success-color)}</style>
-  </head>
-  <body>
-    <h1>Change Password</h1>
-    <?php if ($error): ?><div class="error"><?php echo htmlspecialchars($error); ?></div><?php endif; ?>
-    <?php if ($success): ?><div class="success"><?php echo htmlspecialchars($success); ?></div><?php endif; ?>
-    <form method="post">
-      <?php echo csrf_input_field(); ?>
-      <label>Current password<input name="current_password" type="password" required></label>
-      <label>New password<input name="new_password" type="password" required></label>
-      <label>Confirm new password<input name="confirm_password" type="password" required></label>
-    <button type="submit" class="btn btn-primary">Change Password</button>
-    </form>
-    <p><a href="index.php" class="btn btn-ghost">Back to admin</a></p>
-  </body>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width,initial-scale=1">
+        <title>Change Admin Password</title>
+        <link rel="stylesheet" href="/assets/css/admin.css">
+    </head>
+    <body class="admin">
+        <div class="page-wrap">
+            <div class="admin-card" style="max-width:720px;margin:2.5rem auto;padding:1.25rem">
+                <div class="header-row">
+                    <div class="header-left">
+                        <h1 style="margin:0">Change Password</h1>
+                    </div>
+                    <div class="header-actions">
+                        <a href="index.php" class="btn btn-ghost">Back to admin</a>
+                    </div>
+                </div>
+
+                <?php if ($error): ?><div class="success-alert" style="margin-top:.6rem">❌ <?php echo htmlspecialchars($error); ?></div><?php endif; ?>
+                <?php if ($success): ?><div class="success-alert" style="margin-top:.6rem">✅ <?php echo htmlspecialchars($success); ?></div><?php endif; ?>
+
+                <div class="content-editor" style="margin-top:1rem">
+                    <div class="left">
+                        <form method="post">
+                            <?php echo csrf_input_field(); ?>
+                            <label class="form-label">Current password
+                                <input name="current_password" type="password" required class="form-input">
+                            </label>
+                            <label class="form-label">New password
+                                <input name="new_password" type="password" required class="form-input">
+                            </label>
+                            <label class="form-label">Confirm new password
+                                <input name="confirm_password" type="password" required class="form-input">
+                            </label>
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-primary">Change Password</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
 </html>
