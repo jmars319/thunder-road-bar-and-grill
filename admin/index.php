@@ -426,7 +426,7 @@ header('Content-Type: text/html; charset=utf-8');
                       <form method="post" class="pm-form" data-confirm="This will archive and remove all logs — are you sure?" style="margin:0;margin-top:.5rem;padding:.25rem">
                         <?php echo csrf_input_field(); ?>
                         <input type="hidden" name="action" value="purge_logs">
-                        <button type="submit" class="pm-subitem pm-subitem-full btn btn-ghost" style="display:flex;align-items:center;gap:.5rem"><span class="pm-icon" aria-hidden="true"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Archive & clear all applications</button>
+                        <button type="submit" class="pm-subitem pm-subitem-full btn btn-danger-soft btn-danger-filled" style="display:flex;align-items:center;gap:.5rem"><span class="pm-icon" aria-hidden="true"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Archive & clear all applications</button>
                         <span class="tooltip" data-tooltip="This will create a backup and then permanently clear all current and archived submissions">?</span>
                       </form>
                     </div>
