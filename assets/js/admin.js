@@ -257,7 +257,7 @@
         row.style.display='flex'; row.style.alignItems='center'; row.style.gap='1rem'; row.style.marginBottom='.5rem';
         const img = document.createElement('img'); img.src = '../uploads/images/'+f; img.style.height='48px'; img.style.objectFit='cover';
         const name = document.createElement('div'); name.textContent = f; name.style.flex='1';
-  const del = document.createElement('button'); del.type='button'; del.textContent='Delete'; del.className = 'btn btn-logout'; del.addEventListener('click', async ()=>{
+  const del = document.createElement('button'); del.type='button'; del.textContent='Delete'; del.className = 'btn btn-danger-soft'; del.addEventListener('click', async ()=>{
           if (!await showConfirm('Delete '+f+'?')) return;
           const fd = new FormData(); fd.append('filename', f); fd.append('csrf_token', (document.querySelector('input[name="csrf_token"]')||{}).value || window.__csrfToken || '');
           fetch('delete-image.php', { method: 'POST', body: fd }).then(r=>r.json()).then(res=>{
@@ -443,7 +443,7 @@
         });
         const upS = document.createElement('button'); upS.type='button'; upS.textContent='↑'; upS.title='Move section up'; upS.className='btn btn-ghost'; upS.addEventListener('click', ()=>{ if (sidx<=0) return; [menuData[sidx-1], menuData[sidx]] = [menuData[sidx], menuData[sidx-1]]; render(); });
         const downS = document.createElement('button'); downS.type='button'; downS.textContent='↓'; downS.title='Move section down'; downS.className='btn btn-ghost'; downS.addEventListener('click', ()=>{ if (sidx>=menuData.length-1) return; [menuData[sidx+1], menuData[sidx]] = [menuData[sidx], menuData[sidx+1]]; render(); });
-        const delS = document.createElement('button'); delS.type='button'; delS.textContent='Delete'; delS.className='btn btn-danger'; delS.addEventListener('click', async ()=>{ if (!await showConfirm('Delete this section and its items?')) return; menuData.splice(sidx,1); render(); });
+  const delS = document.createElement('button'); delS.type='button'; delS.textContent='Delete'; delS.className='btn btn-danger-soft'; delS.addEventListener('click', async ()=>{ if (!await showConfirm('Delete this section and its items?')) return; menuData.splice(sidx,1); render(); });
         hdrControls.appendChild(toggleBtn); hdrControls.appendChild(addItemBtn); hdrControls.appendChild(upS); hdrControls.appendChild(downS); hdrControls.appendChild(delS);
         header.appendChild(hdrControls);
         secWrap.appendChild(header);
@@ -566,7 +566,7 @@
           const itemControls = document.createElement('div'); itemControls.style.display='flex'; itemControls.style.gap='.4rem';
           const up = document.createElement('button'); up.type='button'; up.textContent='↑'; up.title='Move up'; up.className='btn btn-ghost'; up.addEventListener('click', ()=>{ if (idx<=0) return; [menuData[sidx].items[idx-1], menuData[sidx].items[idx]] = [menuData[sidx].items[idx], menuData[sidx].items[idx-1]]; render(); });
           const down = document.createElement('button'); down.type='button'; down.textContent='↓'; down.title='Move down'; down.className='btn btn-ghost'; down.addEventListener('click', ()=>{ if (idx>=menuData[sidx].items.length-1) return; [menuData[sidx].items[idx+1], menuData[sidx].items[idx]] = [menuData[sidx].items[idx], menuData[sidx].items[idx+1]]; render(); });
-          const del = document.createElement('button'); del.type='button'; del.textContent='Delete'; del.className='btn btn-danger'; del.addEventListener('click', async ()=>{ if (!await showConfirm('Delete this item?')) return; menuData[sidx].items.splice(idx,1); render(); });
+          const del = document.createElement('button'); del.type='button'; del.textContent='Delete'; del.className='btn btn-danger-soft'; del.addEventListener('click', async ()=>{ if (!await showConfirm('Delete this item?')) return; menuData[sidx].items.splice(idx,1); render(); });
           itemControls.appendChild(up); itemControls.appendChild(down); itemControls.appendChild(del);
           // ensure preview updates after delete
           del.addEventListener('click', ()=> setTimeout(renderPreview, 100));

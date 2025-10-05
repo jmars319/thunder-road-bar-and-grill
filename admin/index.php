@@ -450,7 +450,7 @@ header('Content-Type: text/html; charset=utf-8');
                       <form method="post" style="margin:0" data-confirm="Clear reservation audit? This will remove recent audit entries. Continue?">
                         <?php echo csrf_input_field(); ?>
                         <input type="hidden" name="action" value="clear_reservation_audit">
-                        <button type="submit" class="pm-subitem pm-subitem-full btn btn-ghost btn-danger"><span class="pm-icon" aria-hidden="true"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M6 7h12M9 7v10M15 7v10" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Clear reservation audit</button>
+                        <button type="submit" class="pm-subitem pm-subitem-full btn btn-danger-soft btn-danger-filled"><span class="pm-icon" aria-hidden="true"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M6 7h12M9 7v10M15 7v10" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Clear reservation audit</button>
                       </form>
                       <form method="post" style="margin:0">
                         <?php echo csrf_input_field(); ?>
@@ -463,7 +463,7 @@ header('Content-Type: text/html; charset=utf-8');
                   <div class="pm-item">
                     <form method="post" action="empty-trash.php" class="pm-form" data-confirm="Empty image trash? This will permanently delete trashed images. Continue?">
                       <?php echo csrf_input_field(); ?>
-                      <button type="submit" class="btn btn-ghost btn-danger"><span class="pm-icon" aria-hidden="true"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Empty image trash</button>
+                      <button type="submit" class="btn btn-danger-soft btn-danger-filled"><span class="pm-icon" aria-hidden="true"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Empty image trash</button>
                     </form>
                   </div>
                 <div class="pm-item pm-sep">
@@ -653,7 +653,7 @@ header('Content-Type: text/html; charset=utf-8');
                 <?php echo csrf_input_field(); ?>
                 <input type="hidden" name="action" value="delete_reservation">
                 <input type="hidden" name="idx" value="<?php echo (int)$i; ?>">
-                <button type="submit" class="btn btn-ghost btn-danger">Delete</button>
+                <button type="submit" class="btn btn-danger-soft">Delete</button>
               </form>
             </td>
           </tr>

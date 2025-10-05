@@ -25,6 +25,7 @@
 	--admin-page-bg: #fffbfa; /* slightly lighter, very subtle warm tint */
 	--admin-page-bg-alpha: rgba(255,251,250,0.5); /* ~50% opacity fallback */
 	--admin-page-gradient-overlay: linear-gradient(135deg, rgba(220,38,38,0.02), rgba(146,64,14,0.008));
+	--error-color-muted: #f87171; /* slightly muted red for non-logout destructive actions */
 }
 .admin * { box-sizing: border-box; }
 .admin { -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; }
@@ -53,13 +54,17 @@ html.admin, body.admin, .admin, .page-wrap { background-color: var(--admin-page-
 	/* Ensure danger variants inside the profile menu remain red and outlined */
 	.admin #profile-menu .btn.btn-ghost.btn-danger,
 	.admin #profile-menu .btn.btn-danger {
+		/* keep ghost/menu items outlined; use soft filled variant for menu actions when used filled */
 		background: transparent;
 		border: 1px solid rgba(239,68,68,0.18);
 		color: var(--error-color);
 	}
 	/* use canonical tokens for destructive actions so dark mode follows automatically */
 	.admin .btn-logout { background: var(--error-color); color: var(--text-inverse); border:none; }
-	.admin .btn-logout:hover { background: var(--primary-color); }
+	.admin .btn-logout:hover { filter: brightness(0.94); }
+
+	/* menu / combo items that are destructive but not logout should prefer the softer filled color when shown as filled */
+	.pm-combo-menu .pm-subitem.btn-danger-filled, .pm-combo-menu .btn.btn-danger-filled { background: var(--error-color-muted); color: var(--text-inverse); border: none; }
 .admin .profile-wrap { position:relative; }
 .admin .header-left { display:flex; align-items:center; gap:1rem; }
 .admin .header-actions { display:flex; align-items:center; gap:.75rem; }
@@ -125,6 +130,8 @@ body.admin { overflow-x: hidden; }
 /* Danger / destructive buttons */
 .btn-danger { background: var(--error-color); color: var(--text-inverse); border: none; }
 .btn-danger:hover { filter: brightness(0.95); }
+.btn-danger-soft { background: var(--error-color-muted); color: var(--text-inverse); border: none; }
+.btn-danger-soft:hover { filter: brightness(0.96); }
 .btn-ghost.btn-danger { background: transparent; border:1px solid rgba(239,68,68,0.12); color: var(--error-color); }
 .btn-ghost.btn-danger:hover { background: rgba(239,68,68,0.04); }
 
