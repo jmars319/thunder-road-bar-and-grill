@@ -43,33 +43,56 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } elseif ($new !== $confirm) {
             $error = 'New passwords do not match';
         } else {
-            // generate new hash and update admin/config.php by replacing the constant
+            // generate new hash and prefer to write into admin/auth.json (untracked) so
+            // the runtime config and versioning work correctly. If that fails, fall
+            // back to replacing the constant inside config.php.
             $hash = password_hash($new, PASSWORD_DEFAULT);
-            $cfgFile = __DIR__ . '/config.php';
-            $orig = @file_get_contents($cfgFile);
-            if ($orig === false) {
-                $error = 'Failed to read config file. Check permissions.';
-            } else {
-                $replacement = "define('ADMIN_PASSWORD_HASH', '" . addslashes($hash) . "');";
-                $newContent = preg_replace("/define\(\s*'ADMIN_PASSWORD_HASH'\s*,\s*'[^']*'\s*\);/", $replacement, $orig, 1, $count);
-                if ($newContent === null) {
-                    $error = 'Failed to update config content';
-                } elseif ($count === 0) {
-                    // no match - append replacement after ADMIN_USERNAME define
-                    $newContent = preg_replace("/(define\(\s*'ADMIN_USERNAME'[^;]+;)/", "$1\n" . $replacement, $orig, 1, $c2);
-                }
 
-                if (empty($error)) {
-                    // write atomically
-                    $tmp = $cfgFile . '.tmp';
-                    if (file_put_contents($tmp, $newContent, LOCK_EX) !== false && @rename($tmp, $cfgFile)) {
-                        $success = 'Password updated successfully';
-                        // update runtime constant (best-effort) by defining if possible
-                        // note: constants cannot be redefined; user will need to re-login for new hash to take effect
-                    } else {
-                        @unlink($tmp);
-                        error_log('change-password.php: failed to write config file ' . $cfgFile);
-                        $error = 'Failed to write config file. Check permissions.';
+            // try to write to auth.json and bump version (preferred)
+            $wroteAuth = false;
+            if (function_exists('set_admin_hash_and_bump_version')) {
+                try {
+                    $wroteAuth = set_admin_hash_and_bump_version($hash);
+                } catch (Exception $e) {
+                    $wroteAuth = false;
+                }
+            }
+
+            if ($wroteAuth) {
+                // update session pw version so the current session remains valid
+                if (session_status() !== PHP_SESSION_ACTIVE) session_start();
+                $_SESSION['admin_pw_version'] = get_admin_password_version();
+                $success = 'Password updated successfully';
+            } else {
+                // fallback: update config.php by replacing the constant definition
+                $cfgFile = __DIR__ . '/config.php';
+                $orig = @file_get_contents($cfgFile);
+                if ($orig === false) {
+                    $error = 'Failed to read config file. Check permissions.';
+                } else {
+                    // use addslashes to safely insert the hash into single quotes
+                    $replacement = "define('ADMIN_PASSWORD_HASH', '" . addslashes($hash) . "');";
+                    $newContent = preg_replace("/define\(\s*'ADMIN_PASSWORD_HASH'\s*,\s*'[^']*'\s*\);/", $replacement, $orig, 1, $count);
+                    if ($newContent === null) {
+                        $error = 'Failed to update config content';
+                    } elseif ($count === 0) {
+                        // no match - append replacement after ADMIN_USERNAME define
+                        $newContent = preg_replace("/(define\(\s*'ADMIN_USERNAME'[^;]+;)/", "$1\n" . $replacement, $orig, 1, $c2);
+                    }
+
+                    if (empty($error)) {
+                        // write atomically
+                        $tmp = $cfgFile . '.tmp';
+                        if (file_put_contents($tmp, $newContent, LOCK_EX) !== false && @rename($tmp, $cfgFile)) {
+                            $success = 'Password updated successfully';
+                            // Best-effort: update session pw version to avoid immediate forced logout
+                            if (session_status() !== PHP_SESSION_ACTIVE) session_start();
+                            $_SESSION['admin_pw_version'] = get_admin_password_version();
+                        } else {
+                            @unlink($tmp);
+                            error_log('change-password.php: failed to write config file ' . $cfgFile);
+                            $error = 'Failed to write config file. Check permissions.';
+                        }
                     }
                 }
             }
