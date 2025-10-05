@@ -353,9 +353,9 @@ header('Content-Type: text/html; charset=utf-8');
     <style>
       body{font-family:Arial,Helvetica,sans-serif;padding:20px}
       table{width:100%;border-collapse:collapse}
-      th,td{padding:8px;border:1px solid #ddd;text-align:left}
-      th{background:#f4f4f4}
-      .small{font-size:0.9rem;color:#666}
+  th,td{padding:8px;border:1px solid var(--border-color);text-align:left}
+  th{background:var(--divider-color)}
+  .small{font-size:0.9rem;color:var(--text-secondary)}
       .top-actions{margin-bottom:1rem}
     </style>
   </head>
@@ -367,10 +367,10 @@ header('Content-Type: text/html; charset=utf-8');
   .toast { background: rgba(0,0,0,0.85); color:var(--text-inverse); padding:.6rem .8rem; border-radius:6px; box-shadow:0 6px 18px rgba(0,0,0,.2); opacity:.95 }
   .toast.success { background: var(--success-color) }
   .toast.error { background: var(--error-color) }
-    /* Modal */
-    #modal-backdrop { position:fixed; inset:0; background:rgba(0,0,0,.5); display:none; align-items:center; justify-content:center; z-index:10000 }
-    #modal { background:white; padding:1rem 1.25rem; border-radius:8px; max-width:480px; width:90%; box-shadow:0 10px 30px rgba(0,0,0,.25) }
-    #modal .actions { margin-top:1rem; display:flex; gap:.5rem; justify-content:flex-end }
+  /* Modal */
+  #modal-backdrop { position:fixed; inset:0; background:rgba(0,0,0,.5); display:none; align-items:center; justify-content:center; z-index:10000 }
+  #modal { background: var(--card-bg); padding:1rem 1.25rem; border-radius:8px; max-width:480px; width:90%; box-shadow:0 10px 30px rgba(0,0,0,.25); color: var(--text-primary) }
+  #modal .actions { margin-top:1rem; display:flex; gap:.5rem; justify-content:flex-end }
     </style>
 
     <div id="toast-container"></div>
