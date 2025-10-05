@@ -376,7 +376,7 @@ header('Content-Type: text/html; charset=utf-8');
     <div id="toast-container"></div>
     <div id="modal-backdrop" class="modal-backdrop">
       <div id="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
-        <div id="modal-header"><h2 id="modal-title">Confirm action</h2><button id="modal-close" aria-label="Close">✕</button></div>
+  <div id="modal-header"><h2 id="modal-title">Confirm action</h2><button id="modal-close" class="btn btn-ghost" aria-label="Close">✕</button></div>
         <div id="modal-body" class="modal-body">Are you sure?</div>
         <div class="actions"><button id="modal-cancel" type="button" class="btn btn-ghost">Cancel</button><button id="modal-ok" type="button" class="btn btn-primary">Confirm</button></div>
       </div>
@@ -498,7 +498,7 @@ header('Content-Type: text/html; charset=utf-8');
           <option value="100" <?php if ($per_page==100) echo 'selected'; ?>>100</option>
         </select>
       </label>
-      <button type="submit">Search</button>
+  <button type="submit" class="btn btn-primary">Search</button>
     </form>
   <p class="small">Total results: <?php echo (int)$total; ?> (page <?php echo (int)$page; ?> of <?php echo (int)$total_pages; ?>)</p>
     <?php if (empty($entries)): ?>

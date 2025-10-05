@@ -100,8 +100,8 @@ function csrf_input_field() {
       <label>Current password<input name="current_password" type="password" required></label>
       <label>New password<input name="new_password" type="password" required></label>
       <label>Confirm new password<input name="confirm_password" type="password" required></label>
-      <button type="submit">Change Password</button>
+    <button type="submit" class="btn btn-primary">Change Password</button>
     </form>
-    <p><a href="index.php">Back to admin</a></p>
+    <p><a href="index.php" class="btn btn-ghost">Back to admin</a></p>
   </body>
 </html>

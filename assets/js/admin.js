@@ -257,7 +257,7 @@
         row.style.display='flex'; row.style.alignItems='center'; row.style.gap='1rem'; row.style.marginBottom='.5rem';
         const img = document.createElement('img'); img.src = '../uploads/images/'+f; img.style.height='48px'; img.style.objectFit='cover';
         const name = document.createElement('div'); name.textContent = f; name.style.flex='1';
-  const del = document.createElement('button'); del.type='button'; del.textContent='Delete'; del.addEventListener('click', async ()=>{
+  const del = document.createElement('button'); del.type='button'; del.textContent='Delete'; del.className = 'btn btn-logout'; del.addEventListener('click', async ()=>{
           if (!await showConfirm('Delete '+f+'?')) return;
           const fd = new FormData(); fd.append('filename', f); fd.append('csrf_token', (document.querySelector('input[name="csrf_token"]')||{}).value || window.__csrfToken || '');
           fetch('delete-image.php', { method: 'POST', body: fd }).then(r=>r.json()).then(res=>{
@@ -265,7 +265,7 @@
             else showToast('Delete failed','error');
           });
         });
-  const restoreBtn = document.createElement('button'); restoreBtn.type='button'; restoreBtn.textContent='Trash'; restoreBtn.disabled=true; restoreBtn.title='In images list';
+  const restoreBtn = document.createElement('button'); restoreBtn.type='button'; restoreBtn.textContent='Trash'; restoreBtn.className = 'btn btn-ghost'; restoreBtn.disabled=true; restoreBtn.title='In images list';
         row.appendChild(img); row.appendChild(name); row.appendChild(del); row.appendChild(restoreBtn);
         list.appendChild(row);
       });
@@ -286,7 +286,7 @@
         row.style.display='flex'; row.style.alignItems='center'; row.style.gap='1rem'; row.style.marginBottom='.5rem';
         const img = document.createElement('img'); img.src = '../uploads/trash/'+it.trash_name; img.style.height='48px'; img.style.objectFit='cover';
         const name = document.createElement('div'); name.textContent = it.meta && it.meta.original ? it.meta.original : it.trash_name; name.style.flex='1';
-  const restore = document.createElement('button'); restore.type='button'; restore.textContent='Restore'; restore.addEventListener('click', async ()=>{
+  const restore = document.createElement('button'); restore.type='button'; restore.className = 'btn btn-ghost'; restore.textContent='Restore'; restore.addEventListener('click', async ()=>{
           if (!await showConfirm('Restore '+name.textContent+'?')) return;
           const fd = new FormData(); fd.append('trash_name', it.trash_name); fd.append('csrf_token', (document.querySelector('input[name="csrf_token"]')||{}).value || window.__csrfToken || '');
           fetch('restore-image.php', { method: 'POST', body: fd }).then(r=>r.json()).then(res=>{
