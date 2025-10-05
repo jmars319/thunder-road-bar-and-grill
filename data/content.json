@@ -29,9 +29,9 @@
         "sunday": "Closed"
     },
     "images": {
-        "logo": "logo-1759391867-68de307bb6469.png"
+        "logo": "trbg-logo.png"
     },
-    "last_updated": "2025-10-03 20:46:04",
+    "last_updated": "2025-10-05 03:37:51",
     "menu": [
         {
             "title": "Burgers & Sandwiches",
@@ -147,7 +147,7 @@
                 {
                     "title": "Grilled Cheese",
                     "short": "",
-                    "description": "Available cheese options: American | Cheddar | Provolone | Pimento | Cheese Sauce",
+                    "description": "Available cheese options: American || Cheddar || Provolone || Pimento || Cheese Sauce",
                     "image": "",
                     "price": "5.00",
                     "quantities": []
@@ -414,7 +414,7 @@
                     "short": "",
                     "description": "American | Cheddar | Provolone | Pimento | Cheese Sauce",
                     "image": "",
-                    "price": "0.50",
+                    "price": ".50",
                     "quantities": []
                 },
                 {
@@ -422,7 +422,7 @@
                     "short": "",
                     "description": "",
                     "image": "",
-                    "price": "0.50",
+                    "price": ".50",
                     "quantities": []
                 },
                 {
@@ -438,7 +438,7 @@
                     "short": "",
                     "description": "",
                     "image": "",
-                    "price": "0.50",
+                    "price": ".50",
                     "quantities": []
                 },
                 {
@@ -446,7 +446,7 @@
                     "short": "",
                     "description": "",
                     "image": "",
-                    "price": "0.50",
+                    "price": ".50",
                     "quantities": []
                 },
                 {
@@ -461,7 +461,7 @@
                     "short": "",
                     "description": "Ranch || Italian || 1000 Island || Balsamic Vinaigrette || Honey Mustard",
                     "image": "",
-                    "price": "0.50",
+                    "price": ".50",
                     "quantities": []
                 }
             ],
