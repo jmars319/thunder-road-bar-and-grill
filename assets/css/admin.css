@@ -317,6 +317,10 @@ body.admin { overflow-x: hidden; }
 		--input-border: rgba(255,255,255,0.06);
 		--border-color: rgba(255,255,255,0.06);
 		--divider-color: rgba(255,255,255,0.04);
+
+		/* Error colors tuned for dark mode to keep strong contrast */
+		--error-color: #ef4444; /* primary error (logout) — stays consistent */
+		--error-color-muted: #ef6b6b; /* softer destructive actions — tuned for dark */
 	}
 
 	/* admin page background in dark mode */
