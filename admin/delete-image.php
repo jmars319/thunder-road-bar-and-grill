@@ -71,4 +71,4 @@ if (file_exists($contentFile)) {
     }
 }
 
-echo json_encode(['success'=>true,'message'=>'Moved to trash','trash'=>($destName ?? null)]);
+echo json_encode(['success'=>true,'message'=>'Moved to Trash','trash'=>($destName ?? null)]);
