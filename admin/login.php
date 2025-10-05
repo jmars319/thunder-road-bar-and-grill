@@ -55,12 +55,12 @@ if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true
         }
         
         .login-header h1 {
-            color: #1c1917;
+            color: var(--text-primary);
             margin-bottom: 0.5rem;
         }
         
         .login-header p {
-            color: #78716c;
+            color: var(--text-secondary);
         }
         
         .form-group {
@@ -84,34 +84,34 @@ if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true
         
         .form-input:focus {
             outline: none;
-            border-color: #dc2626;
+            border-color: var(--primary-color);
             box-shadow: 0 0 0 3px rgba(220,38,38,0.08);
         }
         
         .btn-login {
             width: 100%;
             padding: 0.875rem;
-            background: #dc2626;
-            color: white;
+            background: var(--primary-color);
+            color: var(--text-inverse);
             border: none;
             border-radius: 6px;
             font-size: 1rem;
             font-weight: 600;
             cursor: pointer;
-            transition: background 0.2s;
+            transition: all 0.18s ease;
         }
-        
+
         .btn-login:hover {
-            background: #b91c1c;
+            filter: brightness(0.92);
         }
         
         .alert {
             padding: 1rem;
             border-radius: 6px;
             margin-bottom: 1rem;
-            background: #fee2e2;
-            color: #991b1b;
-            border: 1px solid #fca5a5;
+            background: rgba(239,68,68,0.08);
+            color: var(--error-color);
+            border: 1px solid rgba(239,68,68,0.16);
         }
     </style>
 </head>
@@ -140,7 +140,7 @@ if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true
         <?php endif; ?>
         
         <?php if (isset($_GET['logout'])): ?>
-        <div class="alert" style="background: #d1fae5; color: #065f46; border-color: #6ee7b7;">
+        <div class="alert" style="background: rgba(5,150,105,0.08); color: var(--success-color); border-color: rgba(5,150,105,0.16);">
             ✅ You have been logged out successfully
         </div>
         <?php endif; ?>

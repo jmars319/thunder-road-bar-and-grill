@@ -364,9 +364,9 @@ header('Content-Type: text/html; charset=utf-8');
     <style>
     /* Toasts */
     #toast-container { position: fixed; right: 1rem; top: 1rem; z-index: 9999; display:flex; flex-direction:column; gap:.5rem; }
-    .toast { background: #111827; color:#fff; padding:.6rem .8rem; border-radius:6px; box-shadow:0 6px 18px rgba(0,0,0,.2); opacity:.95 }
-    .toast.success { background:#10b981 }
-    .toast.error { background:#ef4444 }
+  .toast { background: rgba(0,0,0,0.85); color:var(--text-inverse); padding:.6rem .8rem; border-radius:6px; box-shadow:0 6px 18px rgba(0,0,0,.2); opacity:.95 }
+  .toast.success { background: var(--success-color) }
+  .toast.error { background: var(--error-color) }
     /* Modal */
     #modal-backdrop { position:fixed; inset:0; background:rgba(0,0,0,.5); display:none; align-items:center; justify-content:center; z-index:10000 }
     #modal { background:white; padding:1rem 1.25rem; border-radius:8px; max-width:480px; width:90%; box-shadow:0 10px 30px rgba(0,0,0,.25) }
@@ -560,7 +560,7 @@ header('Content-Type: text/html; charset=utf-8');
     <button id="add-menu-item" type="button" class="btn btn-primary">Add Section</button>
     <button id="expand-all-sections" type="button" class="btn btn-ghost" style="margin-left:.5rem">Expand all</button>
     <label style="margin-left:.6rem; font-weight:600; font-size:0.95rem; display:inline-block">Find item:</label>
-    <input id="find-menu-input" type="text" placeholder="Item title (e.g. Club Sub)" style="margin-left:.4rem; padding:.35rem; border-radius:6px; border:1px solid #eef2ff">
+  <input id="find-menu-input" type="text" placeholder="Item title (e.g. Club Sub)" style="margin-left:.4rem; padding:.35rem; border-radius:6px; border:1px solid var(--border-color)">
     <button id="find-menu-button" type="button" class="btn btn-ghost" style="margin-left:.25rem">Find</button>
   </div>
         <div id="menu-list"></div>
@@ -590,7 +590,7 @@ header('Content-Type: text/html; charset=utf-8');
       </script>
       <div id="menu-preview" style="flex:1;min-width:300px;max-width:480px;display:flex;flex-direction:column">
         <h3 style="margin-top:0">Live Preview</h3>
-        <div id="preview-area" style="border:1px solid #eef2ff;border-radius:8px;padding:.6rem;background:#fff;min-height:240px;overflow:auto;flex:1;min-height:0;max-height:640px"></div>
+  <div id="preview-area" style="border:1px solid var(--border-color);border-radius:8px;padding:.6rem;background:var(--card-bg);min-height:240px;overflow:auto;flex:1;min-height:0;max-height:640px"></div>
       </div>
     </div>
     

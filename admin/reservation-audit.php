@@ -55,9 +55,9 @@ header('Content-Type: text/html; charset=utf-8');
     <style>
       body{font-family:Arial,Helvetica,sans-serif;padding:20px}
       table{width:100%;border-collapse:collapse}
-      th,td{padding:6px;border:1px solid #ddd;text-align:left;font-size:0.9rem}
-      th{background:#f4f4f4}
-      .small{font-size:0.85rem;color:#666}
+  th,td{padding:6px;border:1px solid var(--border-color);text-align:left;font-size:0.9rem}
+  th{background:var(--divider-color)}
+  .small{font-size:0.85rem;color:var(--text-secondary)}
       .top-actions{margin-bottom:1rem;display:flex;gap:.5rem;align-items:center}
       .mono{font-family:monospace;font-size:0.85rem}
     </style>

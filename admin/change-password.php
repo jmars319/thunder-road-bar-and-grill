@@ -89,7 +89,7 @@ function csrf_input_field() {
   <head>
     <meta charset="utf-8">
     <title>Change Admin Password</title>
-    <style>body{font-family:Arial,Helvetica,sans-serif;padding:20px}label{display:block;margin-bottom:.5rem}input{width:100%;padding:.5rem;margin-bottom:1rem}.error{color:#b91c1c}.success{color:#059669}</style>
+    <style>body{font-family:Arial,Helvetica,sans-serif;padding:20px}label{display:block;margin-bottom:.5rem}input{width:100%;padding:.5rem;margin-bottom:1rem}.error{color:var(--error-color)}.success{color:var(--success-color)}</style>
   </head>
   <body>
     <h1>Change Password</h1>

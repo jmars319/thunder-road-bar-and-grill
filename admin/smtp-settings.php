@@ -20,8 +20,8 @@ if (file_exists(CONTENT_FILE)) {
     <link rel="stylesheet" href="/assets/css/admin.css">
     <style>
       body{font-family:Arial,Helvetica,sans-serif;padding:20px}
-      .small{font-size:0.9rem;color:#666}
-      .card{background:#fff;border:1px solid #eef2ff;padding:1rem;border-radius:8px}
+  .small{font-size:0.9rem;color:var(--text-secondary)}
+  .card{background:var(--card-bg);border:1px solid var(--border-color);padding:1rem;border-radius:8px}
     </style>
   </head>
   <body class="admin">
@@ -34,7 +34,7 @@ if (file_exists(CONTENT_FILE)) {
 
         <p class="small">Configure SMTP credentials used to send notification emails. Passwords are stored in <code>admin/auth.json</code> (untracked).</p>
         <?php if (!file_exists(__DIR__ . '/../vendor/autoload.php')): ?>
-          <div class="small" style="color:#a33;margin-top:.5rem">Note: PHPMailer (Composer dependencies) not detected. The SMTP test button will be disabled until you install dependencies (see README).</div>
+          <div class="small" style="color:var(--error-color);margin-top:.5rem">Note: PHPMailer (Composer dependencies) not detected. The SMTP test button will be disabled until you install dependencies (see README).</div>
         <?php endif; ?>
 
         <section class="card card-spaced">
