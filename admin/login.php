@@ -41,8 +41,8 @@ header('Content-Type: text/html; charset=utf-8');
             <div class="admin-card" style="max-width:520px;margin:2.5rem auto;padding:2rem">
                 <div style="display:flex;align-items:center;gap:12px;margin-bottom:1rem">
                     <a href="../" class="logo" style="display:inline-block">
-                        <?php if ($logoUrl): ?>
-                            <span class="logo-badge" aria-hidden="true"><img class="site-logo-img" src="<?php echo htmlspecialchars($logoUrl); ?>" alt="Admin" style="height:40px; width:auto; max-width:100%; display:inline-block; vertical-align:middle;"></span>
+                          <?php if ($logoUrl): ?>
+                          <span class="logo-badge" aria-hidden="true"><img class="site-logo-img" src="<?php echo htmlspecialchars($logoUrl); ?>" alt="Admin"></span>
                         <?php else: ?>
                             <strong><?php echo htmlspecialchars($c['business_info']['name'] ?? 'Admin'); ?></strong>
                         <?php endif; ?>
