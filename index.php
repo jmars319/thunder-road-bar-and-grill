@@ -273,7 +273,17 @@ $cssVersion = file_exists($cssPath) ? filemtime($cssPath) : time();
                                         echo '<div class="card menu-card section-card" data-section-idx="'.$sidx.'" data-section-id="'.htmlspecialchars($sectionId).'">';
                                         // If a section-level image is present, render it as a background block
                                         if ($firstImg) {
-                                            echo '<div class="menu-img menu-img-bg" aria-hidden="true" style="background-image:url(' . htmlspecialchars($firstImg) . ');"></div>';
+                                            // If the admin provided alt text for the section image, render
+                                            // a semantic <img> with that alt text for accessibility. Otherwise
+                                            // render as a decorative background (aria-hidden).
+                                            $alt = isset($section['image_alt']) ? trim((string)$section['image_alt']) : '';
+                                            if ($alt !== '') {
+                                                echo '<div class="menu-img" aria-hidden="false">';
+                                                echo '<img src="'.htmlspecialchars($firstImg).'" alt="'.htmlspecialchars($alt).'">';
+                                                echo '</div>';
+                                            } else {
+                                                echo '<div class="menu-img menu-img-bg" aria-hidden="true" style="background-image:url(' . htmlspecialchars($firstImg) . ');"></div>';
+                                            }
                                         }
                                         // collapsed card: only show section title and the expand button
                                         echo '<div class="menu-body">';

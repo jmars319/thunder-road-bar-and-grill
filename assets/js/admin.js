@@ -707,9 +707,12 @@
           const secImgInput = makeInput(section.image||'', 'filename.jpg or https://...'); secImgInput.title = 'Section image filename within uploads/images or a full URL'; secImgInput.setAttribute('data-field-type','image');
           const secPick = document.createElement('button'); secPick.type='button'; secPick.textContent='Pick'; secPick.className='btn btn-ghost'; secPick.addEventListener('click', ()=> openImagePicker(secImgInput, { allowedType: 'gallery' }));
           const secPreview = document.createElement('img'); secPreview.style.width='120px'; secPreview.style.height='80px'; secPreview.style.objectFit='cover'; secPreview.style.borderRadius='6px'; secPreview.style.marginLeft='.5rem';
+          // Alt text input for accessibility
+          const secAlt = makeInput(section.image_alt||'', 'Short description for screen readers (optional)'); secAlt.title = 'Optional short description for the section image (used as alt text)'; secAlt.style.maxWidth = '300px'; secAlt.style.marginLeft = '.5rem';
           if (secImgInput.value) secPreview.src = (secImgInput.value.match(/^https?:/i) ? secImgInput.value : ('../uploads/images/' + secImgInput.value));
           secImgInput.addEventListener('input', ()=>{ menuData[sidx].image = secImgInput.value; if (secImgInput.value) secPreview.src = (secImgInput.value.match(/^https?:/i) ? secImgInput.value : ('../uploads/images/' + secImgInput.value)); else secPreview.removeAttribute('src'); renderPreview(); });
-          secImageRow.appendChild(secImgInput); secImageRow.appendChild(secPick); secImageRow.appendChild(secPreview);
+          secAlt.addEventListener('input', ()=>{ menuData[sidx].image_alt = secAlt.value; renderPreview(); });
+          secImageRow.appendChild(secImgInput); secImageRow.appendChild(secPick); secImageRow.appendChild(secPreview); secImageRow.appendChild(secAlt);
           left.appendChild(secImageRow);
         })();
         header.appendChild(left);

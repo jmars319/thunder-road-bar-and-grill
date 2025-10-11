@@ -117,6 +117,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     // Extract a stable identifier for the menu section, if present.
                     $secId = isset($sdata['id']) ? $sdata['id'] : '';
 
+                    // Sanitize section-level alt text if provided (protect against very long values)
+                    if (isset($merged[$si]['image_alt'])) {
+                        $alt = trim((string)$merged[$si]['image_alt']);
+                        // limit to 180 characters to keep JSON size reasonable and avoid abuse
+                        if (mb_strlen($alt) > 180) $alt = mb_substr($alt, 0, 180);
+                        $merged[$si]['image_alt'] = $alt;
+                    }
+
                     if (isset($sdata['items']) && is_array($sdata['items'])) {
                         foreach ($sdata['items'] as $ii => $item) {
                             // If an incoming item has `short` but no `description`,
