@@ -37,9 +37,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['image'])) {
     $imageType = preg_replace('/[^a-z0-9_\-]/i', '', ($_POST['type'] ?? 'general'));
 
     // Basic upload error check
-    if (!isset($image['error']) || $image['error'] !== UPLOAD_ERR_OK) {
+    $uploadErr = $image['error'] ?? null;
+    if (!isset($uploadErr) || $uploadErr !== UPLOAD_ERR_OK) {
+        // Map common PHP upload error codes to friendly messages
+        $errMap = [
+            UPLOAD_ERR_INI_SIZE => 'The uploaded file exceeds the server limit (upload_max_filesize).',
+            UPLOAD_ERR_FORM_SIZE => 'The uploaded file exceeds the form limit (MAX_FILE_SIZE).',
+            UPLOAD_ERR_PARTIAL => 'The uploaded file was only partially uploaded.',
+            UPLOAD_ERR_NO_FILE => 'No file was uploaded.',
+            UPLOAD_ERR_NO_TMP_DIR => 'Missing a temporary folder on the server.',
+            UPLOAD_ERR_CANT_WRITE => 'Failed to write file to disk.',
+            UPLOAD_ERR_EXTENSION => 'A PHP extension stopped the file upload.'
+        ];
+        $userMsg = 'File upload error';
+        if (isset($uploadErr) && isset($errMap[$uploadErr])) $userMsg = $errMap[$uploadErr];
+        elseif (isset($uploadErr)) $userMsg = 'File upload error (code ' . intval($uploadErr) . ')';
+
+        // Log details for server-side debugging (filename and error code)
+        error_log('upload-image.php: upload error for ' . ($image['name'] ?? '[unknown]') . ' code=' . var_export($uploadErr, true));
+
         http_response_code(400);
-        echo json_encode(['success' => false, 'message' => 'File upload error']);
+        echo json_encode(['success' => false, 'message' => $userMsg]);
         exit;
     }
 
