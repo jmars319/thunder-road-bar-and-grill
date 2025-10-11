@@ -292,8 +292,60 @@ class EmailScheduler {
     }
 
     private function sendEmail($config, $recipients, $subject, $body) {
-        $headers = "From: {$config['email_address']}\r\n";
-        $headers .= "Reply-To: {$config['email_address']}\r\n";
+        // Prefer PHPMailer (SMTP) if available and configured. Fallback to PHP mail().
+        $autoload = __DIR__ . '/../vendor/autoload.php';
+        if (file_exists($autoload)) {
+            require_once $autoload;
+        }
+
+        if (class_exists('\\PHPMailer\\PHPMailer\\PHPMailer')) {
+            // Use PHPMailer with SMTP using config or project constants/overrides
+            $mail = new \PHPMailer\PHPMailer\PHPMailer(true);
+            try {
+                $smtpHost = $config['smtp_server'] ?? (defined('SMTP_HOST') ? SMTP_HOST : null);
+                $smtpPort = $config['smtp_port'] ?? (defined('SMTP_PORT') ? SMTP_PORT : null);
+                $smtpUser = $config['email_address'] ?? ($GLOBALS['SMTP_USERNAME_OVERRIDE'] ?? (defined('SMTP_USERNAME') ? SMTP_USERNAME : null));
+                $smtpPass = $config['email_password'] ?? ($GLOBALS['SMTP_PASSWORD_OVERRIDE'] ?? (defined('SMTP_PASSWORD') ? SMTP_PASSWORD : null));
+                $smtpSecure = defined('SMTP_SECURE') ? SMTP_SECURE : 'tls';
+
+                $mail->isSMTP();
+                if ($smtpHost) $mail->Host = $smtpHost;
+                if ($smtpPort) $mail->Port = (int)$smtpPort;
+                $mail->SMTPAuth = true;
+                if ($smtpUser) $mail->Username = $smtpUser;
+                if ($smtpPass) $mail->Password = $smtpPass;
+                if (!empty($smtpSecure)) {
+                    // PHPMailer expects 'tls' or 'ssl' or empty
+                    $mail->SMTPSecure = $smtpSecure;
+                }
+
+                $fromAddress = $smtpUser ?? ($config['email_address'] ?? ($GLOBALS['SMTP_USERNAME_OVERRIDE'] ?? (defined('SMTP_FROM_ADDRESS') ? SMTP_FROM_ADDRESS : null)));
+                $fromName = defined('SMTP_FROM_NAME') ? SMTP_FROM_NAME : null;
+                if ($fromAddress) {
+                    $mail->setFrom($fromAddress, $fromName ?: '');
+                }
+
+                $mail->Subject = $subject;
+                $mail->Body = $body;
+                $mail->isHTML(false);
+
+                foreach ($recipients as $recipient) {
+                    $mail->clearAddresses();
+                    $mail->addAddress($recipient);
+                    if (!$mail->send()) {
+                        throw new Exception('PHPMailer failed to send: ' . $mail->ErrorInfo);
+                    }
+                }
+                return;
+            } catch (Exception $e) {
+                // If PHPMailer fails, fall through to PHP mail() fallback below
+                error_log('EmailScheduler: PHPMailer error - ' . $e->getMessage());
+            }
+        }
+
+        // Fallback: PHP mail()
+        $headers = "From: " . ($config['email_address'] ?? (defined('SMTP_FROM_ADDRESS') ? SMTP_FROM_ADDRESS : '')) . "\r\n";
+        $headers .= "Reply-To: " . ($config['email_address'] ?? '') . "\r\n";
         $headers .= "X-Mailer: PHP/" . phpversion();
 
         foreach ($recipients as $recipient) {
