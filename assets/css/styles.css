@@ -917,7 +917,8 @@ a.btn.btn-primary:focus {
 }
 
 .hero-subtitle {
-    font-size: var(--font-size-xl);
+    /* slightly larger to improve legibility against images */
+    font-size: calc(var(--font-size-xl) * 1.1);
     opacity: 0.9;
     margin-bottom: var(--spacing-xl);
     max-width: 600px;
