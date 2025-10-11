@@ -463,8 +463,16 @@
       // clear sections
       if (listLogo) listLogo.innerHTML=''; if (listHero) listHero.innerHTML=''; if (listGallery) listGallery.innerHTML=''; if (listGeneral) listGeneral.innerHTML='';
       j.files.forEach(f=>{
-        // infer type from filename prefix: <type>-timestamp-...ext
-        const parts = f.split('-'); const t = parts[0] || 'general';
+        // Infer type heuristically.
+        // Prefer explicit prefix (logo-, hero-, gallery-). Otherwise use keywords in filename.
+        const lower = f.toLowerCase();
+        let t = 'general';
+        const parts = f.split('-');
+        if (parts.length && ['logo','hero','gallery','general'].includes(parts[0].toLowerCase())) t = parts[0].toLowerCase();
+        else if (lower.indexOf('logo') !== -1 || lower.indexOf('trbg') !== -1) t = 'logo';
+        else if (lower.indexOf('hero') !== -1) t = 'hero';
+        else if (lower.indexOf('gallery') !== -1 || lower.indexOf('img') !== -1 || lower.indexOf('photo') !== -1) t = 'gallery';
+
         if (t === 'logo' && listLogo) appendRowTo(listLogo, f);
         else if (t === 'hero' && listHero) appendRowTo(listHero, f);
         else if (t === 'gallery' && listGallery) appendRowTo(listGallery, f);
