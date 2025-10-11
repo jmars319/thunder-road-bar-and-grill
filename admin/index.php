@@ -470,6 +470,9 @@ header('Content-Type: text/html; charset=utf-8');
                   </form>
                 </div>
                 <div class="pm-item">
+                  <a class="pm-subitem" href="resume-downloads.php"><span class="pm-icon" aria-hidden="true"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2v6M8 6h8M4 12v6a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Resume Downloads</a>
+                </div>
+                <div class="pm-item">
                   <a class="btn btn-ghost" href="smtp-settings.php"><span class="pm-icon" aria-hidden="true"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M4 4h16v16H4zM4 8l8 5 8-5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>SMTP Settings</a>
                 </div>
                 <div class="pm-item pm-sep">

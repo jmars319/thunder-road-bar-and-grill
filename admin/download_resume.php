@@ -22,6 +22,19 @@ $finfo = @finfo_open(FILEINFO_MIME_TYPE);
 $mime = $finfo ? finfo_file($finfo, $path) : 'application/octet-stream';
 @finfo_close($finfo);
 
+// Log the download (append JSON line)
+$logDir = __DIR__ . '/../logs/'; @mkdir($logDir, 0755, true);
+$logFile = $logDir . 'resume_downloads.log';
+$entry = [
+    'timestamp' => function_exists('eastern_now') ? eastern_now('c') : date('c'),
+    'admin' => $_SESSION['admin_username'] ?? (defined('ADMIN_USERNAME') ? ADMIN_USERNAME : 'admin'),
+    'ip' => $_SERVER['REMOTE_ADDR'] ?? 'unknown',
+    'file' => $name,
+    'original' => $orig,
+    'application_id' => $_GET['app_id'] ?? null,
+];
+file_put_contents($logFile, json_encode($entry, JSON_UNESCAPED_SLASHES) . "\n", FILE_APPEND | LOCK_EX);
+
 header('Content-Type: ' . $mime);
 header('Content-Disposition: attachment; filename="' . basename($orig) . '"');
 header('Content-Length: ' . filesize($path));
