@@ -926,6 +926,37 @@ a.btn.btn-primary:focus {
     line-height: 1.4;
 }
 
+/* Improve hero text readability by adding a subtle brand-colored outline.
+   Use -webkit-text-stroke where available and multiple text-shadow offsets
+   as a robust fallback for other browsers. Keep stroke light so the text
+   remains legible and brand-consistent. */
+.hero-title,
+.hero-subtitle {
+    /* Ensure primary text stays white for contrast */
+    color: #fff;
+    /* Preferred stroke (WebKit/modern browsers) */
+    -webkit-text-stroke: 1.25px var(--primary-color);
+    text-stroke: 1.25px var(--primary-color);
+    /* Fallback outline using multiple shadows to simulate a stroke */
+    text-shadow:
+        1px 1px 0 var(--primary-color),
+        -1px -1px 0 var(--primary-color),
+        1px -1px 0 var(--primary-color),
+        -1px 1px 0 var(--primary-color),
+        0 1px 0 var(--primary-color),
+        0 -1px 0 var(--primary-color),
+        1px 0 0 var(--primary-color),
+        -1px 0 0 var(--primary-color),
+        /* subtle soft shadow underneath for depth */
+        0 2px 6px rgba(0,0,0,0.25);
+}
+
+/* Slightly thinner stroke for subtitle to avoid heavy appearance */
+.hero-subtitle {
+    -webkit-text-stroke-width: 0.9px;
+    text-stroke-width: 0.9px;
+}
+
 /* Section Component */
 .section { padding: calc(var(--spacing-2xl) * 2) 0; }
 
