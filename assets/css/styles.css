@@ -953,8 +953,19 @@ a.btn.btn-primary:focus {
 
 /* Slightly thinner stroke for subtitle to avoid heavy appearance */
 .hero-subtitle {
-    -webkit-text-stroke-width: 0.9px;
-    text-stroke-width: 0.9px;
+    -webkit-text-stroke-width: 0.6px;
+    text-stroke-width: 0.6px;
+    /* Lighter shadow/stroke fallback for subtitle to avoid heavy appearance */
+    text-shadow:
+        0.6px 0.6px 0 var(--primary-color),
+        -0.6px -0.6px 0 var(--primary-color),
+        0.6px -0.6px 0 var(--primary-color),
+        -0.6px 0.6px 0 var(--primary-color),
+        0 0.6px 0 var(--primary-color),
+        0 -0.6px 0 var(--primary-color),
+        0.6px 0 0 var(--primary-color),
+        -0.6px 0 0 var(--primary-color),
+        0 1.5px 6px rgba(0,0,0,0.22);
 }
 
 /* Section Component */
