@@ -53,7 +53,7 @@ if (file_exists(CONTENT_FILE)) {
               <h1 style="margin:0">Email Scheduler</h1>
               <div class="topbar">
                 <a href="../" class="btn btn-ghost" target="_blank">View site</a>
-                <a href="index.php" class="btn btn-primary">Back to Dashboard</a>
+                <a href="index.php" class="btn btn-ghost">Back to Dashboard</a>
               </div>
             </div>
           </div>
