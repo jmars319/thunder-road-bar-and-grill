@@ -271,21 +271,44 @@
     return wrap;
   }
 
-  function openImagePicker(targetInput, multiple){
+  // openImagePicker: targetInput (DOM input), multiple (bool) or options (object)
+  // options.allowedType - when set, will prefer images of that logical type (e.g. 'gallery')
+  function openImagePicker(targetInput, multipleOrOptions){
     const backdrop = document.getElementById('modal-backdrop');
     const body = document.getElementById('modal-body');
     if (!backdrop || !body) return;
     body.innerHTML = '<div style="max-height:320px;overflow:auto;display:flex;flex-wrap:wrap;gap:.5rem"></div>';
     const grid = body.firstChild;
   backdrop.style.display='flex';
-  // NOTE: list-images.php returns a JSON list of filenames in
-  // uploads/images. This UI trusts that the admin session is
-  // authenticated; the server-side endpoint enforces auth and CSRF
-  // where appropriate. The picker only displays filenames — the
-  // chosen value is written into the text input for later saving.
-    fetch('list-images.php').then(r=>r.json()).then(j=>{
+  // NOTE: list-images.php returns a JSON list of filenames in uploads/images.
+  // The picker accepts an optional options object to filter by logical type
+  // (e.g. 'gallery'). Prefer server-side filtering via query string but fall
+  // back to client-side filtering if needed.
+  let multiple = false; let allowedType = null;
+  if (typeof multipleOrOptions === 'object' && multipleOrOptions !== null) {
+    multiple = !!multipleOrOptions.multiple;
+    allowedType = multipleOrOptions.allowedType || null;
+  } else {
+    multiple = !!multipleOrOptions;
+  }
+  const url = allowedType ? ('list-images.php?type=' + encodeURIComponent(allowedType)) : 'list-images.php';
+    fetch(url).then(r=>r.json()).then(j=>{
       if (!j || !Array.isArray(j.files)) { grid.innerHTML = '<i>No images</i>'; return; }
-        j.files.forEach(f=>{
+        // if server didn't filter by type, perform client-side filtering
+        let files = j.files;
+        if (allowedType) {
+          const lowerAllowed = allowedType.toLowerCase();
+          files = files.filter(f=>{
+            const low = f.toLowerCase();
+            if (lowerAllowed === 'gallery') {
+              // prefer gallery-like names or anything that's not hero/logo
+              if (low.indexOf('hero') !== -1 || low.indexOf('logo') !== -1) return false;
+              return true;
+            }
+            return true;
+          });
+        }
+        files.forEach(f=>{
         const thumb = document.createElement('div'); thumb.style.width='120px'; thumb.style.cursor='pointer'; thumb.style.textAlign='center';
         const img = document.createElement('img'); img.src = '../uploads/images/'+f; img.style.width='100%'; img.style.height='80px'; img.style.objectFit='cover';
         const lab = document.createElement('div'); lab.textContent = f; lab.style.fontSize='0.8rem'; lab.style.overflow='hidden'; lab.style.textOverflow='ellipsis'; lab.style.whiteSpace='nowrap';
@@ -678,6 +701,17 @@
         }
         renderDetailsAdmin();
         left.appendChild(detailsContainer);
+        // Section-level image: single image per section (replaces per-item images)
+        (function(){
+          const secImageRow = document.createElement('div'); secImageRow.style.display='flex'; secImageRow.style.gap='.5rem'; secImageRow.style.marginTop='.5rem'; secImageRow.style.alignItems='center';
+          const secImgInput = makeInput(section.image||'', 'filename.jpg or https://...'); secImgInput.title = 'Section image filename within uploads/images or a full URL'; secImgInput.setAttribute('data-field-type','image');
+          const secPick = document.createElement('button'); secPick.type='button'; secPick.textContent='Pick'; secPick.className='btn btn-ghost'; secPick.addEventListener('click', ()=> openImagePicker(secImgInput, { allowedType: 'gallery' }));
+          const secPreview = document.createElement('img'); secPreview.style.width='120px'; secPreview.style.height='80px'; secPreview.style.objectFit='cover'; secPreview.style.borderRadius='6px'; secPreview.style.marginLeft='.5rem';
+          if (secImgInput.value) secPreview.src = (secImgInput.value.match(/^https?:/i) ? secImgInput.value : ('../uploads/images/' + secImgInput.value));
+          secImgInput.addEventListener('input', ()=>{ menuData[sidx].image = secImgInput.value; if (secImgInput.value) secPreview.src = (secImgInput.value.match(/^https?:/i) ? secImgInput.value : ('../uploads/images/' + secImgInput.value)); else secPreview.removeAttribute('src'); renderPreview(); });
+          secImageRow.appendChild(secImgInput); secImageRow.appendChild(secPick); secImageRow.appendChild(secPreview);
+          left.appendChild(secImageRow);
+        })();
         header.appendChild(left);
 
         const hdrControls = document.createElement('div'); hdrControls.style.display='flex'; hdrControls.style.gap='.4rem';
@@ -825,11 +859,8 @@
             }
 
           const rightCol = document.createElement('div'); rightCol.style.display='flex'; rightCol.style.flexDirection='column'; rightCol.style.gap='.4rem';
-          const imgIn = makeInput(it.image||'', 'filename.jpg or https://...'); imgIn.title = 'Image filename within uploads/images or a full URL'; imgIn.setAttribute('data-field-type','image');
-          const pick = document.createElement('button'); pick.type='button'; pick.textContent='Pick'; pick.className='btn btn-ghost'; pick.addEventListener('click', ()=> openImagePicker(imgIn));
-          const imgRow = document.createElement('div'); imgRow.style.display='flex'; imgRow.style.gap='.4rem'; imgRow.appendChild(imgIn); imgRow.appendChild(pick);
-          const preview = document.createElement('img'); preview.style.width='100%'; preview.style.height='80px'; preview.style.objectFit='cover'; preview.style.marginTop='.4rem'; if (imgIn.value) preview.src = '../uploads/images/' + imgIn.value;
-          imgIn.addEventListener('input', ()=>{ menuData[sidx].items[idx].image = imgIn.value; if (imgIn.value) preview.src = '../uploads/images/' + imgIn.value; else preview.removeAttribute('src'); renderPreview(); });
+          // Per-item images have been removed. Images are now assigned at the section level.
+          // Any legacy item.image values are preserved in the data but not editable here.
           // Also update preview when textual fields change
           titleIn.addEventListener('input', renderPreview); if (priceIn) priceIn.addEventListener('input', renderPreview); descIn.addEventListener('input', renderPreview);
 
@@ -841,7 +872,7 @@
           // ensure preview updates after delete
           del.addEventListener('click', ()=> setTimeout(renderPreview, 100));
 
-          rightCol.appendChild(imgRow); rightCol.appendChild(preview); rightCol.appendChild(itemControls);
+          rightCol.appendChild(itemControls);
 
           row.appendChild(leftCol); row.appendChild(rightCol);
           itemsInner.appendChild(row);
@@ -965,6 +996,11 @@
         const sec = document.createElement('div'); sec.className='preview-section';
         const title = document.createElement('div'); title.className='preview-title'; title.textContent = section.title || 'Section';
         sec.appendChild(title);
+        // Show section-level image if present
+        if (section && section.image) {
+          const secImg = document.createElement('img'); secImg.className = 'preview-section-image'; secImg.src = section.image.match(/^https?:/i) ? section.image : ('../uploads/images/' + section.image); secImg.style.width = '100%'; secImg.style.maxHeight = '220px'; secImg.style.objectFit = 'cover'; secImg.style.marginBottom = '.6rem';
+          sec.appendChild(secImg);
+        }
         const itemsWrap = document.createElement('div');
         // section-level details shown once for the whole section
         if (Array.isArray(section.details) && section.details.length) {
@@ -974,7 +1010,6 @@
         }
         (section.items || []).forEach(it=>{
           const pi = document.createElement('div'); pi.className='preview-item';
-          if (it.image) { const im = document.createElement('img'); im.src = '../uploads/images/'+it.image; pi.appendChild(im); }
           const meta = document.createElement('div'); meta.className='preview-meta';
           const t = document.createElement('div'); t.textContent = it.title || ''; t.style.fontWeight='700';
           const s = document.createElement('div'); s.className='small'; s.textContent = it.short || '';
