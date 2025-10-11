@@ -697,6 +697,9 @@ header('Content-Type: text/html; charset=utf-8');
         <label>File
           <input type="file" name="image" accept="image/*" required>
         </label>
+        <div class="small muted-text" style="margin-top:.25rem">
+          Max upload size: server <?php echo htmlspecialchars(ini_get('upload_max_filesize')); ?> — app 5MB
+        </div>
         <button type="submit" class="btn btn-primary">Upload Image</button>
         <div id="upload-result" class="small"></div>
       </form>
