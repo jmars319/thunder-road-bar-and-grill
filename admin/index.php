@@ -687,7 +687,7 @@ header('Content-Type: text/html; charset=utf-8');
       <form id="upload-form" enctype="multipart/form-data">
         <?php echo csrf_input_field(); ?>
         <label>Type
-          <select name="type">
+          <select name="type" id="upload-type-select">
             <option value="logo">Logo</option>
             <option value="hero">Hero</option>
             <option value="gallery">Gallery</option>
@@ -700,7 +700,32 @@ header('Content-Type: text/html; charset=utf-8');
         <button type="submit" class="btn btn-primary">Upload Image</button>
         <div id="upload-result" class="small"></div>
       </form>
-    <div id="image-list"></div>
+
+      <div class="upload-tabs" role="tablist" aria-label="Image upload sections">
+        <button class="upload-tab btn btn-ghost" data-section="logo" role="tab" aria-selected="false">Logo</button>
+        <button class="upload-tab btn btn-ghost" data-section="hero" role="tab" aria-selected="false">Hero</button>
+        <button class="upload-tab btn btn-ghost" data-section="gallery" role="tab" aria-selected="false">Gallery</button>
+        <button class="upload-tab btn btn-ghost" data-section="general" role="tab" aria-selected="false">General</button>
+      </div>
+
+      <div id="image-lists">
+        <div class="image-list-section" data-section="logo" hidden>
+          <h3>Logo uploads</h3>
+          <div class="image-list" id="image-list-logo"></div>
+        </div>
+        <div class="image-list-section" data-section="hero" hidden>
+          <h3>Hero uploads</h3>
+          <div class="image-list" id="image-list-hero"></div>
+        </div>
+        <div class="image-list-section" data-section="gallery" hidden>
+          <h3>Gallery uploads</h3>
+          <div class="image-list" id="image-list-gallery"></div>
+        </div>
+        <div class="image-list-section" data-section="general" hidden>
+          <h3>General uploads</h3>
+          <div class="image-list" id="image-list-general"></div>
+        </div>
+      </div>
     </div>
 
 

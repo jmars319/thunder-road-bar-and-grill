@@ -409,7 +409,24 @@
                 }
               }
             }
-            refreshImageList();
+            // append to per-type list if present, otherwise refresh full list
+            try {
+              const targetList = document.getElementById('image-list-' + upType);
+              if (targetList) {
+                const row = document.createElement('div'); row.style.display='flex'; row.style.alignItems='center'; row.style.gap='1rem'; row.style.marginBottom='.5rem';
+                const img = document.createElement('img'); img.src = '../uploads/images/' + j.filename; img.style.height='48px'; img.style.objectFit='cover';
+                const name = document.createElement('div'); name.textContent = j.filename; name.style.flex='1';
+                const del = document.createElement('button'); del.type='button'; del.textContent='Move to Trash'; del.title = 'Move to trash — can be restored from Trash'; del.className = 'btn btn-danger-soft'; del.addEventListener('click', async ()=>{
+                  if (!await showConfirm('Move '+j.filename+' to Trash?')) return;
+                  const fd2 = new FormData(); fd2.append('filename', j.filename); fd2.append('csrf_token', (document.querySelector('input[name="csrf_token"]')||{}).value || window.__csrfToken || '');
+                  fetch('delete-image.php', { method: 'POST', body: fd2 }).then(r=>r.json()).then(res=>{ if (res && res.success) { targetList.removeChild(row); showToast('Moved to trash','success'); } else showToast('Delete failed','error'); });
+                });
+                row.appendChild(img); row.appendChild(name); row.appendChild(del);
+                targetList.insertBefore(row, targetList.firstChild);
+              } else {
+                refreshImageList();
+              }
+            } catch(e){ refreshImageList(); }
           } catch(e){}
         } else {
           uploadResult.textContent = 'Upload failed: ' + (j.message || 'unknown');
@@ -419,28 +436,62 @@
   }
 
   function refreshImageList() {
-    const list = document.getElementById('image-list');
-    if (!list) return;
+    // If per-section lists exist, populate them based on filename prefix (type-...)
+    const listLogo = document.getElementById('image-list-logo');
+    const listHero = document.getElementById('image-list-hero');
+    const listGallery = document.getElementById('image-list-gallery');
+    const listGeneral = document.getElementById('image-list-general');
+    const hasSections = listLogo || listHero || listGallery || listGeneral;
     fetch('list-images.php').then(r=>r.json()).then(j=>{
-      if (!j || !Array.isArray(j.files)) { list.innerHTML = '<i>No images</i>'; return; }
-      list.innerHTML = '';
+      if (!j || !Array.isArray(j.files)) {
+        if (hasSections) {
+          if (listLogo) listLogo.innerHTML = '<i>No images</i>';
+          if (listHero) listHero.innerHTML = '<i>No images</i>';
+          if (listGallery) listGallery.innerHTML = '<i>No images</i>';
+          if (listGeneral) listGeneral.innerHTML = '<i>No images</i>';
+        }
+        return;
+      }
+      if (!hasSections) {
+        // fallback to legacy single list
+        const list = document.getElementById('image-list');
+        if (!list) return;
+        list.innerHTML = '';
+        j.files.forEach(f=>{ appendRowTo(list, f); });
+        return;
+      }
+      // clear sections
+      if (listLogo) listLogo.innerHTML=''; if (listHero) listHero.innerHTML=''; if (listGallery) listGallery.innerHTML=''; if (listGeneral) listGeneral.innerHTML='';
       j.files.forEach(f=>{
-        const row = document.createElement('div');
-        row.style.display='flex'; row.style.alignItems='center'; row.style.gap='1rem'; row.style.marginBottom='.5rem';
-        const img = document.createElement('img'); img.src = '../uploads/images/'+f; img.style.height='48px'; img.style.objectFit='cover';
-        const name = document.createElement('div'); name.textContent = f; name.style.flex='1';
-        const del = document.createElement('button'); del.type='button'; del.textContent='Move to Trash'; del.title = 'Move to trash — can be restored from Trash'; del.className = 'btn btn-danger-soft'; del.addEventListener('click', async ()=>{
-          if (!await showConfirm('Move '+f+' to Trash?')) return;
-          const fd = new FormData(); fd.append('filename', f); fd.append('csrf_token', (document.querySelector('input[name="csrf_token"]')||{}).value || window.__csrfToken || '');
-          fetch('delete-image.php', { method: 'POST', body: fd }).then(r=>r.json()).then(res=>{
-            if (res && res.success) { refreshImageList(); showToast('Moved to trash','success'); }
-            else showToast('Delete failed','error');
-          });
-        });
-        row.appendChild(img); row.appendChild(name); row.appendChild(del);
-        list.appendChild(row);
+        // infer type from filename prefix: <type>-timestamp-...ext
+        const parts = f.split('-'); const t = parts[0] || 'general';
+        if (t === 'logo' && listLogo) appendRowTo(listLogo, f);
+        else if (t === 'hero' && listHero) appendRowTo(listHero, f);
+        else if (t === 'gallery' && listGallery) appendRowTo(listGallery, f);
+        else if (listGeneral) appendRowTo(listGeneral, f);
       });
-    }).catch(()=>{ list.innerHTML = '<i>Failed to list images</i>'; });
+    }).catch(()=>{
+      if (hasSections) {
+        if (listLogo) listLogo.innerHTML = '<i>Failed to list images</i>';
+        if (listHero) listHero.innerHTML = '<i>Failed to list images</i>';
+        if (listGallery) listGallery.innerHTML = '<i>Failed to list images</i>';
+        if (listGeneral) listGeneral.innerHTML = '<i>Failed to list images</i>';
+      }
+    });
+  }
+
+  function appendRowTo(list, filename) {
+    const row = document.createElement('div');
+    row.style.display='flex'; row.style.alignItems='center'; row.style.gap='1rem'; row.style.marginBottom='.5rem';
+    const img = document.createElement('img'); img.src = '../uploads/images/'+filename; img.style.height='48px'; img.style.objectFit='cover';
+    const name = document.createElement('div'); name.textContent = filename; name.style.flex='1';
+    const del = document.createElement('button'); del.type='button'; del.textContent='Move to Trash'; del.title = 'Move to trash — can be restored from Trash'; del.className = 'btn btn-danger-soft'; del.addEventListener('click', async ()=>{
+      if (!await showConfirm('Move '+filename+' to Trash?')) return;
+      const fd = new FormData(); fd.append('filename', filename); fd.append('csrf_token', (document.querySelector('input[name="csrf_token"]')||{}).value || window.__csrfToken || '');
+      fetch('delete-image.php', { method: 'POST', body: fd }).then(r=>r.json()).then(res=>{ if (res && res.success) { list.removeChild(row); showToast('Moved to trash','success'); } else showToast('Delete failed','error'); });
+    });
+    row.appendChild(img); row.appendChild(name); row.appendChild(del);
+    list.appendChild(row);
   }
 
   // Load trashed images into a separate view
@@ -1088,4 +1139,20 @@
       showConfirm(msg).then(function(ok){ if (ok) form.submit(); });
     }, true);
   })();
+  // Initialize upload tabs if present
+  try { if (typeof initUploadTabs === 'function') initUploadTabs(); } catch(e){}
 })();
+
+// Define initUploadTabs after the main IIFE so it's available when called
+function initUploadTabs(){
+  const tabs = Array.from(document.querySelectorAll('.upload-tab'));
+  if (!tabs || !tabs.length) return;
+  const sections = Array.from(document.querySelectorAll('.image-list-section'));
+  function showSection(name){
+    sections.forEach(s=>{ if (s.dataset.section === name) { s.hidden = false; } else { s.hidden = true; } });
+    tabs.forEach(t=>{ const is = t.dataset.section === name; t.setAttribute('aria-selected', is ? 'true' : 'false'); if (is) t.classList.add('active'); else t.classList.remove('active'); });
+  }
+  tabs.forEach(t=> t.addEventListener('click', function(e){ e.preventDefault(); showSection(t.dataset.section); }));
+  const initial = (document.getElementById('upload-type-select') && document.getElementById('upload-type-select').value) || 'logo';
+  showSection(initial);
+}

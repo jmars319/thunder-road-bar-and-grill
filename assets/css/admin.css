@@ -89,6 +89,13 @@ html.admin, body.admin, .admin, .page-wrap { background-color: var(--admin-page-
 	.admin .tooltip::after { content: attr(data-tooltip); position:absolute; left:50%; transform:translateX(-50%); bottom:calc(100% + 8px); background: var(--text-primary); color: var(--text-inverse); padding:.35rem .5rem; border-radius:6px; white-space:nowrap; font-size:12px; display:none; z-index:60 }
 .admin .tooltip:hover::after, .admin .tooltip:focus::after { display:block }
 
+/* Upload tabs styling */
+.upload-tabs { display:flex; gap:.5rem; margin-top:.6rem; margin-bottom:.6rem }
+.upload-tab.active { background: linear-gradient(90deg,var(--admin-grad-1),var(--accent)); color: var(--text-inverse); }
+.image-list-section { background: var(--surface); padding:.6rem; border-radius:8px; border:1px solid rgba(2,6,23,0.04); margin-bottom:.6rem }
+.image-list-section h3 { margin:0 0 .5rem 0; font-size:1rem }
+.image-list { display:flex; flex-direction:column; gap:.5rem }
+
 /* utility: visually hidden (screen-reader only) */
 .sr-only { position: absolute !important; height: 1px; width: 1px; overflow: hidden; clip: rect(1px, 1px, 1px, 1px); white-space: nowrap; }
 
