@@ -459,27 +459,25 @@ header('Content-Type: text/html; charset=utf-8');
                   </div>
                 </div>
                   <div class="pm-item">
-                    <form method="post" action="empty-trash.php" class="pm-form" data-confirm="Empty image trash? This will permanently delete trashed images. Continue?">
+                    <form method="post" action="empty-trash.php" class="pm-form" data-confirm="Empty image trash? This will permanently delete trashed images. Continue?" style="margin:0">
                       <?php echo csrf_input_field(); ?>
-                      <button type="submit" class="btn btn-danger-soft btn-danger-filled"><span class="pm-icon" aria-hidden="true"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Empty image trash</button>
+                      <button type="submit" class="pm-subitem pm-subitem-full btn btn-danger-soft btn-danger-filled"><span class="pm-icon" aria-hidden="true"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" stroke-linecap="round" stroke-linejoin="round"></svg></span>Empty image trash</button>
                     </form>
                   </div>
                 <div class="pm-item pm-sep">
-                  <form method="get" action="change-password.php" class="pm-form" style="margin:0">
-                    <button type="submit" class="btn btn-ghost"><span class="pm-icon" aria-hidden="true"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM5 11v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Change admin password</button>
-                  </form>
+                  <a href="change-password.php" class="pm-subitem"><span class="pm-icon" aria-hidden="true"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM5 11v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Change admin password</a>
                 </div>
                 <div class="pm-item">
                   <a class="pm-subitem" href="resume-downloads.php"><span class="pm-icon" aria-hidden="true"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2v6M8 6h8M4 12v6a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Resume Downloads</a>
                 </div>
                 <div class="pm-item">
-                  <a class="btn btn-ghost" href="smtp-settings.php"><span class="pm-icon" aria-hidden="true"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M4 4h16v16H4zM4 8l8 5 8-5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>SMTP Settings</a>
+                  <a class="pm-subitem" href="smtp-settings.php"><span class="pm-icon" aria-hidden="true"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M4 4h16v16H4zM4 8l8 5 8-5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>SMTP Settings</a>
                 </div>
                 <div class="pm-item pm-sep">
-                  <form method="post" class="pm-form">
+                  <form method="post" class="pm-form" style="margin:0">
                     <?php echo csrf_input_field(); ?>
                     <input type="hidden" name="action" value="logout">
-                    <button type="submit" class="btn btn-danger btn-logout"><span class="pm-icon" aria-hidden="true"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M16 17l5-5-5-5M21 12H9M13 19v2H5V3h8v2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Log out</button>
+                    <button type="submit" class="pm-subitem pm-subitem-full btn btn-danger btn-logout"><span class="pm-icon" aria-hidden="true"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M16 17l5-5-5-5M21 12H9M13 19v2H5V3h8v2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Log out</button>
                   </form>
                 </div>
               </div>
