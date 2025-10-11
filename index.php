@@ -256,16 +256,25 @@ $cssVersion = file_exists($cssPath) ? filemtime($cssPath) : time();
                                             $sectionTitle = htmlspecialchars($section['title'] ?? ($section['id'] ?? 'Section'));
                                             $sectionId = $section['id'] ?? '';
                                         $items = is_array($section['items']) ? $section['items'] : [];
-                                        // determine a representative image from first item
+                                        // determine a representative image for the section
                                         $firstImg = '';
                                         $firstTitle = '';
-                                        if (count($items)) {
+                                        // Prefer explicit section-level image (set in admin). Fallback to first item image.
+                                        $sectionImg = '';
+                                        if (!empty($section['image'])) {
+                                            $sectionImg = $section['image'];
+                                            $firstImg = preg_match('#^https?://#i', $sectionImg) ? $sectionImg : 'uploads/images/'.ltrim($sectionImg,'/');
+                                        } else if (count($items)) {
                                             $first = $items[0];
                                             $firstTitle = htmlspecialchars($first['title'] ?? '');
                                             $img = $first['image'] ?? '';
                                             if ($img) { $firstImg = preg_match('#^https?://#i', $img) ? $img : 'uploads/images/'.ltrim($img,'/'); }
                                         }
                                         echo '<div class="card menu-card section-card" data-section-idx="'.$sidx.'" data-section-id="'.htmlspecialchars($sectionId).'">';
+                                        // If a section-level image is present, render it as a background block
+                                        if ($firstImg) {
+                                            echo '<div class="menu-img menu-img-bg" aria-hidden="true" style="background-image:url(' . htmlspecialchars($firstImg) . ');"></div>';
+                                        }
                                         // collapsed card: only show section title and the expand button
                                         echo '<div class="menu-body">';
                                         // decorative overlay to improve legibility on image-backed cards

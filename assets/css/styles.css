@@ -493,6 +493,7 @@ textarea.form-input { min-height: 70px; resize:vertical; }
 .menu-grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: var(--spacing-lg); }
 .menu-card { padding:0; overflow:hidden; display:flex; flex-direction:column; }
 .menu-card .menu-img { width:100%; height:160px; object-fit:cover; display:block }
+.menu-card .menu-img-bg { width:100%; height:160px; background-size:cover; background-position:center; display:block; }
 .menu-card .menu-body { padding: var(--spacing-md); display:flex; flex-direction:column; gap:.5rem }
 .menu-card .menu-title { font-size: var(--font-size-lg); font-weight: var(--font-weight-semibold); }
 .menu-card .menu-short { color: var(--text-secondary); font-size: var(--font-size-sm); }
