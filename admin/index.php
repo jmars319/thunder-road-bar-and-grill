@@ -80,7 +80,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     header('Content-Type: text/csv; charset=utf-8');
   header('Content-Disposition: attachment; filename="applications.csv"');
     $out = fopen('php://output', 'w');
-  fputcsv($out, ['timestamp','first_name','last_name','email','phone','address','age','eligible_to_work','position_desired','employment_type','desired_salary','start_date','availability','shift_preference','hours_per_week','restaurant_experience','other_experience','why_work_here','references','resume_original_name','resume_filename','mail_sent','ip']);
+  fputcsv($out, ['timestamp','first_name','last_name','email','phone','address','age','eligible_to_work','position_desired','employment_type','desired_salary','start_date','availability','shift_preference','hours_per_week','restaurant_experience','other_experience','why_work_here','references','resume_original_name','resume_storage_name','mail_sent','ip']);
     foreach ($entries as $e) {
       fputcsv($out, [
         $e['timestamp'] ?? '',
@@ -136,7 +136,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     header('Content-Type: text/csv; charset=utf-8');
   header('Content-Disposition: attachment; filename="all-applications.csv"');
     $out = fopen('php://output', 'w');
-  fputcsv($out, ['timestamp','first_name','last_name','email','phone','address','age','eligible_to_work','position_desired','employment_type','desired_salary','start_date','availability','shift_preference','hours_per_week','restaurant_experience','other_experience','why_work_here','references','resume_original_name','resume_filename','mail_sent','ip']);
+  fputcsv($out, ['timestamp','first_name','last_name','email','phone','address','age','eligible_to_work','position_desired','employment_type','desired_salary','start_date','availability','shift_preference','hours_per_week','restaurant_experience','other_experience','why_work_here','references','resume_original_name','resume_storage_name','mail_sent','ip']);
     foreach ($entries as $e) {
   fputcsv($out, [
         $e['timestamp'] ?? '',
@@ -158,8 +158,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $e['other_experience'] ?? '',
         $e['why_work_here'] ?? '',
         $e['references'] ?? '',
-        $e['resume_original_name'] ?? '',
-        $e['resume_filename'] ?? '',
+  $e['resume_original_name'] ?? '',
+  $e['resume_storage_name'] ?? '',
         !empty($e['mail_sent']) ? '1' : '0',
         $e['ip'] ?? ''
       ]);
@@ -337,8 +337,8 @@ if (isset($_GET['download']) && $_GET['download'] === 'csv') {
             $e['other_experience'] ?? '',
             $e['why_work_here'] ?? '',
             $e['references'] ?? '',
-            $e['resume_original_name'] ?? '',
-            $e['resume_filename'] ?? '',
+      $e['resume_original_name'] ?? '',
+      $e['resume_storage_name'] ?? '',
             !empty($e['mail_sent']) ? '1' : '0',
             $e['ip'] ?? ''
         ]);
@@ -522,7 +522,7 @@ header('Content-Type: text/html; charset=utf-8');
             <td><?php echo htmlspecialchars($e['email'] ?? ''); ?></td>
             <td><?php echo htmlspecialchars($e['phone'] ?? ''); ?></td>
             <td><?php echo htmlspecialchars($e['position_desired'] ?? ''); ?></td>
-            <td><?php if (!empty($e['resume_filename'])) { echo '<a href="' . htmlspecialchars($e['resume_filename']) . '" download>' . htmlspecialchars($e['resume_original_name'] ?? 'Resume') . '</a>'; } else { echo '—'; } ?></td>
+            <td><?php if (!empty($e['resume_storage_name'])) { echo '<a href="download_resume.php?file=' . rawurlencode($e['resume_storage_name']) . '&orig=' . rawurlencode($e['resume_original_name'] ?? '') . '">' . htmlspecialchars($e['resume_original_name'] ?? 'Resume') . '</a>'; } else { echo '—'; } ?></td>
             <td><?php echo !empty($e['mail_sent']) ? 'Yes' : 'No'; ?></td>
           </tr>
         <?php endforeach; ?>

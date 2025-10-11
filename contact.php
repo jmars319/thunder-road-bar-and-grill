@@ -75,8 +75,8 @@ $dataDir = __DIR__ . '/data'; @mkdir($dataDir, 0755, true);
 $applicationsFile = $dataDir . '/applications.json';
 $rateFile = $dataDir . '/rate_limits.json';
 
-// Resume upload settings
-$resumesDir = __DIR__ . '/uploads/resumes/';
+// Resume upload settings (store outside public uploads directory for privacy)
+$resumesDir = __DIR__ . '/data/resumes/';
 @mkdir($resumesDir, 0755, true);
 define('APPLICATION_MAX_RESUME_BYTES', 5 * 1024 * 1024); // 5MB
 // allowed mime types/extensions (we'll validate by both ext and basic mime)
@@ -158,9 +158,9 @@ if (!empty($_FILES['resume']) && is_array($_FILES['resume']) && $_FILES['resume'
                 if (!@move_uploaded_file($rf['tmp_name'], $dest)) {
                     $errors[] = 'Failed to save resume file';
                 } else {
-                    @chmod($dest, 0644);
-                    // store in entry
-                    $resume_filename = 'uploads/resumes/' . $newName;
+                    @chmod($dest, 0640);
+                    // store only basename; file is stored under data/resumes/
+                    $resume_storage_name = $newName;
                     $resume_original_name = $orig;
                 }
             }
@@ -248,7 +248,8 @@ $entry = [
     'why_work_here' => $why_work_here,
     'availability' => $availability,
     'sent' => $mailSent,
-    'resume_filename' => null,
+    // store only the storage filename (basename) and original filename
+    'resume_storage_name' => null,
     'resume_original_name' => null,
 ];
 
