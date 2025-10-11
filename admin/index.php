@@ -403,8 +403,9 @@ header('Content-Type: text/html; charset=utf-8');
               </a>
               <div>
                 <h1 style="margin:0">Admin Dashboard</h1>
-                <div class="topbar">
+                <div class="topbar" style="display:flex;gap:.5rem;align-items:center">
                   <a href="../" class="btn btn-ghost" target="_blank">View site</a>
+                  <a href="email-scheduler.html" class="btn btn-primary" title="Open Email Scheduler">Email Scheduler</a>
                 </div>
               </div>
             </div>
