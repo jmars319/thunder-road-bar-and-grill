@@ -29,7 +29,7 @@ if (file_exists(CONTENT_FILE)) {
       <div class="admin-card">
         <div class="admin-card-header">
           <h1 class="admin-card-title">SMTP Settings</h1>
-          <div><a href="index.php" class="btn btn-ghost">Back to dashboard</a></div>
+          <div><a href="index.php" class="btn btn-ghost">Back to Dashboard</a></div>
         </div>
 
         <p class="small">Configure SMTP credentials used to send notification emails. Passwords are stored in <code>admin/auth.json</code> (untracked).</p>

@@ -63,7 +63,7 @@ header('Content-Type: text/html; charset=utf-8');
     </style>
   </head>
   <body>
-    <a href="index.php" class="btn btn-ghost">◀ Back to Admin</a>
+  <a href="index.php" class="btn btn-ghost">◀ Back to Dashboard</a>
     <h1>Reservation Audit</h1>
     <p class="small">Append-only audit entries written to <code>data/reservation-audit.json</code>. Newest first.</p>
 

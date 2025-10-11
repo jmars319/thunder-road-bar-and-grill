@@ -119,7 +119,7 @@ generate_csrf_token();
                         <h1 style="margin:0">Change Password</h1>
                     </div>
                     <div class="header-actions">
-                        <a href="index.php" class="btn btn-ghost">Back to admin</a>
+                        <a href="index.php" class="btn btn-ghost">Back to Dashboard</a>
                     </div>
                 </div>
 
