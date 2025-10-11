@@ -737,7 +737,7 @@ $cssVersion = file_exists($cssPath) ? filemtime($cssPath) : time();
             <p class="section-subtitle">Apply for a position at our restaurant and become part of our family!</p>
         </div>
         <div class="container-narrow">
-            <form class="card" id="job-application-form" action="/contact.php" method="post">
+            <form class="card" id="job-application-form" action="/contact.php" method="post" enctype="multipart/form-data">
           <!-- Honeypot field to deter bots (hidden from users) -->
           <input type="text" name="hp_field" id="hp-field" autocomplete="off" tabindex="-1"
               style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden;border:0;">
@@ -913,6 +913,11 @@ $cssVersion = file_exists($cssPath) ? filemtime($cssPath) : time();
                 <div>
                     <label for="references" class="form-label">References</label>
                     <textarea id="references" name="references" rows="3" placeholder="Please provide 2-3 professional references (name, relationship, phone number)" class="form-input"></textarea>
+                </div>
+                <div style="margin-top:1rem">
+                    <label for="resume" class="form-label">Upload Resume (PDF or DOCX, max 5MB)</label>
+                    <input type="file" id="resume" name="resume" accept=".pdf,.doc,.docx" class="form-input">
+                    <div class="form-note small" style="margin-top:.25rem">Optional: attach a resume in PDF or Word format. Max file size 5MB.</div>
                 </div>
                 
                 <button type="submit" class="btn btn-primary form-submit-btn">Submit Application</button>

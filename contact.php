@@ -75,6 +75,14 @@ $dataDir = __DIR__ . '/data'; @mkdir($dataDir, 0755, true);
 $applicationsFile = $dataDir . '/applications.json';
 $rateFile = $dataDir . '/rate_limits.json';
 
+// Resume upload settings
+$resumesDir = __DIR__ . '/uploads/resumes/';
+@mkdir($resumesDir, 0755, true);
+define('APPLICATION_MAX_RESUME_BYTES', 5 * 1024 * 1024); // 5MB
+// allowed mime types/extensions (we'll validate by both ext and basic mime)
+$allowedResumeExt = ['pdf','doc','docx'];
+$allowedResumeMime = ['application/pdf','application/msword','application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+
 $rateLimits = [];
 if (file_exists($rateFile)) {
     $r = @file_get_contents($rateFile);
@@ -120,6 +128,46 @@ if ($submission_type === 'application') {
     // generic contact: require a message
     if (trim($message) === '') $errors[] = 'Message is required';
 }
+if (!empty($errors)) {
+    if ($isAjax) { http_response_code(400); echo json_encode(['success' => false, 'errors' => $errors]); }
+    else { header('Location: /index.html?contact_error=1#contact'); }
+    exit;
+}
+
+// Handle resume upload (optional)
+if (!empty($_FILES['resume']) && is_array($_FILES['resume']) && $_FILES['resume']['error'] !== UPLOAD_ERR_NO_FILE) {
+    $rf = $_FILES['resume'];
+    if ($rf['error'] !== UPLOAD_ERR_OK) {
+        $errors[] = 'Error uploading resume file';
+    } else {
+        if ($rf['size'] > APPLICATION_MAX_RESUME_BYTES) {
+            $errors[] = 'Resume must be 5MB or smaller';
+        } else {
+            $orig = basename($rf['name']);
+            $ext = strtolower(pathinfo($orig, PATHINFO_EXTENSION));
+            $finfoMime = mime_content_type($rf['tmp_name']) ?: '';
+            if (!in_array($ext, $allowedResumeExt) || !in_array($finfoMime, $allowedResumeMime)) {
+                // allow if extension matches and mime is one of the common types; else reject
+                $errors[] = 'Resume must be a PDF or Word document (pdf, doc, docx)';
+            } else {
+                // generate safe filename
+                $safe = preg_replace('/[^A-Za-z0-9._-]/', '_', $orig);
+                $ts = time();
+                $newName = $ts . '-' . bin2hex(random_bytes(6)) . '-' . $safe;
+                $dest = $resumesDir . $newName;
+                if (!@move_uploaded_file($rf['tmp_name'], $dest)) {
+                    $errors[] = 'Failed to save resume file';
+                } else {
+                    @chmod($dest, 0644);
+                    // store in entry
+                    $resume_filename = 'uploads/resumes/' . $newName;
+                    $resume_original_name = $orig;
+                }
+            }
+        }
+    }
+}
+
 if (!empty($errors)) {
     if ($isAjax) { http_response_code(400); echo json_encode(['success' => false, 'errors' => $errors]); }
     else { header('Location: /index.html?contact_error=1#contact'); }
@@ -200,6 +248,8 @@ $entry = [
     'why_work_here' => $why_work_here,
     'availability' => $availability,
     'sent' => $mailSent,
+    'resume_filename' => null,
+    'resume_original_name' => null,
 ];
 
 $applications = [];
