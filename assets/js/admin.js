@@ -113,6 +113,8 @@
   // This is only a client-side UX guard; the server accepts arbitrary
   // arrays when saving JSON. Adjust as needed.
   const MAX_ITEMS_PER_SECTION = 50;
+  // Client-side upload limit (bytes). Keep in sync with server-side `$maxSize` in admin/upload-image.php
+  const CLIENT_MAX_UPLOAD_BYTES = 5 * 1024 * 1024; // 5MB
 
   function fetchSchemas(){
     return fetch(schemaUrl).then(r=>{ if (!r.ok) throw new Error('Failed to load schemas'); return r.json(); }).catch(()=>({}));
@@ -388,6 +390,18 @@
   if (uploadForm) {
     uploadForm.addEventListener('submit', function(e){
       e.preventDefault();
+      // Client-side filesize sanity check to avoid sending very large files
+      const fileInput = uploadForm.querySelector('input[type="file"][name="image"]');
+      if (fileInput && fileInput.files && fileInput.files.length) {
+        const f = fileInput.files[0];
+        if (typeof CLIENT_MAX_UPLOAD_BYTES === 'number' && f.size > CLIENT_MAX_UPLOAD_BYTES) {
+          const mb = Math.round(CLIENT_MAX_UPLOAD_BYTES / (1024 * 1024));
+          const msg = 'File too large. Maximum allowed size is ' + mb + 'MB.';
+          if (uploadResult) uploadResult.textContent = 'Upload failed: ' + msg;
+          showToast(msg, 'error');
+          return;
+        }
+      }
       const fd = new FormData(uploadForm);
       fetch('upload-image.php', { method: 'POST', body: fd }).then(r=>r.json()).then(j=>{
         if (j && j.success) {
