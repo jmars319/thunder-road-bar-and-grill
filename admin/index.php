@@ -549,6 +549,7 @@ header('Content-Type: text/html; charset=utf-8');
     </div>
   <div id="menu-admin-wrap" class="menu-admin-wrap" style="display:flex;gap:1rem;align-items:stretch;margin-top:.5rem">
   <div id="menu-admin" style="flex:1">
+    <div class="admin-hint small muted-text" style="margin-bottom:.5rem">Tip: Section images should be selected from the <strong>Gallery</strong> (use the Pick button). These images are used as decorative backgrounds for the menu cards — they are treated as non-essential/decorative (aria-hidden) on the public site.</div>
     <div style="margin-bottom:.5rem">
     <button id="add-menu-item" type="button" class="btn btn-primary">Add Section</button>
     <button id="expand-all-sections" type="button" class="btn btn-ghost" style="margin-left:.5rem">Expand all</button>

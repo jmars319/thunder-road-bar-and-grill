@@ -224,6 +224,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 // number_format ensures we store prices like "12.00"
                                 $merged[$si]['items'][$ii]['price'] = number_format($num, 2, '.', '');
                             }
+                            // Server-side policy: per-item images are deprecated. If
+                            // client accidentally sends item-level `image` fields we
+                            // preserve them in the payload but strip them from the
+                            // stored representation to enforce single section images.
+                            if (isset($merged[$si]['items'][$ii]['image'])) {
+                                // keep a copy under a legacy key for potential migration
+                                $merged[$si]['items'][$ii]['_legacy_image'] = $merged[$si]['items'][$ii]['image'];
+                                unset($merged[$si]['items'][$ii]['image']);
+                            }
                         }
                     }
                 }
