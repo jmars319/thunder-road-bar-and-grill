@@ -7,3 +7,16 @@ vendor/
 # Ignore local macOS files and temporary renamed files created during maintenance
 .DS_Store
 *.old
+# Local runtime artifacts
+.dev_php.pid
+logs/
+.env
+# Uploads and generated images
+uploads/
+uploads/**
+# Local DB and test databases
+data/*.sqlite
+# Local audit/log files
+data/upload-audit.log
+# Composer vendor (optional)
+vendor/
