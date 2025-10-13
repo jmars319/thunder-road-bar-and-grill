@@ -76,9 +76,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   }
 
   if ($action === 'download_csv') {
-    $entries = load_entries($APPLICATIONS_FILE, $LEGACY_MESSAGES_FILE);
+    // Prefer DB-backed export when available
+    $entries = [];
+    if (file_exists(__DIR__ . '/../bootstrap.php')) {
+      try {
+        require_once __DIR__ . '/../bootstrap.php';
+        if (function_exists('db')) {
+          $pdo = db();
+          $rows = $pdo->query('SELECT created_at AS timestamp, first_name, last_name, email, phone, address, age, eligible_to_work, position_desired, employment_type, NULL AS desired_salary, NULL AS start_date, availability, NULL AS shift_preference, NULL AS hours_per_week, NULL AS restaurant_experience, NULL AS other_experience, why_work_here, NULL AS references, resume_original_name, resume_storage_name, sent AS mail_sent, ip_address AS ip FROM job_applications ORDER BY created_at DESC')->fetchAll(PDO::FETCH_ASSOC);
+          $entries = $rows;
+        }
+      } catch (Exception $e) {
+        $entries = load_entries($APPLICATIONS_FILE, $LEGACY_MESSAGES_FILE);
+      }
+    }
+    if (empty($entries)) $entries = load_entries($APPLICATIONS_FILE, $LEGACY_MESSAGES_FILE);
     header('Content-Type: text/csv; charset=utf-8');
-  header('Content-Disposition: attachment; filename="applications.csv"');
+    header('Content-Disposition: attachment; filename="applications.csv"');
     $out = fopen('php://output', 'w');
   fputcsv($out, ['timestamp','first_name','last_name','email','phone','address','age','eligible_to_work','position_desired','employment_type','desired_salary','start_date','availability','shift_preference','hours_per_week','restaurant_experience','other_experience','why_work_here','references','resume_original_name','resume_storage_name','mail_sent','ip']);
     foreach ($entries as $e) {
@@ -111,16 +125,43 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   }
 
   if ($action === 'download_json') {
-    $entries = load_entries($APPLICATIONS_FILE, $LEGACY_MESSAGES_FILE);
+    $entries = [];
+    if (file_exists(__DIR__ . '/../bootstrap.php')) {
+      try {
+        require_once __DIR__ . '/../bootstrap.php';
+        if (function_exists('db')) {
+          $pdo = db();
+          $rows = $pdo->query('SELECT created_at AS timestamp, first_name, last_name, email, phone, address, age, eligible_to_work, position_desired, employment_type, NULL AS desired_salary, NULL AS start_date, availability, NULL AS shift_preference, NULL AS hours_per_week, NULL AS restaurant_experience, NULL AS other_experience, why_work_here, NULL AS references, resume_original_name, resume_storage_name, sent AS mail_sent, ip_address AS ip FROM job_applications ORDER BY created_at DESC')->fetchAll(PDO::FETCH_ASSOC);
+          $entries = $rows;
+        }
+      } catch (Exception $e) {
+        $entries = load_entries($APPLICATIONS_FILE, $LEGACY_MESSAGES_FILE);
+      }
+    }
+    if (empty($entries)) $entries = load_entries($APPLICATIONS_FILE, $LEGACY_MESSAGES_FILE);
     header('Content-Type: application/json');
-  header('Content-Disposition: attachment; filename="applications.json"');
+    header('Content-Disposition: attachment; filename="applications.json"');
     echo json_encode($entries, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
     exit;
   }
   // export all (live + archives)
   if ($action === 'download_all_csv' || $action === 'download_all_json') {
-    $entries = load_entries($APPLICATIONS_FILE, $LEGACY_MESSAGES_FILE);
-    // include archives (both new and legacy patterns)
+    // For "all" we include DB rows plus archives (archives are file-based). Prefer DB for live entries.
+    $entries = [];
+    try {
+      if (file_exists(__DIR__ . '/../bootstrap.php')) {
+        require_once __DIR__ . '/../bootstrap.php';
+        if (function_exists('db')) {
+          $pdo = db();
+          $rows = $pdo->query('SELECT created_at AS timestamp, first_name, last_name, email, phone, address, age, eligible_to_work, position_desired, employment_type, NULL AS desired_salary, NULL AS start_date, availability, NULL AS shift_preference, NULL AS hours_per_week, NULL AS restaurant_experience, NULL AS other_experience, why_work_here, NULL AS references, resume_original_name, resume_storage_name, sent AS mail_sent, ip_address AS ip FROM job_applications ORDER BY created_at DESC')->fetchAll(PDO::FETCH_ASSOC);
+          $entries = $rows;
+        }
+      }
+    } catch (Exception $e) {
+      // fallback to file-based
+      $entries = load_entries($APPLICATIONS_FILE, $LEGACY_MESSAGES_FILE);
+    }
+    // include archived file-based entries
     $archiveDir = __DIR__ . '/../data/archives';
     $archived = load_archived_entries($archiveDir);
     if (!empty($archived)) $entries = array_merge($entries, $archived);
@@ -134,11 +175,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // CSV
     header('Content-Type: text/csv; charset=utf-8');
-  header('Content-Disposition: attachment; filename="all-applications.csv"');
+    header('Content-Disposition: attachment; filename="all-applications.csv"');
     $out = fopen('php://output', 'w');
-  fputcsv($out, ['timestamp','first_name','last_name','email','phone','address','age','eligible_to_work','position_desired','employment_type','desired_salary','start_date','availability','shift_preference','hours_per_week','restaurant_experience','other_experience','why_work_here','references','resume_original_name','resume_storage_name','mail_sent','ip']);
+    fputcsv($out, ['timestamp','first_name','last_name','email','phone','address','age','eligible_to_work','position_desired','employment_type','desired_salary','start_date','availability','shift_preference','hours_per_week','restaurant_experience','other_experience','why_work_here','references','resume_original_name','resume_storage_name','mail_sent','ip']);
     foreach ($entries as $e) {
-  fputcsv($out, [
+      fputcsv($out, [
         $e['timestamp'] ?? '',
         $e['first_name'] ?? '',
         $e['last_name'] ?? '',
@@ -158,8 +199,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $e['other_experience'] ?? '',
         $e['why_work_here'] ?? '',
         $e['references'] ?? '',
-  $e['resume_original_name'] ?? '',
-  $e['resume_storage_name'] ?? '',
+        $e['resume_original_name'] ?? '',
+        $e['resume_storage_name'] ?? '',
         !empty($e['mail_sent']) ? '1' : '0',
         $e['ip'] ?? ''
       ]);
@@ -263,7 +304,43 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   }
 }
 
-$entries = load_entries($APPLICATIONS_FILE, $LEGACY_MESSAGES_FILE);
+$entries = [];
+// Prefer DB-backed job_applications table when available; fall back to file-based JSON
+if (file_exists(__DIR__ . '/../bootstrap.php')) {
+  try {
+    require_once __DIR__ . '/../bootstrap.php';
+    if (function_exists('db')) {
+      $pdo = db();
+      $stmt = $pdo->query('SELECT first_name,last_name,email,phone,position_desired,why_work_here,resume_original_name,resume_storage_name,created_at,ip_address AS ip FROM job_applications ORDER BY created_at DESC');
+      $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+      // normalize into the file-backed entry shape expected by the rest of this page
+      foreach ($rows as $r) {
+        $entries[] = [
+          'id' => isset($r['id']) ? (int)$r['id'] : null,
+          'timestamp' => date('c', strtotime($r['created_at'] ?? date('c'))),
+          'first_name' => $r['first_name'] ?? '',
+          'last_name' => $r['last_name'] ?? '',
+          'email' => $r['email'] ?? '',
+          'phone' => $r['phone'] ?? '',
+          'position_desired' => $r['position_desired'] ?? '',
+          'why_work_here' => $r['why_work_here'] ?? '',
+          'resume_original_name' => $r['resume_original_name'] ?? null,
+          'resume_storage_name' => $r['resume_storage_name'] ?? null,
+          'status' => $r['status'] ?? null,
+          'mail_sent' => !empty($r['sent']) ? 1 : 0,
+          'ip' => $r['ip'] ?? '',
+        ];
+      }
+    }
+  } catch (Exception $e) {
+    // if DB not available, fall back to file-based entries
+    $entries = load_entries($APPLICATIONS_FILE, $LEGACY_MESSAGES_FILE);
+  }
+}
+if (empty($entries)) {
+  // if DB returned nothing, or DB wasn't available, ensure file-based fallback
+  $entries = load_entries($APPLICATIONS_FILE, $LEGACY_MESSAGES_FILE);
+}
 
 // --- Search and Pagination (server-side) ---
 $search = trim((string)($_GET['search'] ?? ''));
@@ -425,6 +502,8 @@ header('Content-Type: text/html; charset=utf-8');
                       <div style="padding:.4rem .5rem;font-weight:700;color:var(--muted);">Download current applications</div>
                       <a href="?download=applications&amp;format=csv" class="pm-subitem" role="menuitem"><span class="pm-icon" aria-hidden="true"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M4 7h16M4 12h10M4 17h16" stroke-linecap="round" stroke-linejoin="round"/></svg></span>CSV</a>
                       <a href="?download=applications&amp;format=json" class="pm-subitem" role="menuitem"><span class="pm-icon" aria-hidden="true"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M7 7l10 5-10 5V7z" stroke-linecap="round" stroke-linejoin="round"/></svg></span>JSON</a>
+                      <div style="padding:.4rem .5rem;font-weight:700;color:var(--muted);margin-top:.4rem">Manage</div>
+                      <a href="job-applications.php" class="pm-subitem" role="menuitem"><span class="pm-icon" aria-hidden="true"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2v6M8 6h8M4 12v6a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Manage Applications</a>
                       <div style="padding:.4rem .5rem;font-weight:700;color:var(--muted);margin-top:.4rem">Download all (including archives)</div>
                       <a href="?download=applications_all&amp;format=csv" class="pm-subitem" role="menuitem" data-confirm="Downloading all applications may create a large file. Continue?"><span class="pm-icon" aria-hidden="true"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M4 6h16v12H4z" stroke-linecap="round" stroke-linejoin="round"/></svg></span>CSV</a>
                       <a href="?download=applications_all&amp;format=json" class="pm-subitem" role="menuitem" data-confirm="Downloading all applications may create a large file. Continue?"><span class="pm-icon" aria-hidden="true"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M8 5h8v14H8z" stroke-linecap="round" stroke-linejoin="round"/></svg></span>JSON</a>
@@ -523,7 +602,7 @@ header('Content-Type: text/html; charset=utf-8');
             <td><?php echo htmlspecialchars($e['email'] ?? ''); ?></td>
             <td><?php echo htmlspecialchars($e['phone'] ?? ''); ?></td>
             <td><?php echo htmlspecialchars($e['position_desired'] ?? ''); ?></td>
-            <td><?php if (!empty($e['resume_storage_name'])) { echo '<a href="download_resume.php?file=' . rawurlencode($e['resume_storage_name']) . '&orig=' . rawurlencode($e['resume_original_name'] ?? '') . '">' . htmlspecialchars($e['resume_original_name'] ?? 'Resume') . '</a>'; } else { echo '—'; } ?></td>
+            <td><?php if (!empty($e['resume_storage_name'])) { if (!empty($e['id'])) { echo '<a href="download-application.php?id=' . rawurlencode($e['id']) . '">' . htmlspecialchars($e['resume_original_name'] ?? 'Resume') . '</a>'; } else { echo '<a href="download_resume.php?file=' . rawurlencode($e['resume_storage_name']) . '&orig=' . rawurlencode($e['resume_original_name'] ?? '') . '">' . htmlspecialchars($e['resume_original_name'] ?? 'Resume') . '</a>'; } } else { echo '—'; } ?></td>
             <td><?php echo !empty($e['mail_sent']) ? 'Yes' : 'No'; ?></td>
           </tr>
         <?php endforeach; ?>

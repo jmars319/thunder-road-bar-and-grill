@@ -1,0 +1,10 @@
+-- Migration (fixed): add legacy application fields to job_applications
+ALTER TABLE job_applications
+  ADD COLUMN IF NOT EXISTS desired_salary VARCHAR(100) DEFAULT NULL,
+  ADD COLUMN IF NOT EXISTS start_date VARCHAR(50) DEFAULT NULL,
+  ADD COLUMN IF NOT EXISTS shift_preference VARCHAR(100) DEFAULT NULL,
+  ADD COLUMN IF NOT EXISTS hours_per_week VARCHAR(50) DEFAULT NULL,
+  ADD COLUMN IF NOT EXISTS restaurant_experience TEXT DEFAULT NULL,
+  ADD COLUMN IF NOT EXISTS other_experience TEXT DEFAULT NULL,
+  ADD COLUMN IF NOT EXISTS references_text TEXT DEFAULT NULL,
+  ADD COLUMN IF NOT EXISTS raw_message TEXT DEFAULT NULL;

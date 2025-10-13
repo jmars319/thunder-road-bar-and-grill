@@ -264,6 +264,39 @@ if (!atomic_write_json($applicationsFile, $applications)) {
     error_log('contact.php: failed to write applications file: ' . $applicationsFile);
 }
 
+// If this is an application, also persist to the database table job_applications if available
+if ($submission_type === 'application') {
+    try {
+        if (file_exists(__DIR__ . '/bootstrap.php')) {
+            require_once __DIR__ . '/bootstrap.php';
+        }
+        if (function_exists('db')) {
+            $pdo = db();
+            $stmt = $pdo->prepare('INSERT INTO job_applications (first_name,last_name,email,phone,address,age,eligible_to_work,position_desired,employment_type,why_work_here,availability,resume_storage_name,resume_original_name,ip_address,user_agent,sent) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)');
+            $stmt->execute([
+                $first_name,
+                $last_name,
+                $email,
+                $phone,
+                $address,
+                is_numeric($age) ? intval($age) : null,
+                $eligible_to_work,
+                $position_desired,
+                $employment_type,
+                $why_work_here,
+                json_encode($availability),
+                $resume_storage_name ?? null,
+                $resume_original_name ?? null,
+                $clientIp,
+                $_SERVER['HTTP_USER_AGENT'] ?? null,
+                $mailSent ? 1 : 0
+            ]);
+        }
+    } catch (Exception $e) {
+        error_log('contact.php: failed to insert job_application: ' . $e->getMessage());
+    }
+}
+
 $rateLimits[$clientIp][] = $now;
 if (!atomic_write_json($rateFile, $rateLimits, JSON_PRETTY_PRINT)) {
     error_log('contact.php: failed to write rate limits file: ' . $rateFile);
