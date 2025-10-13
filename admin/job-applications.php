@@ -16,6 +16,66 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $token = $_POST['csrf_token'] ?? '';
   if (!verify_csrf($token)) { header('HTTP/1.1 400 Bad Request'); echo 'Invalid CSRF'; exit; }
   $id = isset($_POST['id']) ? (int)$_POST['id'] : 0;
+  // If export requested, build the same filter from request parameters and stream
+  if (in_array($action, ['download_csv','download_json'])) {
+    // Gather search filter from request (GET or POST)
+    $search_req = trim((string)($_REQUEST['search'] ?? ''));
+    $where = [];
+    $params = [];
+    if ($search_req !== '') {
+      $where[] = "(first_name LIKE ? OR last_name LIKE ? OR email LIKE ? OR phone LIKE ? OR position_desired LIKE ? OR why_work_here LIKE ? OR raw_message LIKE ? )";
+      $s = '%' . $search_req . '%';
+      for ($i=0;$i<7;$i++) $params[] = $s;
+    }
+    $whereSql = $where ? 'WHERE ' . implode(' AND ', $where) : '';
+    $sql = "SELECT id, first_name, last_name, email, phone, address, age, eligible_to_work, position_desired, employment_type, desired_salary, start_date, availability, shift_preference, hours_per_week, restaurant_experience, other_experience, references_text, why_work_here, resume_storage_name, resume_original_name, status, created_at, ip_address, user_agent, sent, raw_message FROM job_applications {$whereSql} ORDER BY created_at DESC";
+    $stmt = $db->prepare($sql);
+    $stmt->execute($params);
+    $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    if ($action === 'download_json') {
+      header('Content-Type: application/json');
+      header('Content-Disposition: attachment; filename="applications.json"');
+      echo json_encode($rows, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+      exit;
+    }
+
+    // CSV
+    header('Content-Type: text/csv; charset=utf-8');
+    header('Content-Disposition: attachment; filename="applications.csv"');
+    $out = fopen('php://output','w');
+    fputcsv($out, ['id','created_at','first_name','last_name','email','phone','address','age','eligible_to_work','position_desired','employment_type','desired_salary','start_date','availability','shift_preference','hours_per_week','restaurant_experience','other_experience','why_work_here','references_text','resume_original_name','resume_storage_name','sent','ip_address']);
+    foreach ($rows as $e) {
+      fputcsv($out, [
+        $e['id'] ?? '',
+        $e['created_at'] ?? '',
+        $e['first_name'] ?? '',
+        $e['last_name'] ?? '',
+        $e['email'] ?? '',
+        $e['phone'] ?? '',
+        $e['address'] ?? '',
+        $e['age'] ?? '',
+        $e['eligible_to_work'] ?? '',
+        $e['position_desired'] ?? '',
+        $e['employment_type'] ?? '',
+        $e['desired_salary'] ?? '',
+        $e['start_date'] ?? '',
+        is_array($e['availability']) ? implode('|', $e['availability']) : $e['availability'] ?? '',
+        $e['shift_preference'] ?? '',
+        $e['hours_per_week'] ?? '',
+        $e['restaurant_experience'] ?? '',
+        $e['other_experience'] ?? '',
+        $e['why_work_here'] ?? '',
+        $e['references_text'] ?? '',
+        $e['resume_original_name'] ?? '',
+        $e['resume_storage_name'] ?? '',
+        !empty($e['sent']) ? '1' : '0',
+        $e['ip_address'] ?? '',
+      ]);
+    }
+    fclose($out);
+    exit;
+  }
   if ($action === 'mark_reviewed' && $id) {
     $db->prepare('UPDATE job_applications SET status = ? WHERE id = ?')->execute(['reviewed', $id]);
   }

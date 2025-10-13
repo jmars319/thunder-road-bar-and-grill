@@ -503,7 +503,7 @@ header('Content-Type: text/html; charset=utf-8');
                       <a href="?download=applications&amp;format=csv" class="pm-subitem" role="menuitem"><span class="pm-icon" aria-hidden="true"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M4 7h16M4 12h10M4 17h16" stroke-linecap="round" stroke-linejoin="round"/></svg></span>CSV</a>
                       <a href="?download=applications&amp;format=json" class="pm-subitem" role="menuitem"><span class="pm-icon" aria-hidden="true"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M7 7l10 5-10 5V7z" stroke-linecap="round" stroke-linejoin="round"/></svg></span>JSON</a>
                       <div style="padding:.4rem .5rem;font-weight:700;color:var(--muted);margin-top:.4rem">Manage</div>
-                      <a href="job-applications.php" class="pm-subitem" role="menuitem"><span class="pm-icon" aria-hidden="true"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2v6M8 6h8M4 12v6a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Manage Applications</a>
+                      <a href="job-applications.php" class="pm-subitem" role="menuitem" onclick="(function(h){ try{ window.location.href = h; }catch(e){ window.location = h; } })(this.href); return false;"><span class="pm-icon" aria-hidden="true"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2v6M8 6h8M4 12v6a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Manage Applications</a>
                       <div style="padding:.4rem .5rem;font-weight:700;color:var(--muted);margin-top:.4rem">Download all (including archives)</div>
                       <a href="?download=applications_all&amp;format=csv" class="pm-subitem" role="menuitem" data-confirm="Downloading all applications may create a large file. Continue?"><span class="pm-icon" aria-hidden="true"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M4 6h16v12H4z" stroke-linecap="round" stroke-linejoin="round"/></svg></span>CSV</a>
                       <a href="?download=applications_all&amp;format=json" class="pm-subitem" role="menuitem" data-confirm="Downloading all applications may create a large file. Continue?"><span class="pm-icon" aria-hidden="true"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M8 5h8v14H8z" stroke-linecap="round" stroke-linejoin="round"/></svg></span>JSON</a>
@@ -565,7 +565,9 @@ header('Content-Type: text/html; charset=utf-8');
         </div>
     <!-- SMTP settings moved to smtp-settings.php -->
 
-    <h1>Job Applications</h1>
+    <h1 style="display:flex;align-items:center;gap:.5rem">Job Applications
+      <a href="job-applications.php" class="btn btn-ghost" style="margin-left:1rem">Manage Applications</a>
+    </h1>
     <form method="get" class="search-form">
       <input type="text" name="search" value="<?php echo htmlspecialchars($search); ?>" placeholder="Search name, email, phone, application details..." class="search-input">
       <label class="perpage-label">Per page:
@@ -653,6 +655,89 @@ header('Content-Type: text/html; charset=utf-8');
           btn.addEventListener('click', function(){
             try { document.dispatchEvent(new Event('admin.expandAllMenuSections')); } catch(e) { }
           });
+        })();
+      </script>
+
+      <script>
+        // Advanced diagnostic test: capture which listener called preventDefault.
+        // Usage: open /admin/index.php?itest=2
+        (function(){
+          try {
+            var params = new URLSearchParams(window.location.search || '');
+            if (!params.has('itest')) return;
+            if (params.get('itest') !== '2') return;
+
+            var anchor = document.querySelector('a[href="job-applications.php"], a[href*="job-applications.php"]');
+            if (!anchor) return;
+
+            var originalPrevent = Event.prototype.preventDefault;
+            var traces = [];
+            Event.prototype.preventDefault = function(){
+              try { traces.push(new Error().stack); } catch(e){}
+              return originalPrevent.apply(this, arguments);
+            };
+
+            // dispatch cancelable click
+            var ev = new MouseEvent('click', { bubbles: true, cancelable: true, view: window });
+            anchor.dispatchEvent(ev);
+
+            // restore
+            Event.prototype.preventDefault = originalPrevent;
+
+            // show results
+            var out = document.createElement('div'); out.style.position='fixed'; out.style.left='1rem'; out.style.top='1rem'; out.style.zIndex=99999; out.style.maxWidth='60%'; out.style.maxHeight='80%'; out.style.overflow='auto'; out.style.background='rgba(0,0,0,0.95)'; out.style.color='#fff'; out.style.padding='1rem'; out.style.borderRadius='8px'; out.style.fontFamily='monospace'; out.style.fontSize='12px';
+            if (traces.length === 0) {
+              out.textContent = 'itest2: No preventDefault calls detected. The link should be navigable.';
+            } else {
+              var h = document.createElement('div'); h.style.fontWeight='700'; h.style.marginBottom='8px'; h.textContent = 'itest2: preventDefault called by ' + traces.length + ' handler(s) - stack traces below:'; out.appendChild(h);
+              traces.forEach(function(t,i){ var pre = document.createElement('pre'); pre.style.whiteSpace='pre-wrap'; pre.style.background='rgba(255,255,255,0.03)'; pre.style.padding='8px'; pre.style.borderRadius='6px'; pre.style.marginBottom='8px'; pre.textContent = '--- handler #' + (i+1) + '\n' + t; out.appendChild(pre); });
+            }
+            document.body.appendChild(out);
+          } catch (err) { console.error('itest2 error', err); }
+        })();
+      </script>
+
+      <script>
+        // Lightweight in-page integration test for the profile-menu "Manage Applications" link.
+        // Usage: visit /admin/index.php?itest=1 while logged in to run the test in your browser.
+        (function(){
+          try {
+            var params = new URLSearchParams(window.location.search || '');
+            if (!params.has('itest')) return; // only run when explicitly requested
+
+            function showResult(ok, msg) {
+              var el = document.getElementById('itest-result');
+              if (!el) {
+                el = document.createElement('div'); el.id = 'itest-result';
+                el.style.position = 'fixed'; right:0; el.style.right = '1rem'; el.style.top = '1rem'; el.style.zIndex = 99999;
+                el.style.padding = '.6rem 1rem'; el.style.borderRadius = '8px'; el.style.boxShadow = '0 8px 24px rgba(0,0,0,.12)';
+                el.style.fontFamily = 'system-ui, -apple-system, sans-serif'; el.style.fontSize = '14px';
+                document.body.appendChild(el);
+              }
+              el.style.background = ok ? 'rgba(16,185,129,0.95)' : 'rgba(239,68,68,0.95)';
+              el.style.color = 'white';
+              el.textContent = (ok ? 'Integration test passed: ' : 'Integration test FAILED: ') + msg;
+              console.log('itest:', ok, msg);
+            }
+
+            // find the profile-menu link that navigates to job-applications.php
+            var anchor = document.querySelector('a[href="job-applications.php"], a[href*="job-applications.php"]');
+            if (!anchor) { showResult(false, 'Manage Applications link not found'); return; }
+
+            // create a cancelable click event and dispatch it; dispatchEvent returns false if preventDefault was called
+            var ev = new MouseEvent('click', { bubbles: true, cancelable: true, view: window });
+            var allowed = anchor.dispatchEvent(ev);
+            if (!allowed) {
+              // some handler called preventDefault
+              showResult(false, 'A click handler called preventDefault (navigation suppressed)');
+            } else {
+              // no preventDefault; the link should navigate if actually clicked. We won't navigate automatically.
+              showResult(true, 'Click not prevented (link should navigate when activated)');
+            }
+          } catch (err) {
+            console.error('itest error', err);
+            try { showResult(false, 'Error running test: ' + (err && err.message ? err.message : String(err))); } catch(e){}
+          }
         })();
       </script>
       <script>
